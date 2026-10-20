@@ -8,13 +8,18 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Firebase SDKs (Versión compatible CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body id="app-global-container" class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col pt-16 pb-20 bg-cover bg-center bg-no-repeat bg-fixed transition-all duration-300" style="background-image: url('https://st.depositphotos.com/1167801/3262/i/950/depositphotos_32621051-stock-photo-nuts-and-bolts-background.jpg');">
 
   <!-- CAPA DE OVERLAY OSCURA PARA ASEGURAR LEGIBILIDAD CON EL FONDO -->
   <div class="fixed inset-0 bg-slate-950/85 -z-10"></div>
 
-  <!-- 1. BARRA SUPERIOR (HEADER FIX) -->
+  <!-- 1. BARRA SUPERIOR (HEADER) -->
   <header class="bg-slate-950/95 backdrop-blur-md border-b border-slate-800 fixed top-0 left-0 right-0 z-40 h-16">
     <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-4">
       
@@ -33,7 +38,7 @@
 
       <!-- ÁREA DE ACCIONES (PUBLICAR + CHATS + PERFIL) -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <!-- BOTÓN PUBLICAR (+) AL LADO DE CHATS -->
+        <!-- BOTÓN PUBLICAR (+) -->
         <button onclick="requireAuthAction(() => togglePostModal())" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full font-bold transition flex items-center justify-center shadow-lg" title="Crear Publicación">
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
@@ -54,7 +59,7 @@
     </div>
   </header>
 
-  <!-- MODAL DE AUTENTICACIÓN / REGISTRO / VERIFICACIÓN EMAIL -->
+  <!-- MODAL DE AUTENTICACIÓN / REGISTRO -->
   <div id="modal-auth" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -65,73 +70,53 @@
       <!-- FORMULARIO 1: INICIO DE SESIÓN -->
       <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-3 text-xs">
         <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Correo Electrónico o Usuario</label>
-          <input required type="text" placeholder="tu@email.com o @usuario" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Correo Electrónico</label>
+          <input id="login-email" required type="email" placeholder="tu@email.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white outline-none focus:border-red-500">
         </div>
         <div>
           <label class="text-[10px] font-bold text-slate-400 uppercase">Contraseña</label>
-          <input required type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+          <input id="login-password" required type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white outline-none focus:border-red-500">
         </div>
         <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition">Ingresar</button>
         <p class="text-[11px] text-center text-slate-400 pt-2">¿No tienes cuenta? <button type="button" onclick="openAuthModal('signup')" class="text-red-400 font-bold underline">Regístrate aquí</button></p>
       </form>
 
-      <!-- FORMULARIO 2: REGISTRO (PASO 1) -->
-      <form id="form-signup" onsubmit="handleSignupStep1(event)" class="hidden space-y-3 text-xs">
+      <!-- FORMULARIO 2: REGISTRO -->
+      <form id="form-signup" onsubmit="handleSignupSubmit(event)" class="hidden space-y-3 text-xs">
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="text-[10px] font-bold text-slate-400 uppercase">Nombre Real</label>
-            <input id="signup-fullname" required type="text" placeholder="Ej. Juan Pérez" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <input id="signup-fullname" required type="text" placeholder="Ej. Juan Pérez" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-red-500">
           </div>
           <div>
             <label class="text-[10px] font-bold text-slate-400 uppercase">Nombre de Usuario</label>
-            <input id="signup-username" required type="text" placeholder="@juan_perez" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <input id="signup-username" required type="text" placeholder="@juan_perez" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-red-500">
           </div>
         </div>
 
         <div>
           <label class="text-[10px] font-bold text-slate-400 uppercase">Correo Electrónico</label>
-          <input id="signup-email" required type="email" placeholder="juan@ejemplo.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
-        </div>
-
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Teléfono (Opcional)</label>
-          <input type="tel" placeholder="+56 9 1234 5678" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+          <input id="signup-email" required type="email" placeholder="juan@ejemplo.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-red-500">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="text-[10px] font-bold text-slate-400 uppercase">Contraseña</label>
-            <input id="signup-pass" required type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <input id="signup-pass" required type="password" placeholder="••••••••" minlength="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-red-500">
           </div>
           <div>
             <label class="text-[10px] font-bold text-slate-400 uppercase">Confirmar Contraseña</label>
-            <input id="signup-pass-confirm" required type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <input id="signup-pass-confirm" required type="password" placeholder="••••••••" minlength="6" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white outline-none focus:border-red-500">
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition">Enviar Código de Verificación</button>
+        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition">Crear Cuenta e Ingresar</button>
         <p class="text-[11px] text-center text-slate-400">¿Ya tienes cuenta? <button type="button" onclick="openAuthModal('login')" class="text-red-400 font-bold underline">Inicia Sesión</button></p>
-      </form>
-
-      <!-- FORMULARIO 3: VERIFICACIÓN DE CORREO (PASO 2) -->
-      <form id="form-verify" onsubmit="handleVerifyEmail(event)" class="hidden space-y-4 text-xs text-center">
-        <div class="space-y-1">
-          <i data-lucide="mail-check" class="w-8 h-8 text-emerald-400 mx-auto"></i>
-          <h4 class="font-bold text-white text-sm">Verifica tu Correo Electrónico</h4>
-          <p class="text-slate-400 text-[11px]">Ingresa el código de 6 dígitos enviado a <span id="verify-email-target" class="text-white font-bold"></span></p>
-        </div>
-
-        <div class="flex justify-center gap-2">
-          <input required type="text" maxlength="6" placeholder="123456" class="w-40 bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-center text-lg tracking-widest font-mono text-white focus:border-red-500">
-        </div>
-
-        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg transition">Verificar Cuenta y Activar</button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL OPCIONES DE CUENTA (MENÚ DEL ENGRANAJE) -->
+  <!-- MODAL OPCIONES DE CUENTA -->
   <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -142,12 +127,10 @@
       </div>
 
       <div class="space-y-3 text-xs">
-        <!-- BOTÓN ACTIVAR/DESACTIVAR MODO EDICIÓN -->
         <button id="btn-toggle-edit-mode" onclick="toggleEditMode()" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
           <i data-lucide="pencil" class="w-4 h-4 text-red-500"></i> <span id="edit-mode-btn-text">Habilitar Edición de Perfil</span>
         </button>
 
-        <!-- CERRAR SESIÓN -->
         <div class="pt-2 border-t border-slate-800">
           <button onclick="logout()" class="w-full bg-slate-800 hover:bg-red-600/20 text-red-400 border border-red-500/30 font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
             <i data-lucide="log-out" class="w-4 h-4"></i> Cerrar Sesión
@@ -157,119 +140,46 @@
     </div>
   </div>
 
-  <!-- MODAL DE PERFIL DE GRUPO (DETALLE DEL GRUPO) -->
-  <div id="modal-group-profile" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-50 overflow-y-auto p-4 sm:p-6 flex justify-center items-start pt-10">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden mb-12">
-      <!-- Portada del Grupo -->
-      <div class="relative h-48 sm:h-64 w-full bg-slate-950">
-        <img id="group-profile-banner" src="" class="w-full h-full object-cover">
-        <button onclick="closeGroupProfile()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/60 text-white hover:bg-black transition flex items-center justify-center">✕</button>
-      </div>
-      <!-- Info del Grupo -->
-      <div class="p-6 space-y-4 relative bg-slate-900">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <span id="group-profile-category" class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2.5 py-1 rounded border border-red-500/30">Categoría</span>
-            <h2 id="group-profile-name" class="text-xl sm:text-2xl font-bold text-white mt-1">Nombre del Grupo</h2>
-            <p id="group-profile-members" class="text-xs text-slate-400 mt-0.5">0 Miembros</p>
-          </div>
-          <button id="group-profile-join-btn" onclick="toggleJoinGroupState()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-xs font-bold transition shadow-md">
-            Unirme al Grupo
-          </button>
-        </div>
-        <p id="group-profile-desc" class="text-xs text-slate-300 border-t border-slate-800 pt-3">Descripción del grupo...</p>
-
-        <!-- Muro Interno del Grupo -->
-        <div class="border-t border-slate-800 pt-4 space-y-3">
-          <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="newspaper" class="w-4 h-4 text-red-500"></i> Publicaciones del Grupo
-          </h3>
-          <div id="group-profile-posts" class="space-y-3">
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-400 text-center">
-              Aún no hay publicaciones en este grupo. ¡Sé el primero en compartir algo!
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL DE NUEVA PUBLICACIÓN DEL FEED -->
+  <!-- MODAL DE NUEVA PUBLICACIÓN -->
   <div id="modal-post" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="pen-tool" class="text-red-500 w-4 h-4"></i> Crear nueva publicación / avance
+          <i data-lucide="pen-tool" class="text-red-500 w-4 h-4"></i> Crear nueva publicación
         </h3>
         <button onclick="togglePostModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
 
       <form id="form-post" onsubmit="createPost(event)" class="space-y-3">
-        <textarea id="post-text" required rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500" placeholder="¿Qué avance le hiciste a tu auto hoy? Publica fotos, modificaciones o dudas técnicas..."></textarea>
+        <textarea id="post-text" required rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500" placeholder="¿Qué avance le hiciste a tu auto hoy?..."></textarea>
         <div>
           <label class="text-[10px] font-bold text-slate-400 uppercase">URL de imagen (opcional)</label>
           <input id="post-image" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
         </div>
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="togglePostModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Cancelar</button>
+          <button type="button" onclick="togglePostModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs font-semibold">Cancelar</button>
           <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold">Publicar</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL PARA REPORTAR PUBLICACIÓN -->
-  <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="flag" class="text-red-500 w-4 h-4"></i> Reportar publicación
-        </h3>
-        <button onclick="closeReportModal()" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <form onsubmit="handleReportSubmit(event)" class="space-y-3 text-xs">
-        <label class="text-[10px] font-bold text-slate-400 uppercase">Motivo del reporte</label>
-        <select required id="report-reason" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
-          <option value="spam">Spam o contenido no deseado</option>
-          <option value="inappropriate">Contenido inapropiado u ofensivo</option>
-          <option value="scam">Estafa o información falsa</option>
-          <option value="other">Otro motivo</option>
-        </select>
-        <textarea id="report-details" rows="3" placeholder="Detalles adicionales (opcional)..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white"></textarea>
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeReportModal()" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded">Cancelar</button>
-          <button type="submit" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Enviar Reporte</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL PARA COMPARTIR PUBLICACIÓN CON AMIGO -->
-  <div id="modal-share" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="share-2" class="text-red-500 w-4 h-4"></i> Compartir publicación
-        </h3>
-        <button onclick="closeShareModal()" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <p class="text-xs text-slate-400">Selecciona un amigo para enviarle esta publicación por chat directo:</p>
-      <div id="share-friends-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-        <!-- Generado dinámicamente -->
-      </div>
-    </div>
-  </div>
-
-  <!-- DROPDOWN DE CHAT DIRECTO (LISTA DE PERSONAS) -->
+  <!-- DROPDOWN DE CHAT / AÑADIR AMIGOS -->
   <div id="chat-dropdown" class="hidden fixed top-16 right-4 z-50 w-80 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl overflow-hidden">
     <div class="p-3 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
       <span class="text-xs font-bold text-white flex items-center gap-2">
-        <i data-lucide="users" class="w-4 h-4 text-red-500"></i> Amigos disponibles
+        <i data-lucide="users" class="w-4 h-4 text-red-500"></i> Amigos & Contactos
       </span>
       <button onclick="toggleChatDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
     </div>
+    <div class="p-2 border-b border-slate-800 flex items-center gap-1">
+      <input type="text" id="friendSearchInput" placeholder="Añadir por @usuario..." class="bg-slate-900 border border-slate-700 text-xs px-2 py-1 rounded text-white w-full outline-none">
+      <button onclick="sendFriendRequest()" class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-[10px] font-bold text-white whitespace-nowrap">
+        + Agregar
+      </button>
+    </div>
     <div id="chat-friends-list" class="p-2 space-y-1 max-h-64 overflow-y-auto">
-      <!-- Cargado dinámicamente por JS -->
+      <p class="text-xs text-slate-500 text-center py-4">No tienes amigos agregados aún.</p>
     </div>
   </div>
 
@@ -278,32 +188,13 @@
 
     <!-- 1. PESTAÑA: FEED -->
     <section id="tab-feed" class="tab-content space-y-6">
-
-      <!-- SECCIÓN HISTORIAS -->
-      <div class="bg-slate-950/90 border border-slate-800 rounded-xl py-3 px-4 shadow-md backdrop-blur-sm">
-        <div class="flex gap-4 overflow-x-auto items-center" id="stories-container">
-          <div onclick="requireAuthAction(() => alert('Ver tu historia'))" class="flex flex-col items-center gap-1 cursor-pointer shrink-0">
-            <div class="w-12 h-12 rounded-full border-2 border-dashed border-red-500 flex items-center justify-center bg-slate-900 hover:bg-slate-800">
-              <i data-lucide="plus" class="w-5 h-5 text-red-500"></i>
-            </div>
-            <span class="text-[10px] text-slate-400 font-medium">Tu Historia</span>
-          </div>
-          <div id="friends-stories-list" class="flex gap-4">
-            <!-- Historias de amigos se cargarán aquí -->
-          </div>
-        </div>
-      </div>
-
-      <!-- CONTENIDO DEL FEED Y SIDEBAR -->
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-3 space-y-4">
-          <!-- Muro de Publicaciones -->
           <div id="posts-feed" class="space-y-4">
-            <!-- Mensaje cuando el muro está vacío -->
             <div id="empty-feed-msg" class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
               <i data-lucide="layout" class="w-10 h-10 text-slate-500 mx-auto mb-2"></i>
               <h3 class="text-sm font-bold text-white">Aún no hay publicaciones</h3>
-              <p class="text-xs text-slate-400 mt-1">¡Sé el primero en compartir un avance de tu proyecto o auto!</p>
+              <p class="text-xs text-slate-400 mt-1">¡Sé el primero en compartir un avance de tu proyecto!</p>
               <button onclick="requireAuthAction(() => togglePostModal())" class="mt-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Crear Publicación</button>
             </div>
           </div>
@@ -315,159 +206,83 @@
             <div class="bg-slate-950 rounded-lg p-6 text-center border border-slate-800">
               <i data-lucide="megaphone" class="w-6 h-6 text-amber-500 mx-auto mb-1"></i>
               <h4 class="font-bold text-xs text-white">Espacio Disponible</h4>
-              <p class="text-[11px] text-slate-400 mt-1">Anuncia tu taller, repuestos o marca aquí.</p>
-              <button onclick="togglePromoteModal()" class="mt-3 text-[10px] bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1 rounded">Publicitar</button>
+              <p class="text-[11px] text-slate-400 mt-1">Anuncia tu taller o repuestos aquí.</p>
             </div>
           </div>
         </aside>
       </div>
-
     </section>
 
     <!-- 2. PESTAÑA: MARKET -->
     <section id="tab-market" class="tab-content hidden space-y-6">
-      
-      <!-- CONTROLES SUPERIORES DE MARKET -->
       <div class="bg-slate-800/90 border border-slate-700 p-4 rounded-xl space-y-4 shadow-lg backdrop-blur-sm">
         <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
-          
           <div class="relative flex-1">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
-            <input type="text" id="market-search" oninput="filterMarketItems(this.value)" placeholder="Buscar repuestos OEM, herramientas, talleres, servicios de grúa..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
+            <input type="text" id="market-search" placeholder="Buscar repuestos, herramientas..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
           </div>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="setMarketFilter('repuesto')" id="btn-filter-repuestos" class="market-filter-btn px-3 py-2 bg-slate-900 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-              <i data-lucide="package" class="w-3.5 h-3.5 text-red-500"></i> Repuestos
-            </button>
-            <button onclick="setMarketFilter('servicio')" id="btn-filter-servicios" class="market-filter-btn px-3 py-2 bg-slate-900 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-              <i data-lucide="wrench" class="w-3.5 h-3.5 text-amber-500"></i> Servicios
-            </button>
-            <button onclick="toggleSellModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow transition">
-              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Vender
-            </button>
-            <button onclick="togglePromoteModal()" class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow transition">
-              <i data-lucide="megaphone" class="w-3.5 h-3.5"></i> Publicitar Producto/Servicio
-            </button>
-          </div>
-
+          <button onclick="toggleSellModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow transition">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Vender
+          </button>
         </div>
       </div>
 
-      <!-- CATÁLOGO MARKET -->
       <div id="market-catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div id="empty-market-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
           <i data-lucide="shopping-bag" class="w-10 h-10 text-slate-500 mx-auto mb-2"></i>
-          <h3 class="text-sm font-bold text-white">No hay productos ni servicios a la venta</h3>
-          <p class="text-xs text-slate-400 mt-1">Sé el primero en ofrecer un repuesto o servicio automotriz.</p>
-          <button onclick="toggleSellModal()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Publicar Producto</button>
+          <h3 class="text-sm font-bold text-white">No hay productos en venta aún</h3>
         </div>
       </div>
-
     </section>
 
-    <!-- 3. PESTAÑA: GRUPOS GLOBAL -->
+    <!-- 3. PESTAÑA: GRUPOS -->
     <section id="tab-groups" class="tab-content hidden space-y-6">
-      
-      <!-- ENCABEZADO Y CONTROLES DE GRUPOS -->
-      <div class="bg-slate-800/90 border border-slate-700 p-5 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg backdrop-blur-sm">
+      <div class="bg-slate-800/90 border border-slate-700 p-5 rounded-xl flex justify-between items-center shadow-lg backdrop-blur-sm">
         <div>
           <h1 class="text-xl font-bold text-white flex items-center gap-2">
             <i data-lucide="users" class="w-6 h-6 text-red-500"></i> Grupos & Comunidades
           </h1>
-          <p class="text-xs text-slate-400 mt-1">Conéctate con apasionados de tu misma categoría: rutas, videojuegos, marcas y proyectos.</p>
         </div>
-        <button onclick="toggleGroupModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 shrink-0 shadow-lg transition">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> Crear Nuevo Grupo
+        <button onclick="toggleGroupModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Crear Grupo
         </button>
       </div>
 
-      <!-- FILTROS RÁPIDOS POR CATEGORÍA DE GRUPOS -->
-      <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-        <button onclick="filterGroupCategory('all')" class="group-filter-btn bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">Todos los Grupos</button>
-        <button onclick="filterGroupCategory('rutas')" class="group-filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">🛣️ Rutas & Rodadas</button>
-        <button onclick="filterGroupCategory('autos')" class="group-filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">🚘 Vehículos & Marcas</button>
-        <button onclick="filterGroupCategory('videojuegos')" class="group-filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">🎮 Videojuegos & SimRacing</button>
-        <button onclick="filterGroupCategory('meets')" class="group-filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">🌙 Meets & Expor</button>
-        <button onclick="filterGroupCategory('proyectos')" class="group-filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">🔧 Proyectos & Tuning</button>
-      </div>
-
-      <!-- GRID DE TARJETAS DE GRUPOS -->
       <div id="groups-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div id="empty-groups-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-          <i data-lucide="users" class="w-10 h-10 text-slate-500 mx-auto mb-2"></i>
-          <h3 class="text-sm font-bold text-white">No hay grupos creados aún</h3>
-          <p class="text-xs text-slate-400 mt-1">Crea la primera comunidad para tu club o categoría favorita.</p>
-          <button onclick="toggleGroupModal()" class="mt-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Crear Grupo</button>
+          <p class="text-xs text-slate-400">No hay grupos creados aún.</p>
         </div>
       </div>
-
     </section>
 
     <!-- 4. PESTAÑA: PERFIL DE USUARIO -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
-      
-      <!-- ENCABEZADO DE PERFIL -->
       <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
-        
-        <!-- BOTÓN ENGRANAJE CONFIGURACIÓN -->
         <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 p-2 bg-slate-900/80 hover:bg-slate-700 text-slate-300 rounded-full border border-slate-700 transition shadow-lg" title="Opciones de Cuenta">
           <i data-lucide="settings" class="w-5 h-5"></i>
         </button>
 
-        <!-- BOTÓN CAMBIAR FONDO DE PERFIL EN LA ESQUINA INFERIOR DERECHA -->
-        <button onclick="editBackgroundUrl()" class="edit-btn-element hidden absolute bottom-4 right-4 px-3 py-1.5 bg-slate-900/85 hover:bg-slate-800 text-white rounded-lg border border-slate-700 transition flex items-center gap-1.5 text-xs font-bold shadow-xl" title="Cambiar Fondo de Perfil">
-          <i data-lucide="image" class="w-4 h-4 text-amber-400"></i>
-          <span>Cambiar Fondo</span>
-        </button>
-
-        <div class="flex flex-col sm:flex-row items-center gap-5 pr-0 sm:pr-12">
-          
-          <!-- AVATAR DE PERFIL -->
-          <div class="relative group shrink-0">
+        <div class="flex flex-col sm:flex-row items-center gap-5">
+          <div class="relative shrink-0">
             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl">
               <div id="profile-avatar-display" class="w-full h-full rounded-full bg-red-600 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
                 <span id="profile-avatar-initials">YO</span>
                 <img id="profile-avatar-img" src="" class="hidden w-full h-full object-cover">
               </div>
             </div>
-            <!-- LÁPIZ EDICIÓN FOTO -->
-            <button onclick="editProfileAvatar()" class="edit-btn-element hidden absolute bottom-1 right-1 p-2 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg border border-slate-900 transition" title="Editar foto de perfil">
-              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-            </button>
           </div>
 
-          <!-- DATOS Y DESCRIPCIÓN -->
           <div class="space-y-1.5 text-center sm:text-left flex-1">
             <div class="flex items-center justify-center sm:justify-start gap-2">
               <h2 id="profile-display-name" class="text-xl sm:text-2xl font-bold text-white">Nombre de Usuario</h2>
-              <button onclick="editProfileName()" class="edit-btn-element hidden text-slate-400 hover:text-white transition" title="Editar nombre">
-                <i data-lucide="pencil" class="w-4 h-4"></i>
-              </button>
             </div>
             <p id="profile-display-username" class="text-xs sm:text-sm text-red-400 font-semibold">@usuario</p>
-            
-            <div class="flex items-start justify-center sm:justify-start gap-2 max-w-2xl">
-              <p id="profile-display-bio" class="text-xs sm:text-sm text-slate-300">
-                Añade una descripción sobre ti y tus proyectos automotrices.
-              </p>
-              <button onclick="editProfileBio()" class="edit-btn-element hidden text-slate-400 hover:text-white transition shrink-0 mt-0.5" title="Editar biografía">
-                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
-
-            <div class="flex justify-center sm:justify-start gap-6 text-xs text-slate-400 pt-1">
-              <div><strong id="count-posts" class="text-white font-bold">0</strong> Publicaciones</div>
-              <div><strong id="count-vehicles" class="text-white font-bold">0</strong> Vehículos</div>
-              <div><strong id="count-friends" class="text-white font-bold">0</strong> Amigos</div>
-            </div>
+            <p id="profile-display-bio" class="text-xs sm:text-sm text-slate-300">Bienvenido a tu perfil de Mi Garage.</p>
           </div>
-
         </div>
-
       </div>
 
-      <!-- SUB-NAVEGACIÓN INTERNA DEL PERFIL (4 PESTAÑAS) -->
+      <!-- SUB-PESTAÑAS DE PERFIL -->
       <div class="flex justify-center border-b border-slate-800 gap-4 sm:gap-10 overflow-x-auto">
         <button onclick="switchProfileSubTab('posts')" id="btn-subtab-posts" class="pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0">
           <i data-lucide="newspaper" class="w-4 h-4"></i> Feed
@@ -483,60 +298,43 @@
         </button>
       </div>
 
-      <!-- CONTENIDO DE SUB-PESTAÑAS DE PERFIL -->
-      
-      <!-- 1. FEED PROPIO -->
+      <!-- CONTENIDO DE SUB-PESTAÑAS -->
       <div id="profile-subtab-posts" class="space-y-4">
         <div id="user-own-posts" class="space-y-4">
-          <div id="empty-user-posts-msg" class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">Aún no has publicado nada. Tus publicaciones aparecerán aquí.</p>
+          <div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center">
+            <p class="text-xs text-slate-400">Tus publicaciones aparecerán aquí.</p>
           </div>
         </div>
       </div>
 
-      <!-- 2. MARKET PROPIO -->
       <div id="profile-subtab-market" class="hidden space-y-4">
         <div id="user-own-market" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div id="empty-user-market-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">No tienes artículos o servicios a la venta actualmente.</p>
+          <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center">
+            <p class="text-xs text-slate-400">No tienes artículos a la venta actualmente.</p>
           </div>
         </div>
       </div>
 
-      <!-- 3. GARAGE PROPIO -->
       <div id="profile-subtab-garage" class="hidden space-y-6">
         <div class="flex justify-between items-center">
           <h3 class="text-sm font-bold text-white flex items-center gap-2">
-            <i data-lucide="car" class="w-4 h-4 text-red-500"></i> Tus Vehículos & Proyectos
+            <i data-lucide="car" class="w-4 h-4 text-red-500"></i> Tus Vehículos
           </h3>
           <button onclick="addNewVehicle()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar Vehículo
           </button>
         </div>
-
         <div id="garage-vehicles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div id="empty-garage-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <i data-lucide="car" class="w-10 h-10 text-slate-500 mx-auto mb-2"></i>
+          <div id="empty-garage-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center">
             <p class="text-xs text-slate-400">No has agregado vehículos a tu garage.</p>
-            <button onclick="addNewVehicle()" class="mt-3 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">Agregar Mi Primer Vehículo</button>
           </div>
         </div>
       </div>
 
-      <!-- 4. PESTAÑA PERFIL: MIS GRUPOS -->
       <div id="profile-subtab-groups" class="hidden space-y-4">
-        <div class="flex justify-between items-center">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2">
-            <i data-lucide="users" class="w-4 h-4 text-red-500"></i> Comunidades a las que perteneces
-          </h3>
-          <button onclick="switchTab('groups')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-            Explorar más grupos
-          </button>
-        </div>
-
         <div id="user-joined-groups-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div id="empty-user-groups-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">Aún no te has unido a ningún grupo.</p>
+          <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center">
+            <p class="text-xs text-slate-400">Aún no perteneces a ningún grupo.</p>
           </div>
         </div>
       </div>
@@ -544,119 +342,6 @@
     </section>
 
   </main>
-
-  <!-- MODAL PARA CREAR UN NUEVO GRUPO -->
-  <div id="modal-group" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="users" class="text-red-500 w-4 h-4"></i> Crear Nueva Comunidad / Grupo
-        </h3>
-        <button onclick="toggleGroupModal()" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-
-      <form onsubmit="createNewGroup(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Nombre del Grupo</label>
-          <input id="group-name" required type="text" placeholder="Ej. Club Suzuki 4x4 o SimRacing Drift League" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-        </div>
-
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Categoría del Grupo</label>
-          <select id="group-category" required class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-            <option value="rutas">🛣️ Rutas & Rodadas</option>
-            <option value="autos">🚘 Vehículos & Marcas</option>
-            <option value="videojuegos">🎮 Videojuegos & SimRacing</option>
-            <option value="meets">🌙 Meets & Expor</option>
-            <option value="proyectos">🔧 Proyectos & Restoration / Tuning</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Descripción Breve</label>
-          <textarea id="group-desc" required rows="2" placeholder="¿De qué trata el grupo y qué normas tienen?..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
-        </div>
-
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Imagen de Portada (URL)</label>
-          <input id="group-image" required type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
-          <button type="button" onclick="toggleGroupModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded font-semibold">Cancelar</button>
-          <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Crear Grupo</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL DE VENDER PRODUCTO/REPUESTO -->
-  <div id="modal-sell" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="plus-circle" class="text-emerald-500 w-4 h-4"></i> Publicar Repuesto o Vehículo en Venta
-        </h3>
-        <button onclick="toggleSellModal()" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-
-      <form onsubmit="handleSellSubmit(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Título del Producto</label>
-          <input id="sell-title" required type="text" placeholder="Ej. Kit de Suspensión u Homocinética OEM" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-[10px] font-bold text-slate-400 uppercase">Precio ($)</label>
-            <input id="sell-price" required type="number" placeholder="Ej. 150000" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-          </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-400 uppercase">Categoría</label>
-            <select id="sell-type" required class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-              <option value="repuesto">Repuesto</option>
-              <option value="servicio">Servicio / Taller</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Descripción</label>
-          <input id="sell-desc" required type="text" placeholder="Detalles de compatibilidad, estado, etc." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-        </div>
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Foto del Producto (URL)</label>
-          <input id="sell-image" required type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="toggleSellModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded">Cancelar</button>
-          <button type="submit" class="px-5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold">Publicar Venta</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL PUBLICITAR SERVICIO O PRODUCTO -->
-  <div id="modal-promote" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-amber-500/40 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="megaphone" class="text-amber-500 w-4 h-4"></i> Publicitar Producto o Taller
-        </h3>
-        <button onclick="togglePromoteModal()" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-
-      <div class="space-y-3 text-xs">
-        <p class="text-slate-300">Posiciona tu taller, grúa o marca de repuestos en la cima del Market y Feed de miles de entusiastas.</p>
-        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1">
-          <div class="flex justify-between font-bold text-white">
-            <span>Plan Destacado Semanal</span>
-            <span class="text-amber-400">$29.900 / sem</span>
-          </div>
-          <p class="text-[10px] text-slate-400">Aparece en recomendaciones prioritarias por marca, modelo y geolocalización.</p>
-        </div>
-        <button onclick="alert('Procesando pago de publicidad...'); togglePromoteModal();" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded font-bold">Pagar Anuncio Destacado</button>
-      </div>
-    </div>
-  </div>
 
   <!-- NAVEGACIÓN INFERIOR (3 PESTAÑAS) -->
   <nav class="bg-slate-950/95 backdrop-blur-md border-t border-slate-800 fixed bottom-0 left-0 right-0 z-40 h-16 flex items-center justify-around px-4 max-w-7xl mx-auto">
@@ -674,847 +359,11 @@
     </button>
   </nav>
 
-  <!-- CONTENEDOR DE BURBUJAS FLOTANTES (ESTILO MESSENGER) -->
-  <div id="floating-chat-bubbles" class="fixed bottom-20 right-4 z-50 flex flex-col gap-3 items-end">
-    <!-- Se insertan burbujas de amigos dinámicamente -->
-  </div>
-
-  <!-- VENTANA DE CHAT INDIVIDUAL FLOTANTE -->
-  <div id="active-chat-box" class="hidden fixed bottom-20 right-20 z-50 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl flex flex-col h-80">
-    <div class="p-2.5 bg-slate-950 border-b border-slate-800 flex justify-between items-center rounded-t-xl">
-      <span id="chat-user-name" class="text-xs font-bold text-white flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        <span id="chat-title-text">Chat</span>
-      </span>
-      <button onclick="closeDirectChat()" class="text-slate-400 hover:text-white text-xs">✕</button>
-    </div>
-    <div id="chat-messages" class="flex-1 p-3 overflow-y-auto text-xs space-y-2">
-      <!-- Mensajes dinámicos -->
-    </div>
-    <div class="p-2 border-t border-slate-800 flex gap-1">
-      <input id="chat-input" type="text" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white focus:outline-none focus:border-red-500">
-      <button onclick="sendChatMessage()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-xs font-bold transition">Enviar</button>
-    </div>
-  </div>
-
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- FIREBASE INITIALIZATION & CORE SCRIPT -->
   <script>
     lucide.createIcons();
 
-    const DEFAULT_BG = "https://st.depositphotos.com/1167801/3262/i/950/depositphotos_32621051-stock-photo-nuts-and-bolts-background.jpg";
-
-    let isLoggedIn = false;
-    let currentUser = null;
-    let isEditModeActive = false;
-    let currentSharedPostText = '';
-    let targetPostToReport = null;
-
-    // Almacenamiento dinámico de datos
-    const groupsData = {};
-    const friendsList = [];
-    let activeChatFriend = null;
-
-    function requireAuthAction(callbackAction) {
-      if(!isLoggedIn) {
-        openAuthModal('login');
-      } else {
-        callbackAction();
-      }
-    }
-
-    function switchTabWithAuth(tabId) {
-      if(!isLoggedIn) {
-        openAuthModal('login');
-      } else {
-        switchTab(tabId);
-      }
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-red-500', 'text-white');
-        btn.classList.add('text-slate-400');
-      });
-
-      const activeBtn = document.getElementById(`btn-${tabId}`);
-      if(activeBtn) {
-        activeBtn.classList.add('text-red-500');
-        activeBtn.classList.remove('text-slate-400');
-      }
-
-      const globalContainer = document.getElementById('app-global-container');
-      if (tabId === 'profile' && currentUser && currentUser.profileBgUrl) {
-        globalContainer.style.backgroundImage = `url('${currentUser.profileBgUrl}')`;
-      } else {
-        globalContainer.style.backgroundImage = `url('${DEFAULT_BG}')`;
-      }
-
-      if(tabId === 'market') {
-        resetMarketFilters();
-      }
-    }
-
-    // ABRIR PERFIL DE GRUPO
-    function openGroupProfile(groupId) {
-      const g = groupsData[groupId];
-      if (!g) return;
-
-      document.getElementById('group-profile-banner').src = g.banner;
-      document.getElementById('group-profile-name').innerText = g.name;
-      document.getElementById('group-profile-category').innerText = g.category;
-      document.getElementById('group-profile-members').innerText = g.members;
-      document.getElementById('group-profile-desc').innerText = g.desc;
-
-      document.getElementById('modal-group-profile').classList.remove('hidden');
-    }
-
-    function closeGroupProfile() {
-      document.getElementById('modal-group-profile').classList.add('hidden');
-    }
-
-    function toggleJoinGroupState() {
-      const btn = document.getElementById('group-profile-join-btn');
-      if (btn.innerText === "Unirme al Grupo") {
-        btn.innerText = "Miembro √";
-        btn.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-xs font-bold transition shadow-md";
-      } else {
-        btn.innerText = "Unirme al Grupo";
-        btn.className = "bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-xs font-bold transition shadow-md";
-      }
-    }
-
-    // PESTAÑAS DEL PERFIL
-    function switchProfileSubTab(sub) {
-      const btnPosts = document.getElementById('btn-subtab-posts');
-      const btnMarket = document.getElementById('btn-subtab-market');
-      const btnGarage = document.getElementById('btn-subtab-garage');
-      const btnGroups = document.getElementById('btn-subtab-groups');
-
-      const contentPosts = document.getElementById('profile-subtab-posts');
-      const contentMarket = document.getElementById('profile-subtab-market');
-      const contentGarage = document.getElementById('profile-subtab-garage');
-      const contentGroups = document.getElementById('profile-subtab-groups');
-
-      contentPosts.classList.add('hidden');
-      contentMarket.classList.add('hidden');
-      contentGarage.classList.add('hidden');
-      contentGroups.classList.add('hidden');
-
-      const defaultClass = "pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0";
-      const activeClass = "pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0";
-
-      btnPosts.className = defaultClass;
-      btnMarket.className = defaultClass;
-      btnGarage.className = defaultClass;
-      btnGroups.className = defaultClass;
-
-      if(sub === 'posts') {
-        contentPosts.classList.remove('hidden');
-        btnPosts.className = activeClass;
-      } else if(sub === 'market') {
-        contentMarket.classList.remove('hidden');
-        btnMarket.className = activeClass;
-      } else if(sub === 'garage') {
-        contentGarage.classList.remove('hidden');
-        btnGarage.className = activeClass;
-      } else if(sub === 'groups') {
-        contentGroups.classList.remove('hidden');
-        btnGroups.className = activeClass;
-      }
-    }
-
-    // MENÚ OPCIONES POSTS
-    function togglePostMenu(postId) {
-      const menu = document.getElementById(`menu-${postId}`);
-      if (!menu) return;
-      document.querySelectorAll('[id^="menu-post-"]').forEach(m => {
-        if(m !== menu) m.classList.add('hidden');
-      });
-      menu.classList.toggle('hidden');
-    }
-
-    function blockContent(postId) {
-      const postCard = document.getElementById(postId);
-      if (postCard && confirm("¿Deseas ocultar esta publicación de tu feed?")) {
-        postCard.remove();
-      }
-    }
-
-    function openReportModal(postId) {
-      targetPostToReport = postId;
-      document.querySelectorAll('[id^="menu-post-"]').forEach(m => m.classList.add('hidden'));
-      document.getElementById('modal-report').classList.remove('hidden');
-    }
-
-    function closeReportModal() {
-      document.getElementById('modal-report').classList.add('hidden');
-      targetPostToReport = null;
-    }
-
-    function handleReportSubmit(e) {
-      e.preventDefault();
-      alert("Gracias por tu reporte. Nuestro equipo revisará esta publicación.");
-      closeReportModal();
-    }
-
-    function editOwnPost(postId) {
-      const postCard = document.getElementById(postId);
-      if(!postCard) return;
-      const textEl = postCard.querySelector('.post-text-content');
-      const currentText = textEl ? textEl.innerText : '';
-      const newText = prompt("Edita el contenido de tu publicación:", currentText);
-      if (newText !== null && newText.trim() !== '') {
-        if(textEl) textEl.innerText = newText.trim();
-      }
-      document.querySelectorAll('[id^="menu-post-"]').forEach(m => m.classList.add('hidden'));
-    }
-
-    function deleteOwnPost(postId) {
-      const postCard = document.getElementById(postId);
-      if (postCard && confirm("¿Estás seguro de que deseas eliminar esta publicación?")) {
-        postCard.remove();
-      }
-    }
-
-    function toggleLike(postId) {
-      const postCard = document.getElementById(postId);
-      if(!postCard) return;
-      
-      const likeBtn = postCard.querySelector('.btn-like');
-      const likesCountEl = postCard.querySelector('.likes-count');
-      let currentLikes = parseInt(likesCountEl.innerText) || 0;
-
-      if(likeBtn.classList.contains('text-red-500')) {
-        likeBtn.classList.remove('text-red-500');
-        likeBtn.classList.add('text-slate-400');
-        likesCountEl.innerText = currentLikes - 1;
-      } else {
-        likeBtn.classList.add('text-red-500');
-        likeBtn.classList.remove('text-slate-400');
-        likesCountEl.innerText = currentLikes + 1;
-      }
-    }
-
-    function openShareModal(text) {
-      currentSharedPostText = text;
-      const shareListContainer = document.getElementById('share-friends-list');
-      shareListContainer.innerHTML = '';
-
-      if (friendsList.length === 0) {
-        shareListContainer.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Aún no tienes amigos agregados.</p>';
-      } else {
-        friendsList.forEach(friend => {
-          const item = `
-            <div onclick="shareWithFriend('${friend.id}')" class="flex items-center justify-between p-2.5 bg-slate-950 hover:bg-slate-800 rounded-lg cursor-pointer transition border border-slate-800">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-red-600 text-xs font-bold flex items-center justify-center text-white overflow-hidden">
-                  ${friend.avatar ? `<img src="${friend.avatar}" class="w-full h-full object-cover">` : friend.initials}
-                </div>
-                <div>
-                  <h4 class="text-xs font-bold text-white">${friend.name}</h4>
-                  <p class="text-[10px] text-slate-400">${friend.car || 'Sin auto'}</p>
-                </div>
-              </div>
-              <i data-lucide="send" class="w-4 h-4 text-red-500"></i>
-            </div>
-          `;
-          shareListContainer.insertAdjacentHTML('beforeend', item);
-        });
-      }
-
-      document.getElementById('modal-share').classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closeShareModal() {
-      document.getElementById('modal-share').classList.add('hidden');
-    }
-
-    function shareWithFriend(friendId) {
-      const friend = friendsList.find(f => f.id === friendId);
-      closeShareModal();
-      openDirectChat(friend);
-
-      const msgBox = document.getElementById('chat-messages');
-      const shareHTML = `
-        <div class="bg-red-950/80 border border-red-500/40 p-2.5 rounded-lg text-xs space-y-1 my-1">
-          <span class="text-[9px] font-bold text-red-400 uppercase tracking-wider block">📌 Publicación compartida</span>
-          <p class="text-slate-200 italic">"${currentSharedPostText}"</p>
-        </div>
-      `;
-      msgBox.insertAdjacentHTML('beforeend', shareHTML);
-      msgBox.scrollTop = msgBox.scrollHeight;
-    }
-
-    function renderFriendsDropdown() {
-      const container = document.getElementById('chat-friends-list');
-      container.innerHTML = '';
-
-      if (friendsList.length === 0) {
-        container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No tienes amigos conectados.</p>';
-        return;
-      }
-
-      friendsList.forEach(friend => {
-        const html = `
-          <div onclick="selectFriendFromDropdown('${friend.id}')" class="flex items-center justify-between p-2 hover:bg-slate-900 rounded-lg cursor-pointer transition">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-full bg-red-600 text-xs font-bold flex items-center justify-center text-white overflow-hidden shrink-0">
-                ${friend.avatar ? `<img src="${friend.avatar}" class="w-full h-full object-cover">` : friend.initials}
-              </div>
-              <div>
-                <h4 class="text-xs font-semibold text-white">${friend.name}</h4>
-                <p class="text-[10px] text-slate-400">${friend.car || 'Entusiasta'}</p>
-              </div>
-            </div>
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-md"></span>
-          </div>
-        `;
-        container.insertAdjacentHTML('beforeend', html);
-      });
-    }
-
-    function selectFriendFromDropdown(friendId) {
-      const friend = friendsList.find(f => f.id === friendId);
-      toggleChatDropdown();
-      openDirectChat(friend);
-    }
-
-    function openDirectChat(friend) {
-      if (!friend) return;
-      activeChatFriend = friend;
-      createOrFocusFloatingBubble(friend);
-      document.getElementById('chat-title-text').innerText = `${friend.name} (${friend.car || 'Piloto'})`;
-      document.getElementById('active-chat-box').classList.remove('hidden');
-    }
-
-    function createOrFocusFloatingBubble(friend) {
-      const bubblesContainer = document.getElementById('floating-chat-bubbles');
-      let existingBubble = document.getElementById(`bubble-${friend.id}`);
-
-      if (!existingBubble) {
-        const avatarContent = friend.avatar 
-          ? `<img src="${friend.avatar}" class="w-full h-full object-cover">` 
-          : `<span class="text-xs font-bold text-white">${friend.initials}</span>`;
-
-        const bubbleHTML = `
-          <div id="bubble-${friend.id}" onclick="toggleChatWindowFromBubble('${friend.id}')" class="relative group cursor-pointer transform hover:scale-110 transition duration-200">
-            <div class="w-12 h-12 rounded-full border-2 border-red-500 bg-slate-900 overflow-hidden shadow-2xl flex items-center justify-center">
-              ${avatarContent}
-            </div>
-            <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-950 rounded-full"></span>
-            <span class="absolute right-14 top-2 bg-slate-950 text-white text-[10px] px-2 py-1 rounded shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition">
-              ${friend.name}
-            </span>
-          </div>
-        `;
-        bubblesContainer.insertAdjacentHTML('beforeend', bubbleHTML);
-      }
-    }
-
-    function toggleChatWindowFromBubble(friendId) {
-      const friend = friendsList.find(f => f.id === friendId);
-      const chatBox = document.getElementById('active-chat-box');
-
-      if (activeChatFriend && activeChatFriend.id === friendId && !chatBox.classList.contains('hidden')) {
-        chatBox.classList.add('hidden');
-      } else {
-        openDirectChat(friend);
-      }
-    }
-
-    function closeDirectChat() {
-      document.getElementById('active-chat-box').classList.add('hidden');
-    }
-
-    function sendChatMessage() {
-      const input = document.getElementById('chat-input');
-      if(!input.value.trim()) return;
-      const msgBox = document.getElementById('chat-messages');
-      msgBox.insertAdjacentHTML('beforeend', `<div class="bg-red-600 text-white p-2 rounded-lg max-w-[80%] ml-auto text-xs shadow-md">${input.value}</div>`);
-      input.value = '';
-      msgBox.scrollTop = msgBox.scrollHeight;
-    }
-
-    function openAuthModal(mode) {
-      const modal = document.getElementById('modal-auth');
-      const title = document.getElementById('auth-title');
-      const formLogin = document.getElementById('form-login');
-      const formSignup = document.getElementById('form-signup');
-      const formVerify = document.getElementById('form-verify');
-
-      modal.classList.remove('hidden');
-      formLogin.classList.add('hidden');
-      formSignup.classList.add('hidden');
-      formVerify.classList.add('hidden');
-
-      if(mode === 'login') {
-        title.innerText = 'Iniciar Sesión en Mi Garage';
-        formLogin.classList.remove('hidden');
-      } else if(mode === 'signup') {
-        title.innerText = 'Crear Cuenta en Mi Garage';
-        formSignup.classList.remove('hidden');
-      } else if(mode === 'verify') {
-        title.innerText = 'Verificación de Seguridad';
-        formVerify.classList.remove('hidden');
-      }
-    }
-
-    function closeAuthModal() {
-      document.getElementById('modal-auth').classList.add('hidden');
-    }
-
-    function handleLoginSubmit(e) {
-      e.preventDefault();
-      isLoggedIn = true;
-      currentUser = { 
-        name: 'Usuario Mi Garage', 
-        username: '@mi_garage',
-        bio: 'Bienvenido a tu perfil.',
-        avatarUrl: '',
-        profileBgUrl: ''
-      };
-      updateUserSessionUI();
-      closeAuthModal();
-    }
-
-    function handleSignupStep1(e) {
-      e.preventDefault();
-      const pass = document.getElementById('signup-pass').value;
-      const passConfirm = document.getElementById('signup-pass-confirm').value;
-
-      if(pass !== passConfirm) {
-        alert('Las contraseñas no coinciden. Por favor verifícalas.');
-        return;
-      }
-
-      const email = document.getElementById('signup-email').value;
-      document.getElementById('verify-email-target').innerText = email;
-      openAuthModal('verify');
-    }
-
-    function handleVerifyEmail(e) {
-      e.preventDefault();
-      isLoggedIn = true;
-      const fullname = document.getElementById('signup-fullname').value || 'Piloto';
-      const user = document.getElementById('signup-username').value || '@piloto';
-      
-      const initialsStr = fullname.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'YO';
-
-      currentUser = { 
-        name: fullname, 
-        username: user.startsWith('@') ? user : `@${user}`,
-        bio: 'Nuevo integrante en la comunidad Mi Garage.',
-        initials: initialsStr,
-        avatarUrl: '',
-        profileBgUrl: ''
-      };
-      updateUserSessionUI();
-      closeAuthModal();
-      alert('¡Cuenta verificada y creada con éxito! Bienvenido a Mi Garage.');
-    }
-
-    function updateUserSessionUI() {
-      const container = document.getElementById('auth-buttons-container');
-      const initials = currentUser.initials || 'YO';
-
-      container.innerHTML = `
-        <button onclick="switchTab('profile')" title="Ir a tu Perfil" class="w-9 h-9 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[2px] shadow-lg transition transform hover:scale-105 active:scale-95 focus:outline-none">
-          <div id="header-avatar-inner" class="w-full h-full rounded-full bg-red-600 font-black text-xs flex items-center justify-center text-white border border-slate-950 overflow-hidden">
-            ${initials}
-          </div>
-        </button>
-      `;
-
-      document.getElementById('profile-display-name').innerText = currentUser.name;
-      document.getElementById('profile-display-username').innerText = currentUser.username;
-      document.getElementById('profile-display-bio').innerText = currentUser.bio;
-      document.getElementById('profile-avatar-initials').innerText = initials;
-      
-      renderFriendsDropdown();
-    }
-
-    function toggleEditMode() {
-      isEditModeActive = !isEditModeActive;
-      const editBtns = document.querySelectorAll('.edit-btn-element');
-      const btnText = document.getElementById('edit-mode-btn-text');
-
-      if (isEditModeActive) {
-        editBtns.forEach(btn => btn.classList.remove('hidden'));
-        btnText.innerText = "Deshabilitar Edición de Perfil";
-        toggleSettingsModal();
-        switchTab('profile');
-        alert("Modo edición activado. Ahora puedes modificar tu perfil.");
-      } else {
-        editBtns.forEach(btn => btn.classList.add('hidden'));
-        btnText.innerText = "Habilitar Edición de Perfil";
-        toggleSettingsModal();
-        alert("Modo edición deshabilitado.");
-      }
-    }
-
-    function editProfileName() {
-      if(!isEditModeActive) return;
-      const newName = prompt("Ingresa tu nuevo Nombre Real:", currentUser ? currentUser.name : "");
-      if (newName && newName.trim() !== "") {
-        currentUser.name = newName.trim();
-        document.getElementById('profile-display-name').innerText = currentUser.name;
-      }
-    }
-
-    function editProfileBio() {
-      if(!isEditModeActive) return;
-      const newBio = prompt("Edita tu biografía:", currentUser ? currentUser.bio : "");
-      if (newBio !== null && newBio.trim() !== "") {
-        currentUser.bio = newBio.trim();
-        document.getElementById('profile-display-bio').innerText = currentUser.bio;
-      }
-    }
-
-    function editProfileAvatar() {
-      if(!isEditModeActive) return;
-      const newAvatar = prompt("Ingresa la URL de tu nueva foto de perfil:");
-      if (newAvatar && newAvatar.trim() !== "") {
-        currentUser.avatarUrl = newAvatar.trim();
-        
-        const initials = document.getElementById('profile-avatar-initials');
-        const img = document.getElementById('profile-avatar-img');
-        initials.classList.add('hidden');
-        img.src = currentUser.avatarUrl;
-        img.classList.remove('hidden');
-
-        const headerAvatar = document.getElementById('header-avatar-inner');
-        if (headerAvatar) {
-          headerAvatar.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover">`;
-        }
-      }
-    }
-
-    function editBackgroundUrl() {
-      if(!isEditModeActive) return;
-      const bgUrl = prompt("Ingresa la URL de la imagen para el FONDO DE TU PERFIL:");
-      if (bgUrl && bgUrl.trim() !== "") {
-        currentUser.profileBgUrl = bgUrl.trim();
-        const globalContainer = document.getElementById('app-global-container');
-        globalContainer.style.backgroundImage = `url('${currentUser.profileBgUrl}')`;
-      }
-    }
-
-    function toggleSettingsModal() {
-      document.getElementById('modal-settings').classList.toggle('hidden');
-    }
-
-    function logout() {
-      isLoggedIn = false;
-      currentUser = null;
-      toggleSettingsModal();
-      location.reload();
-    }
-
-    function addNewVehicle() {
-      const name = prompt("Nombre/Modelo del Vehículo:");
-      if(!name) return;
-      const year = prompt("Año del Vehículo:") || "2024";
-      const desc = prompt("Descripción/Modificaciones:") || "Sin detalles agregados.";
-      const img = prompt("URL de la imagen del auto:") || "";
-
-      const emptyGarageMsg = document.getElementById('empty-garage-msg');
-      if (emptyGarageMsg) emptyGarageMsg.remove();
-
-      const imgHTML = img ? `<img src="${img}" class="w-full h-44 object-cover" onerror="this.style.display='none'">` : `<div class="w-full h-44 bg-slate-950 flex items-center justify-center text-slate-600"><i data-lucide="car" class="w-12 h-12"></i></div>`;
-
-      const vehicleHTML = `
-        <div class="bg-slate-800/90 border border-slate-700 rounded-xl overflow-hidden shadow-lg flex flex-col justify-between backdrop-blur-sm">
-          <div>
-            ${imgHTML}
-            <div class="p-4 space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/30">Proyecto</span>
-                <span class="text-[10px] text-slate-400">${year}</span>
-              </div>
-              <h4 class="font-bold text-sm text-white">${name}</h4>
-              <p class="text-xs text-slate-400">${desc}</p>
-            </div>
-          </div>
-          <div class="p-4 pt-0 border-t border-slate-700/60 mt-3 flex justify-between items-center">
-            <span class="text-[10px] text-emerald-400 font-semibold">En Garage</span>
-            <button onclick="alert('Editar especificaciones')" class="text-xs text-slate-300 hover:text-white font-semibold">Editar</button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('garage-vehicles-grid').insertAdjacentHTML('afterbegin', vehicleHTML);
-      
-      const countEl = document.getElementById('count-vehicles');
-      if(countEl) countEl.innerText = parseInt(countEl.innerText) + 1;
-
-      lucide.createIcons();
-    }
-
-    function togglePostModal() {
-      document.getElementById('modal-post').classList.toggle('hidden');
-    }
-
-    function toggleChatDropdown() {
-      renderFriendsDropdown();
-      document.getElementById('chat-dropdown').classList.toggle('hidden');
-    }
-
-    function toggleSellModal() {
-      document.getElementById('modal-sell').classList.toggle('hidden');
-    }
-
-    function togglePromoteModal() {
-      document.getElementById('modal-promote').classList.toggle('hidden');
-    }
-
-    function toggleGroupModal() {
-      document.getElementById('modal-group').classList.toggle('hidden');
-    }
-
-    function createPost(e) {
-      e.preventDefault();
-      const text = document.getElementById('post-text').value;
-      const img = document.getElementById('post-image').value;
-      const imgHTML = img ? `<img src="${img}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">` : '';
-      const newPostId = `post-${Date.now()}`;
-
-      const emptyFeedMsg = document.getElementById('empty-feed-msg');
-      if (emptyFeedMsg) emptyFeedMsg.remove();
-
-      const emptyUserPostsMsg = document.getElementById('empty-user-posts-msg');
-      if (emptyUserPostsMsg) emptyUserPostsMsg.remove();
-
-      const userInitials = currentUser ? (currentUser.initials || 'YO') : 'YO';
-
-      const postHTML = `
-        <div class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md relative" id="${newPostId}">
-          <div class="p-4 flex justify-between items-center border-b border-slate-700/50">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-red-600 font-bold flex items-center justify-center text-sm">${userInitials}</div>
-              <div>
-                <h3 class="font-semibold text-xs text-white">${currentUser ? currentUser.name : 'Piloto'} <span class="text-slate-400 font-normal">${currentUser ? currentUser.username : '@usuario'}</span></h3>
-                <p class="text-[11px] text-red-400 font-medium">Publicación reciente</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] text-slate-500">Ahora mismo</span>
-              <div class="relative">
-                <button onclick="togglePostMenu('${newPostId}')" class="text-slate-400 hover:text-white p-1 rounded-lg transition">
-                  <i data-lucide="more-vertical" class="w-4 h-4"></i>
-                </button>
-                <div id="menu-${newPostId}" class="hidden absolute right-0 top-6 w-44 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
-                  <button onclick="editOwnPost('${newPostId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300 flex items-center gap-2">
-                    <i data-lucide="pencil" class="w-3.5 h-3.5 text-blue-400"></i> Editar publicación
-                  </button>
-                  <button onclick="deleteOwnPost('${newPostId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400 flex items-center gap-2">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar publicación
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="p-4 space-y-3">
-            <p class="text-xs text-slate-200 post-text-content">${text}</p>
-            ${imgHTML}
-          </div>
-          <div class="px-4 py-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
-            <button onclick="requireAuthAction(() => toggleLike('${newPostId}'))" class="btn-like hover:text-red-500 flex items-center gap-1.5 transition font-semibold">
-              <i data-lucide="heart" class="w-4 h-4 icon-heart"></i>
-              <span class="likes-count">0</span>
-            </button>
-            <button onclick="requireAuthAction(() => openShareModal('${text.replace(/'/g, "\\'")}'))" class="hover:text-white flex items-center gap-1.5 transition font-semibold">
-              <i data-lucide="share-2" class="w-4 h-4 text-slate-400"></i>
-              <span>Compartir</span>
-            </button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('posts-feed').insertAdjacentHTML('afterbegin', postHTML);
-      
-      const userOwnPosts = document.getElementById('user-own-posts');
-      if(userOwnPosts) {
-        userOwnPosts.insertAdjacentHTML('afterbegin', postHTML);
-      }
-
-      const countPostsEl = document.getElementById('count-posts');
-      if(countPostsEl) countPostsEl.innerText = parseInt(countPostsEl.innerText) + 1;
-
-      document.getElementById('form-post').reset();
-      togglePostModal();
-      lucide.createIcons();
-    }
-
-    function handleSellSubmit(e) {
-      e.preventDefault();
-      const title = document.getElementById('sell-title').value;
-      const price = document.getElementById('sell-price').value;
-      const type = document.getElementById('sell-type').value;
-      const desc = document.getElementById('sell-desc').value;
-      const img = document.getElementById('sell-image').value;
-
-      const emptyMarketMsg = document.getElementById('empty-market-msg');
-      if (emptyMarketMsg) emptyMarketMsg.remove();
-
-      const emptyUserMarketMsg = document.getElementById('empty-user-market-msg');
-      if (emptyUserMarketMsg) emptyUserMarketMsg.remove();
-
-      const cardHTML = `
-        <div class="market-card ${type} bg-slate-800/90 border border-slate-700 rounded-xl overflow-hidden shadow-lg flex flex-col justify-between backdrop-blur-sm">
-          <div>
-            <div class="relative">
-              <img src="${img}" class="w-full h-44 object-cover" onerror="this.src='https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=600&q=80'">
-              <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded capitalize">${type}</span>
-            </div>
-            <div class="p-4 space-y-2">
-              <div class="flex justify-between items-start">
-                <h3 class="font-bold text-sm text-white">${title}</h3>
-                <span class="text-red-400 font-black text-sm">$${parseInt(price).toLocaleString('es-CL')}</span>
-              </div>
-              <p class="text-[11px] text-slate-400">${desc}</p>
-            </div>
-          </div>
-          <div class="p-4 pt-0 border-t border-slate-700/60 mt-3 flex items-center justify-between">
-            <span class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Vendedor Verificado</span>
-            <button onclick="alert('Solicitud enviada al vendedor')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-semibold">Contactar</button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('market-catalog-grid').insertAdjacentHTML('afterbegin', cardHTML);
-      
-      const userOwnMarket = document.getElementById('user-own-market');
-      if (userOwnMarket) {
-        userOwnMarket.insertAdjacentHTML('afterbegin', cardHTML);
-      }
-
-      toggleSellModal();
-      e.target.reset();
-      lucide.createIcons();
-    }
-
-    function createNewGroup(e) {
-      e.preventDefault();
-      const name = document.getElementById('group-name').value;
-      const category = document.getElementById('group-category').value;
-      const desc = document.getElementById('group-desc').value;
-      const img = document.getElementById('group-image').value;
-      const newGroupId = `g_${Date.now()}`;
-
-      const emptyGroupsMsg = document.getElementById('empty-groups-msg');
-      if (emptyGroupsMsg) emptyGroupsMsg.remove();
-
-      const emptyUserGroupsMsg = document.getElementById('empty-user-groups-msg');
-      if (emptyUserGroupsMsg) emptyUserGroupsMsg.remove();
-
-      const categoryLabels = {
-        rutas: 'Rutas & Rodadas',
-        autos: 'Vehículos & Marcas',
-        videojuegos: 'Videojuegos & SimRacing',
-        meets: 'Meets & Expor',
-        proyectos: 'Proyectos & Tuning'
-      };
-
-      groupsData[newGroupId] = {
-        name: name,
-        category: categoryLabels[category],
-        members: '1 Miembro',
-        banner: img,
-        desc: desc
-      };
-
-      const groupHTML = `
-        <div class="group-card ${category} bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg flex flex-col justify-between">
-          <div>
-            <img src="${img}" class="w-full h-40 object-cover" onerror="this.src='https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=600&q=80'">
-            <div class="p-4 space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/30">${categoryLabels[category]}</span>
-                <span class="text-[10px] text-slate-400">1 Miembro</span>
-              </div>
-              <h3 class="font-bold text-base text-white">${name}</h3>
-              <p class="text-xs text-slate-400">${desc}</p>
-            </div>
-          </div>
-          <div class="p-4 pt-0 border-t border-slate-700/60 mt-3 flex justify-between items-center">
-            <span class="text-[10px] text-emerald-400 font-medium">● Creado por ti</span>
-            <button onclick="openGroupProfile('${newGroupId}')" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded font-semibold transition">Ver Perfil</button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('groups-grid').insertAdjacentHTML('afterbegin', groupHTML);
-
-      const joinedItemHTML = `
-        <div onclick="openGroupProfile('${newGroupId}')" class="bg-slate-800/90 hover:bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-center justify-between cursor-pointer transition shadow-md backdrop-blur-sm">
-          <div class="flex items-center gap-3">
-            <img src="${img}" class="w-12 h-12 rounded-lg object-cover border border-slate-700" onerror="this.src='https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=200&q=80'">
-            <div>
-              <h4 class="text-xs font-bold text-white">${name}</h4>
-              <p class="text-[10px] text-slate-400 mt-0.5">1 Miembro • ${categoryLabels[category]}</p>
-            </div>
-          </div>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
-        </div>
-      `;
-      document.getElementById('user-joined-groups-grid').insertAdjacentHTML('afterbegin', joinedItemHTML);
-
-      document.getElementById('modal-group').querySelector('form').reset();
-      toggleGroupModal();
-      lucide.createIcons();
-    }
-
-    function filterGroupCategory(cat) {
-      const cards = document.querySelectorAll('.group-card');
-      cards.forEach(card => {
-        if(cat === 'all' || card.classList.contains(cat)) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-    }
-
-    function setMarketFilter(type) {
-      const items = document.querySelectorAll('.market-card');
-      items.forEach(card => {
-        if(card.classList.contains(type)) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-    }
-
-    function resetMarketFilters() {
-      const items = document.querySelectorAll('.market-card');
-      items.forEach(card => card.classList.remove('hidden'));
-    }
-
-    function filterMarketItems(query) {
-      const q = query.toLowerCase();
-      const items = document.querySelectorAll('.market-card');
-      items.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        if(text.includes(q)) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-    }
-  </script>
-<!-- Firebase SDKs (Versión compatible CDN) -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-  <script>
-    // Configuración de tu aplicación en Firebase
+    // Configuración real del proyecto Firebase: migarage-51e36
     const firebaseConfig = {
       apiKey: "AIzaSyBzd5hyxm1SzxrllaLB42Szf0J7uObsvY",
       authDomain: "migarage-51e36.firebaseapp.com",
@@ -1525,11 +374,282 @@
       measurementId: "G-T6K6VW84B6"
     };
 
-    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    let isLoggedIn = false;
+    let currentUserData = null;
+
+    // Escuchar cambios de sesión en tiempo real
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        isLoggedIn = true;
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          currentUserData = doc.data();
+          updateUserSessionUI();
+        }
+      } else {
+        isLoggedIn = false;
+        currentUserData = null;
+        updateGuestUI();
+      }
+      loadPosts();
+    });
+
+    function updateUserSessionUI() {
+      const initials = (currentUserData.name || 'U').charAt(0).toUpperCase();
+
+      document.getElementById('auth-buttons-container').innerHTML = `
+        <button onclick="switchTab('profile')" title="Ir a tu Perfil" class="w-9 h-9 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[2px] shadow-lg">
+          <div class="w-full h-full rounded-full bg-red-600 font-black text-xs flex items-center justify-center text-white border border-slate-950">
+            ${initials}
+          </div>
+        </button>
+      `;
+
+      document.getElementById('profile-display-name').innerText = currentUserData.name;
+      document.getElementById('profile-display-username').innerText = '@' + currentUserData.username;
+      document.getElementById('profile-avatar-initials').innerText = initials;
+
+      loadFriendsList();
+    }
+
+    function updateGuestUI() {
+      document.getElementById('auth-buttons-container').innerHTML = `
+        <button onclick="openAuthModal('login')" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg font-semibold transition hidden sm:inline-block">Iniciar Sesión</button>
+        <button onclick="openAuthModal('signup')" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">Registrarse</button>
+      `;
+    }
+
+    // Registro de Usuarios en Firebase
+    async function handleSignupSubmit(e) {
+      e.preventDefault();
+      const pass = document.getElementById('signup-pass').value;
+      const passConfirm = document.getElementById('signup-pass-confirm').value;
+
+      if (pass !== passConfirm) return alert('Las contraseñas no coinciden.');
+
+      const name = document.getElementById('signup-fullname').value;
+      const username = document.getElementById('signup-username').value.replace('@', '').trim();
+      const email = document.getElementById('signup-email').value;
+
+      try {
+        const res = await auth.createUserWithEmailAndPassword(email, pass);
+        await db.collection('users').doc(res.user.uid).set({
+          uid: res.user.uid,
+          name,
+          username,
+          email,
+          friends: []
+        });
+        closeAuthModal();
+      } catch (err) {
+        alert("Error al registrar cuenta: " + err.message);
+      }
+    }
+
+    // Inicio de Sesión Real en Firebase
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        closeAuthModal();
+      } catch (err) {
+        alert("Error al ingresar: " + err.message);
+      }
+    }
+
+    function logout() {
+      auth.signOut();
+      toggleSettingsModal();
+    }
+
+    // Crear Publicación en Firestore
+    async function createPost(e) {
+      e.preventDefault();
+      if (!auth.currentUser) return alert("Debes iniciar sesión.");
+
+      const content = document.getElementById('post-text').value;
+      const imageUrl = document.getElementById('post-image').value;
+
+      try {
+        await db.collection('posts').add({
+          userId: auth.currentUser.uid,
+          authorName: currentUserData.name,
+          authorUsername: currentUserData.username,
+          content,
+          imageUrl: imageUrl || null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('form-post').reset();
+        togglePostModal();
+        loadPosts();
+      } catch (err) {
+        alert("Error al guardar la publicación: " + err.message);
+      }
+    }
+
+    // Cargar Publicaciones Reales desde Firestore
+    function loadPosts() {
+      db.collection('posts').orderBy('createdAt', 'desc').get().then(snapshot => {
+        const feedContainer = document.getElementById('posts-feed');
+        const userOwnPosts = document.getElementById('user-own-posts');
+        
+        feedContainer.innerHTML = '';
+        if (userOwnPosts) userOwnPosts.innerHTML = '';
+
+        if (snapshot.empty) {
+          feedContainer.innerHTML = `
+            <div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center">
+              <p class="text-xs text-slate-400">Aún no hay publicaciones en la red.</p>
+            </div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const post = doc.data();
+          const initials = (post.authorName || 'U').charAt(0).toUpperCase();
+
+          const card = `
+            <div class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3">
+              <div class="flex items-center gap-3 border-b border-slate-700/50 pb-2">
+                <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white">
+                  ${initials}
+                </div>
+                <div>
+                  <h3 class="font-semibold text-xs text-white">${post.authorName || 'Usuario'}</h3>
+                  <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
+                </div>
+              </div>
+              <p class="text-xs text-slate-200">${post.content}</p>
+              ${post.imageUrl ? `<img src="${post.imageUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">` : ''}
+            </div>
+          `;
+
+          feedContainer.insertAdjacentHTML('beforeend', card);
+
+          if (auth.currentUser && post.userId === auth.currentUser.uid && userOwnPosts) {
+            userOwnPosts.insertAdjacentHTML('beforeend', card);
+          }
+        });
+      });
+    }
+
+    // Sistema de Amigos
+    async function sendFriendRequest() {
+      if (!auth.currentUser) return alert("Inicia sesión para agregar amigos.");
+      const input = document.getElementById('friendSearchInput').value.replace('@', '').trim();
+      if (!input) return alert("Escribe el usuario.");
+
+      const snapshot = await db.collection('users').where('username', '==', input).get();
+      if (snapshot.empty) return alert("Usuario no encontrado.");
+
+      const target = snapshot.docs[0].data();
+      if (target.uid === auth.currentUser.uid) return alert("No puedes agregarte a ti mismo.");
+
+      await db.collection('users').doc(auth.currentUser.uid).update({
+        friends: firebase.firestore.FieldValue.arrayUnion({
+          uid: target.uid,
+          name: target.name,
+          username: target.username
+        })
+      });
+
+      document.getElementById('friendSearchInput').value = '';
+      alert(`¡${target.name} añadido a tus amigos!`);
+      loadFriendsList();
+    }
+
+    async function loadFriendsList() {
+      if (!auth.currentUser) return;
+      const doc = await db.collection('users').doc(auth.currentUser.uid).get();
+      const friends = doc.data()?.friends || [];
+
+      const dropdownList = document.getElementById('chat-friends-list');
+      if (friends.length === 0) {
+        dropdownList.innerHTML = '<p class="text-xs text-slate-500 text-center py-3">Sin amigos añadidos aún.</p>';
+        return;
+      }
+
+      dropdownList.innerHTML = friends.map(f => `
+        <div class="flex items-center justify-between p-2 bg-slate-900 rounded-lg border border-slate-800">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs text-white">
+              ${f.name.charAt(0)}
+            </div>
+            <div>
+              <p class="font-semibold text-white text-xs">${f.name}</p>
+              <p class="text-[10px] text-slate-400">@${f.username}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Funciones de Control UI & Modales
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-red-500');
+        btn.classList.add('text-slate-400');
+      });
+
+      const activeBtn = document.getElementById(`btn-${tabId}`);
+      if(activeBtn) {
+        activeBtn.classList.add('text-red-500');
+        activeBtn.classList.remove('text-slate-400');
+      }
+    }
+
+    function switchProfileSubTab(sub) {
+      ['posts', 'market', 'garage', 'groups'].forEach(s => {
+        document.getElementById(`profile-subtab-${s}`)?.classList.add('hidden');
+        const btn = document.getElementById(`btn-subtab-${s}`);
+        if(btn) btn.className = "pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0";
+      });
+
+      document.getElementById(`profile-subtab-${sub}`)?.classList.remove('hidden');
+      const activeBtn = document.getElementById(`btn-subtab-${sub}`);
+      if(activeBtn) activeBtn.className = "pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0";
+    }
+
+    function switchTabWithAuth(tabId) {
+      if(!isLoggedIn) openAuthModal('login');
+      else switchTab(tabId);
+    }
+
+    function requireAuthAction(action) {
+      if(!isLoggedIn) openAuthModal('login');
+      else action();
+    }
+
+    function openAuthModal(mode) {
+      document.getElementById('modal-auth').classList.remove('hidden');
+      document.getElementById('form-login').classList.add('hidden');
+      document.getElementById('form-signup').classList.add('hidden');
+
+      if (mode === 'login') {
+        document.getElementById('auth-title').innerText = 'Iniciar Sesión';
+        document.getElementById('form-login').classList.remove('hidden');
+      } else {
+        document.getElementById('auth-title').innerText = 'Crear Cuenta';
+        document.getElementById('form-signup').classList.remove('hidden');
+      }
+    }
+
+    function closeAuthModal() { document.getElementById('modal-auth').classList.add('hidden'); }
+    function togglePostModal() { document.getElementById('modal-post').classList.toggle('hidden'); }
+    function toggleSettingsModal() { document.getElementById('modal-settings').classList.toggle('hidden'); }
+    function toggleChatDropdown() { document.getElementById('chat-dropdown').classList.toggle('hidden'); }
+    function toggleSellModal() { document.getElementById('modal-sell').classList.toggle('hidden'); }
+    function toggleGroupModal() { document.getElementById('modal-group').classList.toggle('hidden'); }
   </script>
-</body>
 </body>
 </html>
