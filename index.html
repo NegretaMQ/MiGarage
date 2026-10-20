@@ -29,12 +29,10 @@
         <span class="text-lg font-black tracking-wider text-white">MI<span class="text-red-500">GARAGE</span></span>
       </div>
 
-      <!-- BÚSQUEDA GLOBAL / BUSCAR PERSONAS POR USERNAME -->
+      <!-- BÚSQUEDA GLOBAL -->
       <div class="relative flex-1 max-w-md hidden sm:block">
         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
         <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Buscar personas (@usuario), publicaciones, productos..." class="w-full bg-slate-900 border border-slate-700/80 rounded-full pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
-        
-        <!-- DESPLEGABLE DE BÚSQUEDA DE AMIGOS/USUARIOS -->
         <div id="search-results-dropdown" class="hidden absolute top-10 left-0 right-0 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 space-y-2 z-50 max-h-60 overflow-y-auto"></div>
       </div>
 
@@ -113,17 +111,20 @@
     </div>
   </div>
 
-  <!-- MODAL OPCIONES DE CUENTA -->
+  <!-- MODAL OPCIONES DE CUENTA / EDITAR PERFIL -->
   <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i data-lucide="settings" class="text-slate-400 w-4 h-4"></i> Opciones de Cuenta
+          <i data-lucide="settings" class="text-slate-400 w-4 h-4"></i> Configuración de Cuenta
         </h3>
         <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
 
       <div class="space-y-3 text-xs">
+        <button onclick="openEditProfileModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+          <i data-lucide="pencil" class="w-4 h-4 text-red-500"></i> Modificar Datos de Perfil
+        </button>
         <button onclick="logout()" class="w-full bg-slate-800 hover:bg-red-600/20 text-red-400 border border-red-500/30 font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
           <i data-lucide="log-out" class="w-4 h-4"></i> Cerrar Sesión
         </button>
@@ -131,7 +132,80 @@
     </div>
   </div>
 
-  <!-- MODAL CREAR PUBLICACIÓN -->
+  <!-- MODAL EDITAR PERFIL -->
+  <div id="modal-edit-profile" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="user-check" class="text-red-500 w-4 h-4"></i> Editar Perfil
+        </h3>
+        <button onclick="closeEditProfileModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveProfile(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Nombre Real</label>
+          <input id="edit-name" type="text" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Biografía / Descripción</label>
+          <textarea id="edit-bio" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Foto de Perfil (Avatar local)</label>
+          <input id="edit-avatar-file" type="file" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-xs">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Imagen de Fondo de Perfil</label>
+          <input id="edit-bg-file" type="file" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-xs">
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeEditProfileModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded font-semibold">Cancelar</button>
+          <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL VISOR DE AMIGOS -->
+  <div id="modal-friends-list" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="users" class="text-red-500 w-4 h-4"></i> Lista de Amigos
+        </h3>
+        <button onclick="closeFriendsModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div id="friends-modal-container" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
+    </div>
+  </div>
+
+  <!-- MODAL REPORTAR PUBLICACIÓN -->
+  <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="flag" class="text-red-500 w-4 h-4"></i> Reportar publicación
+        </h3>
+        <button onclick="closeReportModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <form onsubmit="handleReportSubmit(event)" class="space-y-3 text-xs">
+        <label class="text-[10px] font-bold text-slate-400 uppercase">Motivo del reporte</label>
+        <select required id="report-reason" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+          <option value="spam">Spam o contenido no deseado</option>
+          <option value="inappropriate">Contenido inapropiado u ofensivo</option>
+          <option value="scam">Estafa o información falsa</option>
+          <option value="other">Otro motivo</option>
+        </select>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeReportModal()" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded">Cancelar</button>
+          <button type="submit" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Enviar Reporte</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL CREAR PUBLICACIÓN (CON ARCHIVO LOCAL) -->
   <div id="modal-post" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -144,8 +218,8 @@
       <form id="form-post" onsubmit="createPost(event)" class="space-y-3">
         <textarea id="post-text" required rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500" placeholder="¿Qué avance le hiciste a tu auto hoy?..."></textarea>
         <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">URL de imagen (opcional)</label>
-          <input id="post-image" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Subir Foto o Video Local</label>
+          <input id="post-file" type="file" accept="image/*,video/*" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white">
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="togglePostModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs font-semibold">Cancelar</button>
@@ -185,11 +259,11 @@
         </div>
         <div>
           <label class="text-[10px] font-bold text-slate-400 uppercase">Descripción</label>
-          <input id="sell-desc" required type="text" placeholder="Detalles de compatibilidad, estado, etc." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+          <input id="sell-desc" required type="text" placeholder="Detalles de compatibilidad..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
         </div>
         <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Foto del Producto (URL)</label>
-          <input id="sell-image" required type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Foto del Producto (Archivo local)</label>
+          <input id="sell-file" required type="file" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="toggleSellModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded">Cancelar</button>
@@ -219,8 +293,8 @@
           <textarea id="group-desc" required rows="2" placeholder="¿De qué trata el grupo?..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
         </div>
         <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Imagen de Portada (URL)</label>
-          <input id="group-image" required type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Imagen de Portada (Archivo local)</label>
+          <input id="group-file" required type="file" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
         </div>
         <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
           <button type="button" onclick="toggleGroupModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded font-semibold">Cancelar</button>
@@ -239,21 +313,22 @@
       <button onclick="toggleChatDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
     </div>
 
-    <!-- SECCIÓN DE SOLICITUDES PENDIENTES DE ACEPTAR -->
     <div id="friend-requests-section" class="p-2 border-b border-slate-800 hidden bg-slate-900/50">
       <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-1">Solicitudes Pendientes</span>
       <div id="friend-requests-list" class="space-y-1.5"></div>
     </div>
 
-    <!-- LISTA DE AMIGOS ACEPTADOS -->
     <div class="p-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mis Amigos</div>
     <div id="chat-friends-list" class="p-2 space-y-1 max-h-64 overflow-y-auto">
       <p class="text-xs text-slate-500 text-center py-4">No tienes amigos agregados aún.</p>
     </div>
   </div>
 
+  <!-- CONTENEDOR DE BURBUJAS FLOTANTES DE CHAT -->
+  <div id="floating-bubbles-container" class="fixed bottom-20 right-4 z-50 flex flex-col gap-2 items-end"></div>
+
   <!-- VENTANA FLOTANTE DE CHAT DESPLEGABLE -->
-  <div id="active-chat-box" class="hidden fixed bottom-20 right-4 sm:right-10 z-50 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl flex flex-col h-80">
+  <div id="active-chat-box" class="hidden fixed bottom-20 right-20 z-50 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl flex flex-col h-80">
     <div class="p-2.5 bg-slate-950 border-b border-slate-800 flex justify-between items-center rounded-t-xl">
       <span id="chat-user-name" class="text-xs font-bold text-white flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -261,9 +336,7 @@
       </span>
       <button onclick="closeDirectChat()" class="text-slate-400 hover:text-white text-xs">✕</button>
     </div>
-    <div id="chat-messages" class="flex-1 p-3 overflow-y-auto text-xs space-y-2">
-      <!-- Mensajes dinámicos -->
-    </div>
+    <div id="chat-messages" class="flex-1 p-3 overflow-y-auto text-xs space-y-2"></div>
     <div class="p-2 border-t border-slate-800 flex gap-1">
       <input id="chat-input" type="text" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white focus:outline-none focus:border-red-500">
       <button onclick="sendChatMessage()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-xs font-bold transition">Enviar</button>
@@ -340,7 +413,7 @@
       </div>
     </section>
 
-    <!-- 4. PERFIL DE USUARIO CON SUB-PESTAÑAS Y GARAGE RESTAURADO -->
+    <!-- 4. PERFIL DE USUARIO CON VISOR DE AMIGOS -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
       <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
         <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 p-2 bg-slate-900/80 hover:bg-slate-700 text-slate-300 rounded-full border border-slate-700 transition shadow-lg" title="Opciones de Cuenta">
@@ -348,9 +421,10 @@
         </button>
 
         <div class="flex flex-col sm:flex-row items-center gap-5">
-          <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl">
+          <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
             <div id="profile-avatar-display" class="w-full h-full rounded-full bg-red-600 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
               <span id="profile-avatar-initials">YO</span>
+              <img id="profile-avatar-img" src="" class="hidden w-full h-full object-cover">
             </div>
           </div>
 
@@ -358,11 +432,17 @@
             <h2 id="profile-display-name" class="text-xl sm:text-2xl font-bold text-white">Nombre de Usuario</h2>
             <p id="profile-display-username" class="text-xs sm:text-sm text-red-400 font-semibold">@usuario</p>
             <p id="profile-display-bio" class="text-xs sm:text-sm text-slate-300">Añade una descripción sobre ti y tus proyectos automotrices.</p>
+            
+            <!-- VISOR DE AMIGOS -->
+            <div onclick="openFriendsModal()" class="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-slate-950/80 hover:bg-slate-900 border border-slate-700 rounded-lg cursor-pointer transition">
+              <i data-lucide="users" class="w-4 h-4 text-red-500"></i>
+              <span class="text-xs text-slate-300"><strong id="friends-count-num" class="text-white font-bold">0</strong> Amigos (Ver todos)</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- SUB-PESTAÑAS DEL PERFIL (FEED, MARKET, GARAGE, GRUPOS) -->
+      <!-- SUB-PESTAÑAS DEL PERFIL -->
       <div class="flex justify-center border-b border-slate-800 gap-4 sm:gap-10 overflow-x-auto">
         <button onclick="switchProfileSubTab('posts')" id="btn-subtab-posts" class="pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0">
           <i data-lucide="newspaper" class="w-4 h-4"></i> Feed
@@ -423,7 +503,7 @@
 
   </main>
 
-  <!-- NAVEGACIÓN INFERIOR (3 PESTAÑAS) -->
+  <!-- NAVEGACIÓN INFERIOR -->
   <nav class="bg-slate-950/95 backdrop-blur-md border-t border-slate-800 fixed bottom-0 left-0 right-0 z-40 h-16 flex items-center justify-around px-4 max-w-7xl mx-auto">
     <button onclick="switchTab('feed')" id="btn-feed" class="nav-btn flex flex-col items-center justify-center w-full h-full text-red-500 transition gap-1">
       <i data-lucide="newspaper" class="w-6 h-6"></i>
@@ -460,6 +540,7 @@
     let isLoggedIn = false;
     let currentUserData = null;
     let activeChatFriend = null;
+    let targetPostToReport = null;
 
     auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -491,15 +572,29 @@
 
       document.getElementById('auth-buttons-container').innerHTML = `
         <button onclick="switchTab('profile')" title="Ir a tu Perfil" class="w-9 h-9 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[2px] shadow-lg">
-          <div class="w-full h-full rounded-full bg-red-600 font-black text-xs flex items-center justify-center text-white border border-slate-950">
-            ${initials}
+          <div class="w-full h-full rounded-full bg-red-600 font-black text-xs flex items-center justify-center text-white border border-slate-950 overflow-hidden">
+            ${currentUserData.avatarUrl ? `<img src="${currentUserData.avatarUrl}" class="w-full h-full object-cover">` : initials}
           </div>
         </button>
       `;
 
       document.getElementById('profile-display-name').innerText = currentUserData.name;
       document.getElementById('profile-display-username').innerText = '@' + currentUserData.username;
+      document.getElementById('profile-display-bio').innerText = currentUserData.bio || 'Sin biografía agregada.';
       document.getElementById('profile-avatar-initials').innerText = initials;
+
+      if (currentUserData.avatarUrl) {
+        document.getElementById('profile-avatar-initials').classList.add('hidden');
+        const img = document.getElementById('profile-avatar-img');
+        img.src = currentUserData.avatarUrl;
+        img.classList.remove('hidden');
+      }
+
+      if (currentUserData.profileBgUrl) {
+        document.getElementById('app-global-container').style.backgroundImage = `url('${currentUserData.profileBgUrl}')`;
+      }
+
+      document.getElementById('friends-count-num').innerText = currentUserData.friends ? currentUserData.friends.length : 0;
     }
 
     function updateGuestUI() {
@@ -509,7 +604,90 @@
       `;
     }
 
-    // BÚSQUEDA GLOBAL DE USUARIOS / AMIGOS
+    // UTILIDAD PARA LER ARCHIVOS LOCALES EN BASE64
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // EDITAR PERFIL COMPLETO
+    function openEditProfileModal() {
+      toggleSettingsModal();
+      document.getElementById('edit-name').value = currentUserData.name || '';
+      document.getElementById('edit-bio').value = currentUserData.bio || '';
+      document.getElementById('modal-edit-profile').classList.remove('hidden');
+    }
+
+    function closeEditProfileModal() {
+      document.getElementById('modal-edit-profile').classList.add('hidden');
+    }
+
+    async function handleSaveProfile(e) {
+      e.preventDefault();
+      if (!auth.currentUser) return;
+
+      const name = document.getElementById('edit-name').value;
+      const bio = document.getElementById('edit-bio').value;
+
+      const avatarFile = document.getElementById('edit-avatar-file').files[0];
+      const bgFile = document.getElementById('edit-bg-file').files[0];
+
+      let updates = { name, bio };
+
+      if (avatarFile) {
+        updates.avatarUrl = await readFileAsDataURL(avatarFile);
+      }
+      if (bgFile) {
+        updates.profileBgUrl = await readFileAsDataURL(bgFile);
+      }
+
+      try {
+        await db.collection('users').doc(auth.currentUser.uid).update(updates);
+        closeEditProfileModal();
+        alert('Perfil actualizado con éxito');
+      } catch (err) {
+        alert('Error al actualizar perfil: ' + err.message);
+      }
+    }
+
+    // VISOR MODAL DE AMIGOS
+    function openFriendsModal() {
+      const modal = document.getElementById('modal-friends-list');
+      const container = document.getElementById('friends-modal-container');
+      const friends = currentUserData?.friends || [];
+
+      if (friends.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Aún no tienes amigos agregados.</p>';
+      } else {
+        container.innerHTML = friends.map(f => `
+          <div onclick="openDirectChat('${f.uid}', '${f.name}'); closeFriendsModal();" class="flex items-center justify-between p-2.5 bg-slate-950 hover:bg-slate-800 rounded-lg cursor-pointer transition border border-slate-800">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white">
+                ${f.name.charAt(0)}
+              </div>
+              <div>
+                <p class="font-bold text-white text-xs">${f.name}</p>
+                <p class="text-[10px] text-slate-400">@${f.username}</p>
+              </div>
+            </div>
+            <i data-lucide="message-square" class="w-4 h-4 text-red-500"></i>
+          </div>
+        `).join('');
+      }
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeFriendsModal() {
+      document.getElementById('modal-friends-list').classList.add('hidden');
+    }
+
+    // BÚSQUEDA GLOBAL DE USUARIOS
     async function handleGlobalSearch(query) {
       const dropdown = document.getElementById('search-results-dropdown');
       const cleanQuery = query.replace('@', '').trim().toLowerCase();
@@ -587,7 +765,7 @@
           incomingRequests: firebase.firestore.FieldValue.arrayUnion({ uid: auth.currentUser.uid, name: currentUserData.name, username: currentUserData.username })
         });
 
-        alert(`Solicitud de amistad enviada a @${targetUsername}`);
+        alert(`Solicitud enviada a @${targetUsername}`);
         document.getElementById('search-results-dropdown').classList.add('hidden');
         document.getElementById('global-search').value = '';
       } catch (err) {
@@ -682,11 +860,28 @@
       `).join('');
     }
 
+    // BURBUJAS FLOTANTES DE CHAT
+    function addOrUpdateChatBubble(friendUid, friendName) {
+      const container = document.getElementById('floating-bubbles-container');
+      let existing = document.getElementById(`bubble-${friendUid}`);
+
+      if (!existing) {
+        const bubble = `
+          <div id="bubble-${friendUid}" onclick="openDirectChat('${friendUid}', '${friendName}')" class="w-12 h-12 rounded-full bg-red-600 border-2 border-white text-white font-bold text-sm flex items-center justify-center cursor-pointer shadow-2xl relative hover:scale-110 transition">
+            ${friendName.charAt(0)}
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-950"></span>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', bubble);
+      }
+    }
+
     function openDirectChat(friendUid, friendName) {
       activeChatFriend = { uid: friendUid, name: friendName };
+      addOrUpdateChatBubble(friendUid, friendName);
       document.getElementById('chat-title-text').innerText = friendName;
       document.getElementById('active-chat-box').classList.remove('hidden');
-      toggleChatDropdown();
+      document.getElementById('chat-dropdown').classList.add('hidden');
       listenMessages();
     }
 
@@ -738,7 +933,7 @@
         });
     }
 
-    // VEHÍCULOS / GARAGE
+    // VEHÍCULOS / GARAGE CON ARCHIVO LOCAL
     async function addNewVehicle() {
       if (!auth.currentUser) return;
       const name = prompt("Modelo del Vehículo:");
@@ -784,65 +979,86 @@
       });
     }
 
-    // SUB-PESTAÑAS DEL PERFIL
-    function switchProfileSubTab(sub) {
-      ['posts', 'market', 'garage', 'groups'].forEach(s => {
-        document.getElementById(`profile-subtab-${s}`)?.classList.add('hidden');
-        const btn = document.getElementById(`btn-subtab-${s}`);
-        if (btn) btn.className = "pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0";
-      });
-
-      document.getElementById(`profile-subtab-${sub}`)?.classList.remove('hidden');
-      const activeBtn = document.getElementById(`btn-subtab-${sub}`);
-      if (activeBtn) activeBtn.className = "pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0";
-    }
-
-    // CONTROL DE AUTENTICACIÓN
-    async function handleSignupSubmit(e) {
-      e.preventDefault();
-      const pass = document.getElementById('signup-pass').value;
-      if (pass !== document.getElementById('signup-pass-confirm').value) return alert('Las contraseñas no coinciden.');
-
-      const name = document.getElementById('signup-fullname').value;
-      const username = document.getElementById('signup-username').value.replace('@', '').trim();
-      const email = document.getElementById('signup-email').value;
+    // INTERACCIONES CON PUBLICACIONES (ME GUSTA, COMPARTIR, MENU DE OPCIONES)
+    async function toggleLikePost(postId, currentLikes) {
+      if (!auth.currentUser) return openAuthModal('login');
+      const postRef = db.collection('posts').doc(postId);
 
       try {
-        const res = await auth.createUserWithEmailAndPassword(email, pass);
-        await db.collection('users').doc(res.user.uid).set({
-          uid: res.user.uid,
-          name,
-          username,
-          email,
-          friends: [],
-          incomingRequests: [],
-          sentRequests: []
-        });
-        closeAuthModal();
+        const doc = await postRef.get();
+        const likes = doc.data().likes || [];
+        const userUid = auth.currentUser.uid;
+
+        if (likes.includes(userUid)) {
+          await postRef.update({ likes: firebase.firestore.FieldValue.arrayRemove(userUid) });
+        } else {
+          await postRef.update({ likes: firebase.firestore.FieldValue.arrayUnion(userUid) });
+        }
       } catch (err) {
-        alert("Error al registrarse: " + err.message);
+        console.error(err);
       }
     }
 
-    async function handleLoginSubmit(e) {
-      e.preventDefault();
-      try {
-        await auth.signInWithEmailAndPassword(
-          document.getElementById('login-email').value,
-          document.getElementById('login-password').value
-        );
-        closeAuthModal();
-      } catch (err) {
-        alert("Error al ingresar: " + err.message);
+    function sharePostByChat(content) {
+      if (!isLoggedIn) return openAuthModal('login');
+      const friends = currentUserData?.friends || [];
+      if (friends.length === 0) return alert("Agrega amigos para compartir contenido.");
+
+      const selected = prompt(`Escribe el @username del amigo con el que quieres compartir esto:\n${friends.map(f => '@' + f.username).join(', ')}`);
+      if (!selected) return;
+
+      const target = friends.find(f => f.username.toLowerCase() === selected.replace('@', '').trim().toLowerCase());
+      if (target) {
+        openDirectChat(target.uid, target.name);
+        document.getElementById('chat-input').value = `📌 Publicación compartida: "${content}"`;
+      } else {
+        alert("Usuario no encontrado en tu lista de amigos.");
       }
     }
 
-    function logout() {
-      auth.signOut();
-      toggleSettingsModal();
+    function togglePostMenu(postId) {
+      const menu = document.getElementById(`menu-${postId}`);
+      menu.classList.toggle('hidden');
     }
 
-    // PUBLICACIONES Y CONTENIDOS
+    async function deletePost(postId) {
+      if (confirm("¿Estás seguro de que deseas eliminar esta publicación?")) {
+        await db.collection('posts').doc(postId).delete();
+      }
+    }
+
+    async function editPost(postId, currentContent) {
+      const newText = prompt("Edita el texto de tu publicación:", currentContent);
+      if (newText && newText.trim() !== '') {
+        await db.collection('posts').doc(postId).update({ content: newText.trim() });
+      }
+    }
+
+    function blockPostUI(postId) {
+      const postCard = document.getElementById(`post-card-${postId}`);
+      if (postCard) {
+        postCard.remove();
+        alert("Publicación oculta.");
+      }
+    }
+
+    function openReportModal(postId) {
+      targetPostToReport = postId;
+      document.getElementById('modal-report').classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+      document.getElementById('modal-report').classList.add('hidden');
+      targetPostToReport = null;
+    }
+
+    function handleReportSubmit(e) {
+      e.preventDefault();
+      alert("Gracias por tu reporte. Nuestro equipo lo revisará.");
+      closeReportModal();
+    }
+
+    // CARGAR FEED Y ARCHIVOS MULTIMEDIA LOCALES
     function loadPosts() {
       db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const feedContainer = document.getElementById('posts-feed');
@@ -857,26 +1073,72 @@
 
         snapshot.forEach(doc => {
           const post = doc.data();
+          const postId = doc.id;
+          const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
+          const likes = post.likes || [];
+          const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
+
+          let mediaHTML = '';
+          if (post.mediaUrl) {
+            if (post.mediaType === 'video') {
+              mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full max-h-96 object-cover border border-slate-700"></video>`;
+            } else {
+              mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">`;
+            }
+          }
+
           const card = `
-            <div class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3">
-              <div class="flex items-center gap-3 border-b border-slate-700/50 pb-2">
-                <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white">
-                  ${(post.authorName || 'U').charAt(0)}
+            <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
+              <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white">
+                    ${(post.authorName || 'U').charAt(0)}
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-xs text-white">${post.authorName || 'Usuario'}</h3>
+                    <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 class="font-semibold text-xs text-white">${post.authorName || 'Usuario'}</h3>
-                  <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
+
+                <div class="relative">
+                  <button onclick="togglePostMenu('${postId}')" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                  </button>
+                  <div id="menu-${postId}" class="hidden absolute right-0 top-6 w-36 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
+                    ${isOwner ? `
+                      <button onclick="editPost('${postId}', '${post.content}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Editar</button>
+                      <button onclick="deletePost('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Eliminar</button>
+                    ` : `
+                      <button onclick="blockPostUI('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Ocultar</button>
+                      <button onclick="openReportModal('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Reportar</button>
+                    `}
+                  </div>
                 </div>
               </div>
+
               <p class="text-xs text-slate-200">${post.content}</p>
-              ${post.imageUrl ? `<img src="${post.imageUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">` : ''}
+              ${mediaHTML}
+
+              <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
+                <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
+                  <i data-lucide="heart" class="w-4 h-4"></i>
+                  <span>${likes.length}</span>
+                </button>
+                <button onclick="sharePostByChat('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+                  <i data-lucide="share-2" class="w-4 h-4"></i>
+                  <span>Compartir</span>
+                </button>
+              </div>
             </div>
           `;
+
           feedContainer.insertAdjacentHTML('beforeend', card);
-          if (auth.currentUser && post.userId === auth.currentUser.uid && userOwnPosts) {
+          if (isOwner && userOwnPosts) {
             userOwnPosts.insertAdjacentHTML('beforeend', card);
           }
         });
+
+        lucide.createIcons();
       });
     }
 
@@ -884,13 +1146,26 @@
       e.preventDefault();
       if (!auth.currentUser) return;
 
+      const fileInput = document.getElementById('post-file');
+      const file = fileInput.files[0];
+
+      let mediaUrl = null;
+      let mediaType = null;
+
+      if (file) {
+        mediaUrl = await readFileAsDataURL(file);
+        mediaType = file.type.startsWith('video') ? 'video' : 'image';
+      }
+
       try {
         await db.collection('posts').add({
           userId: auth.currentUser.uid,
           authorName: currentUserData.name,
           authorUsername: currentUserData.username,
           content: document.getElementById('post-text').value,
-          imageUrl: document.getElementById('post-image').value || null,
+          mediaUrl,
+          mediaType,
+          likes: [],
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         document.getElementById('form-post').reset();
@@ -900,6 +1175,7 @@
       }
     }
 
+    // MARKETPLACE
     function loadMarket() {
       db.collection('market').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('market-catalog-grid');
@@ -936,6 +1212,9 @@
       e.preventDefault();
       if (!auth.currentUser) return;
 
+      const file = document.getElementById('sell-file').files[0];
+      const imageUrl = await readFileAsDataURL(file);
+
       try {
         await db.collection('market').add({
           userId: auth.currentUser.uid,
@@ -943,7 +1222,7 @@
           price: Number(document.getElementById('sell-price').value),
           type: document.getElementById('sell-type').value,
           desc: document.getElementById('sell-desc').value,
-          imageUrl: document.getElementById('sell-image').value,
+          imageUrl,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         toggleSellModal();
@@ -953,6 +1232,7 @@
       }
     }
 
+    // GRUPOS
     function loadGroups() {
       db.collection('groups').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('groups-grid');
@@ -981,12 +1261,15 @@
       e.preventDefault();
       if (!auth.currentUser) return;
 
+      const file = document.getElementById('group-file').files[0];
+      const imageUrl = await readFileAsDataURL(file);
+
       try {
         await db.collection('groups').add({
           ownerId: auth.currentUser.uid,
           name: document.getElementById('group-name').value,
           desc: document.getElementById('group-desc').value,
-          imageUrl: document.getElementById('group-image').value,
+          imageUrl,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         toggleGroupModal();
@@ -996,7 +1279,68 @@
       }
     }
 
-    // MODALES Y NAVEGACIÓN
+    // CONTROL DE SUB-PESTAÑAS
+    function switchProfileSubTab(sub) {
+      ['posts', 'market', 'garage', 'groups'].forEach(s => {
+        document.getElementById(`profile-subtab-${s}`)?.classList.add('hidden');
+        const btn = document.getElementById(`btn-subtab-${s}`);
+        if (btn) btn.className = "pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0";
+      });
+
+      document.getElementById(`profile-subtab-${sub}`)?.classList.remove('hidden');
+      const activeBtn = document.getElementById(`btn-subtab-${sub}`);
+      if (activeBtn) activeBtn.className = "pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0";
+    }
+
+    // REGISTRO E INICIO DE SESIÓN
+    async function handleSignupSubmit(e) {
+      e.preventDefault();
+      const pass = document.getElementById('signup-pass').value;
+      if (pass !== document.getElementById('signup-pass-confirm').value) return alert('Las contraseñas no coinciden.');
+
+      const name = document.getElementById('signup-fullname').value;
+      const username = document.getElementById('signup-username').value.replace('@', '').trim();
+      const email = document.getElementById('signup-email').value;
+
+      try {
+        const res = await auth.createUserWithEmailAndPassword(email, pass);
+        await db.collection('users').doc(res.user.uid).set({
+          uid: res.user.uid,
+          name,
+          username,
+          email,
+          bio: 'Nuevo integrante en la comunidad Mi Garage.',
+          avatarUrl: '',
+          profileBgUrl: '',
+          friends: [],
+          incomingRequests: [],
+          sentRequests: []
+        });
+        closeAuthModal();
+      } catch (err) {
+        alert("Error al registrarse: " + err.message);
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      try {
+        await auth.signInWithEmailAndPassword(
+          document.getElementById('login-email').value,
+          document.getElementById('login-password').value
+        );
+        closeAuthModal();
+      } catch (err) {
+        alert("Error al ingresar: " + err.message);
+      }
+    }
+
+    function logout() {
+      auth.signOut();
+      toggleSettingsModal();
+    }
+
+    // MODALES Y NAVEGACIÓN GENERAL
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
