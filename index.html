@@ -47,7 +47,7 @@
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
 
-        <!-- BOTÓN NOTIFICACIONES (INDEPENDIENTE DE CHATS) -->
+        <!-- BOTÓN NOTIFICACIONES -->
         <button onclick="requireAuthAction(() => toggleNotifsDropdown())" class="relative bg-slate-800 hover:bg-slate-700 p-2 rounded-full border border-slate-700 text-slate-200 transition flex items-center justify-center" title="Notificaciones">
           <i data-lucide="bell" class="w-5 h-5 text-amber-500"></i>
           <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-amber-500 text-slate-950 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
@@ -72,7 +72,7 @@
   <div id="notifs-dropdown" class="hidden fixed top-16 right-16 z-50 w-80 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl overflow-hidden">
     <div class="p-3 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
       <span class="text-xs font-bold text-white flex items-center gap-2">
-        <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i> Notificaciones
+        <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i> Novedades y Notificaciones
       </span>
       <button onclick="toggleNotifsDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
     </div>
@@ -149,7 +149,7 @@
     </div>
   </div>
 
-  <!-- MODAL EDITAR PERFIL -->
+  <!-- MODAL EDITAR PERFIL (SIN OPCIÓN DE FONDO) -->
   <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -192,39 +192,11 @@
           <label class="text-[10px] font-bold text-slate-400 uppercase">Foto de Perfil (Avatar local)</label>
           <input id="edit-avatar-file" type="file" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-xs">
         </div>
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase">Imagen de Fondo de Perfil</label>
-          <input id="edit-bg-file" type="file" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-xs">
-        </div>
         <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
           <button type="button" onclick="closeEditProfileModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded font-semibold">Cancelar</button>
           <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Guardar Cambios</button>
         </div>
       </form>
-    </div>
-  </div>
-
-  <!-- MODAL VER PERFIL DE OTRO USUARIO -->
-  <div id="modal-view-user-profile" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto relative">
-      <button onclick="closeUserProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-950/80 p-2 rounded-full border border-slate-800 z-10">✕</button>
-
-      <div id="user-profile-header" class="p-6 rounded-xl relative bg-cover bg-center border border-slate-800 flex flex-col sm:flex-row items-center gap-5">
-        <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
-          <div id="user-profile-avatar" class="w-full h-full rounded-full bg-red-600 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
-            <span id="user-profile-initials">U</span>
-            <img id="user-profile-img" src="" class="hidden w-full h-full object-cover">
-          </div>
-        </div>
-        <div class="space-y-1.5 text-center sm:text-left flex-1 bg-slate-950/80 p-3 rounded-lg border border-slate-800/80 backdrop-blur-sm">
-          <h2 id="user-profile-name" class="text-xl font-bold text-white">Nombre</h2>
-          <p id="user-profile-username" class="text-xs text-red-400 font-semibold">@usuario</p>
-          <p id="user-profile-bio" class="text-xs text-slate-300">Biografía del usuario</p>
-        </div>
-      </div>
-
-      <h3 class="text-xs font-bold uppercase text-slate-400 border-b border-slate-800 pb-2">Publicaciones del Usuario</h3>
-      <div id="user-profile-posts" class="space-y-4"></div>
     </div>
   </div>
 
@@ -275,7 +247,7 @@
   <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="flag" class="text-red-500 w-4 h-4"></i> Reportar publicación</h3>
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="flag" class="text-red-500 w-4 h-4"></i> Reportar elementos</h3>
         <button onclick="closeReportModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
       <form onsubmit="handleReportSubmit(event)" class="space-y-3 text-xs">
@@ -412,7 +384,6 @@
     <!-- 1. FEED CON BARRA DE HISTORIAS -->
     <section id="tab-feed" class="tab-content space-y-6">
 
-      <!-- BARRA DE HISTORIAS DE INSTAGRAM -->
       <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl backdrop-blur-sm overflow-x-auto no-scrollbar flex items-center gap-4">
         <div onclick="requireAuthAction(() => openUploadStoryModal())" class="flex flex-col items-center gap-1 cursor-pointer shrink-0">
           <div class="w-14 h-14 rounded-full border-2 border-dashed border-red-500 flex items-center justify-center bg-slate-950 hover:bg-slate-900 transition relative">
@@ -486,10 +457,10 @@
       </div>
     </section>
 
-    <!-- 4. PERFIL PROPIO -->
+    <!-- 4. PERFIL (PROPIO Y DE OTROS USUARIOS) -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
-      <div id="own-profile-header-card" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm bg-cover bg-center">
-        <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 p-2 bg-slate-900/80 hover:bg-slate-700 text-slate-300 rounded-full border border-slate-700 transition shadow-lg" title="Opciones de Cuenta">
+      <div id="profile-header-card" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
+        <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 p-2 bg-slate-900/80 hover:bg-slate-700 text-slate-300 rounded-full border border-slate-700 transition shadow-lg" title="Opciones de Cuenta">
           <i data-lucide="settings" class="w-5 h-5"></i>
         </button>
 
@@ -502,8 +473,13 @@
           </div>
 
           <div class="space-y-1.5 text-center sm:text-left flex-1 bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 backdrop-blur-sm">
-            <h2 id="profile-display-name" class="text-xl sm:text-2xl font-bold text-white">Nombre de Usuario</h2>
-            <p id="profile-display-username" class="text-xs sm:text-sm text-red-400 font-semibold">@usuario</p>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 id="profile-display-name" class="text-xl sm:text-2xl font-bold text-white">Nombre de Usuario</h2>
+                <p id="profile-display-username" class="text-xs sm:text-sm text-red-400 font-semibold">@usuario</p>
+              </div>
+              <button id="profile-follow-btn" onclick="toggleFollowActiveProfile()" class="hidden bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition shrink-0 self-center sm:self-auto">+ Seguir</button>
+            </div>
             <p id="profile-display-bio" class="text-xs sm:text-sm text-slate-300">Añade una descripción sobre ti y tus proyectos automotrices.</p>
             
             <div onclick="openFriendsModal()" class="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg cursor-pointer transition">
@@ -533,7 +509,7 @@
       <div id="profile-subtab-posts" class="space-y-4">
         <div id="user-own-posts" class="space-y-4">
           <div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">Aún no has publicado nada. Tus publicaciones aparecerán aquí.</p>
+            <p class="text-xs text-slate-400">No hay publicaciones para mostrar.</p>
           </div>
         </div>
       </div>
@@ -541,22 +517,22 @@
       <div id="profile-subtab-market" class="hidden space-y-4">
         <div id="user-own-market" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">No tienes artículos o servicios a la venta actualmente.</p>
+            <p class="text-xs text-slate-400">No hay artículos o servicios a la venta actualmente.</p>
           </div>
         </div>
       </div>
 
       <div id="profile-subtab-garage" class="hidden space-y-6">
         <div class="flex justify-between items-center">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="car" class="w-4 h-4 text-red-500"></i> Tus Vehículos & Proyectos</h3>
-          <button onclick="addNewVehicle()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="car" class="w-4 h-4 text-red-500"></i> Vehículos & Proyectos</h3>
+          <button id="add-vehicle-btn" onclick="addNewVehicle()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar Vehículo
           </button>
         </div>
 
         <div id="garage-vehicles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div id="empty-garage-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">No has agregado vehículos a tu garage.</p>
+            <p class="text-xs text-slate-400">No hay vehículos agregados.</p>
           </div>
         </div>
       </div>
@@ -564,7 +540,7 @@
       <div id="profile-subtab-groups" class="hidden space-y-4">
         <div id="user-joined-groups-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">Aún no te has unido a ningún grupo.</p>
+            <p class="text-xs text-slate-400">No se ha unido a ningún grupo.</p>
           </div>
         </div>
       </div>
@@ -592,8 +568,6 @@
   <script>
     lucide.createIcons();
 
-    const DEFAULT_BG = "url('https://st.depositphotos.com/1167801/3262/i/950/depositphotos_32621051-stock-photo-nuts-and-bolts-background.jpg')";
-
     const firebaseConfig = {
       apiKey: "AIzaSyBzd5hyxm1SzxrrlLaLB42Szf0J7uObsvY",
       authDomain: "migarage-51e36.firebaseapp.com",
@@ -610,10 +584,10 @@
 
     let isLoggedIn = false;
     let currentUserData = null;
+    let activeProfileUid = null;
     let activeChatFriend = null;
     let activeChatUnsubscribe = null;
     let unreadCounts = {};
-    let openCommentBoxId = null;
 
     auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -636,9 +610,11 @@
           currentUserData = doc.data();
           updateUserSessionUI();
           renderFriendsList();
-          loadVehicles();
           listenNotifications();
           listenIncomingChatAlerts();
+          if (!activeProfileUid) {
+            viewUserProfile(uid);
+          }
         }
       });
     }
@@ -647,31 +623,12 @@
       const initials = (currentUserData.name || 'U').charAt(0).toUpperCase();
 
       document.getElementById('auth-buttons-container').innerHTML = `
-        <button onclick="switchTab('profile')" title="Ir a tu Perfil" class="w-9 h-9 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[2px] shadow-lg">
+        <button onclick="viewUserProfile('${auth.currentUser.uid}')" title="Ir a tu Perfil" class="w-9 h-9 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[2px] shadow-lg">
           <div class="w-full h-full rounded-full bg-red-600 font-black text-xs flex items-center justify-center text-white border border-slate-950 overflow-hidden">
             ${currentUserData.avatarUrl ? `<img src="${currentUserData.avatarUrl}" class="w-full h-full object-cover">` : initials}
           </div>
         </button>
       `;
-
-      document.getElementById('profile-display-name').innerText = currentUserData.name;
-      document.getElementById('profile-display-username').innerText = '@' + currentUserData.username;
-      document.getElementById('profile-display-bio').innerText = currentUserData.bio || 'Sin biografía agregada.';
-      document.getElementById('profile-avatar-initials').innerText = initials;
-
-      if (currentUserData.avatarUrl) {
-        document.getElementById('profile-avatar-initials').classList.add('hidden');
-        const img = document.getElementById('profile-avatar-img');
-        img.src = currentUserData.avatarUrl;
-        img.classList.remove('hidden');
-      }
-
-      // El fondo del perfil personalizado solo se aplica dentro de la tarjeta de cabecera del perfil propio
-      if (currentUserData.profileBgUrl) {
-        document.getElementById('own-profile-header-card').style.backgroundImage = `url('${currentUserData.profileBgUrl}')`;
-      }
-
-      document.getElementById('friends-count-num').innerText = currentUserData.friends ? currentUserData.friends.length : 0;
     }
 
     function updateGuestUI() {
@@ -687,6 +644,126 @@
         reader.onload = () => resolve(reader.result);
         reader.onerror = reject;
         reader.readAsDataURL(file);
+      });
+    }
+
+    // VISUALIZAR PERFIL DE CUALQUIER USUARIO
+    async function viewUserProfile(uid) {
+      activeProfileUid = uid;
+      switchTab('profile');
+
+      try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) return;
+
+        const u = userDoc.data();
+        const isOwn = auth.currentUser && auth.currentUser.uid === uid;
+
+        document.getElementById('profile-display-name').innerText = u.name;
+        document.getElementById('profile-display-username').innerText = '@' + u.username;
+        document.getElementById('profile-display-bio').innerText = u.bio || 'Sin biografía agregada.';
+        document.getElementById('profile-avatar-initials').innerText = u.name.charAt(0).toUpperCase();
+
+        const img = document.getElementById('profile-avatar-img');
+        if (u.avatarUrl) {
+          img.src = u.avatarUrl;
+          img.classList.remove('hidden');
+          document.getElementById('profile-avatar-initials').classList.add('hidden');
+        } else {
+          img.classList.add('hidden');
+          document.getElementById('profile-avatar-initials').classList.remove('hidden');
+        }
+
+        document.getElementById('friends-count-num').innerText = u.friends ? u.friends.length : 0;
+
+        // Botón de opciones sólo en perfil propio
+        document.getElementById('profile-settings-btn').classList.toggle('hidden', !isOwn);
+        document.getElementById('add-vehicle-btn').classList.toggle('hidden', !isOwn);
+
+        // Botón de Seguir si es perfil ajeno
+        const followBtn = document.getElementById('profile-follow-btn');
+        if (!isOwn && isLoggedIn) {
+          followBtn.classList.remove('hidden');
+          const following = currentUserData?.following || [];
+          const isFollowing = following.includes(uid);
+          followBtn.innerText = isFollowing ? 'Siguiendo √' : '+ Seguir';
+          followBtn.className = isFollowing ? 'bg-slate-800 text-slate-300 border border-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition shrink-0' : 'bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition shrink-0';
+        } else {
+          followBtn.classList.add('hidden');
+        }
+
+        loadUserVehicles(uid);
+        loadUserOwnPosts(uid);
+      } catch (err) { console.error(err); }
+    }
+
+    async function toggleFollowActiveProfile() {
+      if (!isLoggedIn || !activeProfileUid) return openAuthModal('login');
+
+      const myUid = auth.currentUser.uid;
+      const following = currentUserData?.following || [];
+      const isFollowing = following.includes(activeProfileUid);
+
+      try {
+        if (isFollowing) {
+          await db.collection('users').doc(myUid).update({
+            following: firebase.firestore.FieldValue.arrayRemove(activeProfileUid)
+          });
+        } else {
+          await db.collection('users').doc(myUid).update({
+            following: firebase.firestore.FieldValue.arrayUnion(activeProfileUid)
+          });
+          addNotification(activeProfileUid, 'follow', `${currentUserData.name} comenzó a seguirte.`);
+          addNotification(myUid, 'activity', `Ahora sigues a la cuenta.`);
+        }
+        viewUserProfile(activeProfileUid);
+      } catch (err) { console.error(err); }
+    }
+
+    function loadUserVehicles(uid) {
+      db.collection('vehicles').where('userId', '==', uid).onSnapshot(snapshot => {
+        const grid = document.getElementById('garage-vehicles-grid');
+        grid.innerHTML = '';
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay vehículos agregados.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const v = doc.data();
+          const card = `
+            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 space-y-2">
+              <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/30">${v.year}</span>
+              <h4 class="font-bold text-sm text-white">${v.name}</h4>
+              <p class="text-xs text-slate-400">${v.desc}</p>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', card);
+        });
+      });
+    }
+
+    function loadUserOwnPosts(uid) {
+      db.collection('posts').where('userId', '==', uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        const container = document.getElementById('user-own-posts');
+        container.innerHTML = '';
+
+        if (snapshot.empty) {
+          container.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay publicaciones disponibles.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const post = doc.data();
+          const card = `
+            <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-4 space-y-2">
+              <p class="text-xs text-slate-200">${post.content}</p>
+              ${post.mediaUrl ? `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-60 object-cover border border-slate-700">` : ''}
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', card);
+        });
       });
     }
 
@@ -706,7 +783,6 @@
 
           notifList.innerHTML = '';
 
-          // Solicitudes de Amistad
           incomingRequests.forEach(r => {
             const reqItem = `
               <div class="p-2 bg-slate-900 border border-amber-500/30 rounded-lg space-y-1.5">
@@ -725,7 +801,7 @@
             if (!n.read) unreadCount++;
             const item = `
               <div class="p-2 bg-slate-900 border border-slate-800 rounded-lg flex items-center gap-2">
-                <i data-lucide="${n.type === 'like' ? 'heart' : 'message-square'}" class="w-4 h-4 text-${n.type === 'like' ? 'red' : 'blue'}-500 shrink-0"></i>
+                <i data-lucide="bell" class="w-4 h-4 text-amber-500 shrink-0"></i>
                 <p class="text-slate-300 text-xs">${n.text}</p>
               </div>
             `;
@@ -748,7 +824,6 @@
     }
 
     async function addNotification(targetUid, type, text) {
-      if (targetUid === auth.currentUser?.uid) return;
       try {
         await db.collection('users').doc(targetUid).collection('notifications').add({
           type,
@@ -767,72 +842,6 @@
     function toggleChatDropdown() {
       document.getElementById('chat-dropdown').classList.toggle('hidden');
       document.getElementById('notifs-dropdown').classList.add('hidden');
-    }
-
-    // ABRIR Y VER PERFIL DE CUALQUIER USUARIO
-    async function openUserProfileModal(targetUid) {
-      if (targetUid === auth.currentUser?.uid) {
-        switchTab('profile');
-        return;
-      }
-
-      try {
-        const userDoc = await db.collection('users').doc(targetUid).get();
-        if (!userDoc.exists) return;
-
-        const u = userDoc.data();
-        const modal = document.getElementById('modal-view-user-profile');
-        
-        document.getElementById('user-profile-name').innerText = u.name;
-        document.getElementById('user-profile-username').innerText = '@' + u.username;
-        document.getElementById('user-profile-bio').innerText = u.bio || 'Sin biografía.';
-        document.getElementById('user-profile-initials').innerText = u.name.charAt(0).toUpperCase();
-
-        const avatarImg = document.getElementById('user-profile-img');
-        if (u.avatarUrl) {
-          avatarImg.src = u.avatarUrl;
-          avatarImg.classList.remove('hidden');
-          document.getElementById('user-profile-initials').classList.add('hidden');
-        } else {
-          avatarImg.classList.add('hidden');
-          document.getElementById('user-profile-initials').classList.remove('hidden');
-        }
-
-        const headerCard = document.getElementById('user-profile-header');
-        if (u.profileBgUrl) {
-          headerCard.style.backgroundImage = `url('${u.profileBgUrl}')`;
-        } else {
-          headerCard.style.backgroundImage = 'none';
-        }
-
-        // Cargar posts del usuario objetivo
-        const postsSnap = await db.collection('posts').where('userId', '==', targetUid).get();
-        const postsContainer = document.getElementById('user-profile-posts');
-        postsContainer.innerHTML = '';
-
-        if (postsSnap.empty) {
-          postsContainer.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Este usuario no tiene publicaciones.</p>';
-        } else {
-          postsSnap.forEach(doc => {
-            const post = doc.data();
-            const card = `
-              <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-4 space-y-2">
-                <p class="text-xs text-slate-200">${post.content}</p>
-                ${post.mediaUrl ? `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-60 object-cover border border-slate-700">` : ''}
-              </div>
-            `;
-            postsContainer.insertAdjacentHTML('beforeend', card);
-          });
-        }
-
-        modal.classList.remove('hidden');
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function closeUserProfileModal() {
-      document.getElementById('modal-view-user-profile').classList.add('hidden');
     }
 
     // HISTORIAS ESTILO INSTAGRAM
@@ -907,7 +916,7 @@
       document.getElementById('modal-view-story').classList.add('hidden');
     }
 
-    // SISTEMA DE CHAT CON APERTURA/CIERRE POR BURBUJA
+    // CHAT FLOTANTE
     function listenIncomingChatAlerts() {
       const friends = currentUserData?.friends || [];
       const myUid = auth.currentUser?.uid;
@@ -959,7 +968,6 @@
       }
     }
 
-    // ALTERNAR APERTURA Y CIERRE DEL CHAT DESDE LA BURBUJA
     function toggleDirectChatBubble(friendUid, friendName) {
       const chatBox = document.getElementById('active-chat-box');
       
@@ -1039,7 +1047,7 @@
         });
     }
 
-    // COMENTARIOS Y HILOS DE RESPUESTA EN PUBLICACIONES
+    // COMENTARIOS: RESPUESTAS, EDICIÓN, ELIMINACIÓN Y REPORTES
     function toggleCommentsBox(postId) {
       const commentsSection = document.getElementById(`comments-section-${postId}`);
       commentsSection.classList.toggle('hidden');
@@ -1069,9 +1077,33 @@
         if (postDoc.exists) {
           addNotification(postDoc.data().userId, 'comment', `${currentUserData.name} comentó tu publicación.`);
         }
+        addNotification(auth.currentUser.uid, 'activity', `Publicaste un comentario.`);
 
         inputEl.value = '';
       } catch (err) { console.error(err); }
+    }
+
+    function toggleCommentMenu(commentId) {
+      const menu = document.getElementById(`comment-menu-${commentId}`);
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    async function deleteComment(postId, commentId) {
+      if (confirm("¿Deseas eliminar este comentario?")) {
+        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+      }
+    }
+
+    async function editComment(postId, commentId, currentText) {
+      const newText = prompt("Edita tu comentario:", currentText);
+      if (newText && newText.trim() !== "") {
+        await db.collection('posts').doc(postId).collection('comments').doc(commentId).update({ text: newText.trim() });
+      }
+    }
+
+    function blockCommentUI(commentId) {
+      document.getElementById(`comment-card-${commentId}`)?.remove();
+      alert("Comentario oculto.");
     }
 
     function listenPostComments(postId) {
@@ -1088,25 +1120,41 @@
 
           mainComments.forEach(c => {
             const replies = comments.filter(r => r.parentCommentId === c.id);
+            const isCommentOwner = auth.currentUser && c.authorUid === auth.currentUser.uid;
+
             const card = `
-              <div class="p-2 bg-slate-900 border border-slate-800 rounded-lg space-y-1.5">
+              <div id="comment-card-${c.id}" class="p-2 bg-slate-900 border border-slate-800 rounded-lg space-y-1.5 relative">
                 <div class="flex items-center justify-between">
-                  <span onclick="openUserProfileModal('${c.authorUid}')" class="font-bold text-xs text-white cursor-pointer hover:underline">${c.authorName} <span class="text-[10px] text-slate-400">@${c.authorUsername}</span></span>
+                  <span onclick="viewUserProfile('${c.authorUid}')" class="font-bold text-xs text-white cursor-pointer hover:underline">${c.authorName} <span class="text-[10px] text-slate-400">@${c.authorUsername}</span></span>
+                  
+                  <div class="relative">
+                    <button onclick="toggleCommentMenu('${c.id}')" class="text-slate-500 hover:text-white p-0.5">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <div id="comment-menu-${c.id}" class="hidden absolute right-0 top-5 w-32 bg-slate-950 border border-slate-800 rounded shadow-xl z-30 py-1 text-[11px]">
+                      ${isCommentOwner ? `
+                        <button onclick="editComment('${postId}', '${c.id}', '${c.text}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-slate-300">Editar</button>
+                        <button onclick="deleteComment('${postId}', '${c.id}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-red-400">Eliminar</button>
+                      ` : `
+                        <button onclick="blockCommentUI('${c.id}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-slate-300">Ocultar</button>
+                        <button onclick="openReportModal()" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-red-400">Reportar</button>
+                      `}
+                    </div>
+                  </div>
                 </div>
+
                 <p class="text-xs text-slate-200">${c.text}</p>
                 <button onclick="toggleReplyBox('${c.id}')" class="text-[10px] text-red-400 font-bold hover:underline">Responder</button>
 
-                <!-- RESPUESTAS -->
                 <div class="pl-3 border-l border-slate-700 space-y-1 mt-1">
                   ${replies.map(r => `
                     <div class="p-1.5 bg-slate-950 rounded text-xs">
-                      <span onclick="openUserProfileModal('${r.authorUid}')" class="font-bold text-white text-[11px] cursor-pointer hover:underline">${r.authorName}:</span>
+                      <span onclick="viewUserProfile('${r.authorUid}')" class="font-bold text-white text-[11px] cursor-pointer hover:underline">${r.authorName}:</span>
                       <span class="text-slate-300 text-[11px]">${r.text}</span>
                     </div>
                   `).join('')}
                 </div>
 
-                <!-- CAMPO PARA RESPONDER -->
                 <div id="reply-box-${c.id}" class="hidden flex gap-1 pt-1">
                   <input id="reply-input-${c.id}" type="text" placeholder="Escribe una respuesta..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1 text-xs text-white">
                   <button onclick="addComment('${postId}', '${c.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">Enviar</button>
@@ -1115,6 +1163,7 @@
             `;
             container.insertAdjacentHTML('beforeend', card);
           });
+          lucide.createIcons();
         });
     }
 
@@ -1122,13 +1171,11 @@
       document.getElementById(`reply-box-${commentId}`).classList.toggle('hidden');
     }
 
-    // CARGAR FEED DE PUBLICACIONES
+    // FEED PRINCIPAL
     function loadPosts() {
       db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const feedContainer = document.getElementById('posts-feed');
-        const userOwnPosts = document.getElementById('user-own-posts');
         feedContainer.innerHTML = '';
-        if (userOwnPosts) userOwnPosts.innerHTML = '';
 
         if (snapshot.empty) {
           feedContainer.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">Aún no hay publicaciones en la comunidad.</p></div>`;
@@ -1154,8 +1201,7 @@
           const card = `
             <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
               <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
-                <!-- NAVEGACIÓN AL PERFIL AL APRETAR EL NOMBRE O FOTO -->
-                <div onclick="openUserProfileModal('${post.userId}')" class="flex items-center gap-3 cursor-pointer group">
+                <div onclick="viewUserProfile('${post.userId}')" class="flex items-center gap-3 cursor-pointer group">
                   <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white group-hover:scale-105 transition">
                     ${(post.authorName || 'U').charAt(0)}
                   </div>
@@ -1184,7 +1230,6 @@
               <p class="text-xs text-slate-200">${post.content}</p>
               ${mediaHTML}
 
-              <!-- BOTONES ME GUSTA, COMENTAR Y COMPARTIR -->
               <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
                 <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
                   <i data-lucide="heart" class="w-4 h-4"></i>
@@ -1200,7 +1245,6 @@
                 </button>
               </div>
 
-              <!-- SECCIÓN DESPLEGABLE DE COMENTARIOS -->
               <div id="comments-section-${postId}" class="hidden pt-3 border-t border-slate-800 space-y-2">
                 <div class="flex gap-2">
                   <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
@@ -1212,9 +1256,6 @@
           `;
 
           feedContainer.insertAdjacentHTML('beforeend', card);
-          if (isOwner && userOwnPosts) {
-            userOwnPosts.insertAdjacentHTML('beforeend', card);
-          }
         });
 
         lucide.createIcons();
@@ -1236,6 +1277,7 @@
         } else {
           await postRef.update({ likes: firebase.firestore.FieldValue.arrayUnion(userUid) });
           addNotification(postData.userId, 'like', `${currentUserData.name} le dio Me Gusta a tu publicación.`);
+          addNotification(userUid, 'activity', `Le diste Me Gusta a una publicación.`);
         }
       } catch (err) { console.error(err); }
     }
@@ -1266,12 +1308,14 @@
           likes: [],
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        addNotification(auth.currentUser.uid, 'activity', `Creaste una nueva publicación.`);
         document.getElementById('form-post').reset();
         togglePostModal();
       } catch (err) { alert("Error al publicar: " + err.message); }
     }
 
-    // BÚSQUEDA GLOBAL DE USUARIOS
+    // BÚSQUEDA GLOBAL Y SOLICITUDES
     async function handleGlobalSearch(query) {
       const dropdown = document.getElementById('search-results-dropdown');
       const cleanQuery = query.replace('@', '').trim().toLowerCase();
@@ -1317,7 +1361,7 @@
 
           return `
             <div class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg transition">
-              <div onclick="openUserProfileModal('${u.uid}')" class="flex items-center gap-2 cursor-pointer">
+              <div onclick="viewUserProfile('${u.uid}')" class="flex items-center gap-2 cursor-pointer">
                 <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs text-white">
                   ${u.name.charAt(0)}
                 </div>
@@ -1424,31 +1468,6 @@
       } catch (err) { alert(err.message); }
     }
 
-    function loadVehicles() {
-      if (!auth.currentUser) return;
-      db.collection('vehicles').where('userId', '==', auth.currentUser.uid).onSnapshot(snapshot => {
-        const grid = document.getElementById('garage-vehicles-grid');
-        grid.innerHTML = '';
-
-        if (snapshot.empty) {
-          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No has agregado vehículos a tu garage.</p></div>`;
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          const v = doc.data();
-          const card = `
-            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 space-y-2">
-              <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/30">${v.year}</span>
-              <h4 class="font-bold text-sm text-white">${v.name}</h4>
-              <p class="text-xs text-slate-400">${v.desc}</p>
-            </div>
-          `;
-          grid.insertAdjacentHTML('beforeend', card);
-        });
-      });
-    }
-
     function loadMarket() {
       db.collection('market').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('market-catalog-grid');
@@ -1547,7 +1566,7 @@
       } catch (err) { alert(err.message); }
     }
 
-    // EDITAR PERFIL COMPLETO
+    // EDITAR PERFIL
     function openEditProfileModal() {
       toggleSettingsModal();
       document.getElementById('edit-name').value = currentUserData.name || '';
@@ -1565,14 +1584,11 @@
 
       const name = document.getElementById('edit-name').value;
       const bio = document.getElementById('edit-bio').value;
-
       const avatarFile = document.getElementById('edit-avatar-file').files[0];
-      const bgFile = document.getElementById('edit-bg-file').files[0];
 
       let updates = { name, bio };
 
       if (avatarFile) updates.avatarUrl = await readFileAsDataURL(avatarFile);
-      if (bgFile) updates.profileBgUrl = await readFileAsDataURL(bgFile);
 
       try {
         await db.collection('users').doc(auth.currentUser.uid).update(updates);
@@ -1581,7 +1597,7 @@
       } catch (err) { alert(err.message); }
     }
 
-    // NAVEGACIÓN DE PESTAÑAS Y CONTROL DE FONDO DE PANTALLA GENERAL
+    // NAVEGACIÓN GENERAL
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
@@ -1596,9 +1612,6 @@
         activeBtn.classList.add('text-red-500');
         activeBtn.classList.remove('text-slate-400');
       }
-
-      // ASEGURAR QUE EL FONDO GLOBAL SEA SIEMPRE EL DE TUERCAS Y PERNOS
-      document.getElementById('app-global-container').style.backgroundImage = DEFAULT_BG;
     }
 
     function switchTabWithAuth(tabId) {
@@ -1671,8 +1684,8 @@
           email,
           bio: 'Nuevo integrante en la comunidad Mi Garage.',
           avatarUrl: '',
-          profileBgUrl: '',
           friends: [],
+          following: [],
           incomingRequests: [],
           sentRequests: []
         });
