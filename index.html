@@ -111,7 +111,7 @@
     </div>
   </div>
 
-  <!-- MODAL OPCIONES DE CUENTA / EDITAR PERFIL -->
+  <!-- MODAL CONFIGURACIÓN / EDITAR PERFIL -->
   <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -205,7 +205,7 @@
     </div>
   </div>
 
-  <!-- MODAL CREAR PUBLICACIÓN (CON ARCHIVO LOCAL) -->
+  <!-- MODAL CREAR PUBLICACIÓN -->
   <div id="modal-post" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -337,8 +337,10 @@
       <button onclick="closeDirectChat()" class="text-slate-400 hover:text-white text-xs">✕</button>
     </div>
     <div id="chat-messages" class="flex-1 p-3 overflow-y-auto text-xs space-y-2"></div>
+    
+    <!-- CAMPO DE MENSAJE CON ENVÍO POR ENTER -->
     <div class="p-2 border-t border-slate-800 flex gap-1">
-      <input id="chat-input" type="text" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+      <input id="chat-input" type="text" placeholder="Escribe un mensaje y presiona Enter..." onkeydown="handleChatKeyDown(event)" class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white focus:outline-none focus:border-red-500">
       <button onclick="sendChatMessage()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-xs font-bold transition">Enviar</button>
     </div>
   </div>
@@ -413,7 +415,7 @@
       </div>
     </section>
 
-    <!-- 4. PERFIL DE USUARIO CON VISOR DE AMIGOS -->
+    <!-- 4. PERFIL DE USUARIO -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
       <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
         <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 p-2 bg-slate-900/80 hover:bg-slate-700 text-slate-300 rounded-full border border-slate-700 transition shadow-lg" title="Opciones de Cuenta">
@@ -433,7 +435,6 @@
             <p id="profile-display-username" class="text-xs sm:text-sm text-red-400 font-semibold">@usuario</p>
             <p id="profile-display-bio" class="text-xs sm:text-sm text-slate-300">Añade una descripción sobre ti y tus proyectos automotrices.</p>
             
-            <!-- VISOR DE AMIGOS -->
             <div onclick="openFriendsModal()" class="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-slate-950/80 hover:bg-slate-900 border border-slate-700 rounded-lg cursor-pointer transition">
               <i data-lucide="users" class="w-4 h-4 text-red-500"></i>
               <span class="text-xs text-slate-300"><strong id="friends-count-num" class="text-white font-bold">0</strong> Amigos (Ver todos)</span>
@@ -519,7 +520,7 @@
     </button>
   </nav>
 
-  <!-- LÓGICA JAVASCRIPT CON FIREBASE -->
+  <!-- LÓGICA JAVASCRIPT CON FIREBASE Y ALERTAS DE CHAT -->
   <script>
     lucide.createIcons();
 
@@ -540,7 +541,8 @@
     let isLoggedIn = false;
     let currentUserData = null;
     let activeChatFriend = null;
-    let targetPostToReport = null;
+    let activeChatUnsubscribe = null;
+    let unreadCounts = {};
 
     auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -563,6 +565,7 @@
           updateUserSessionUI();
           renderFriendsAndRequests();
           loadVehicles();
+          listenIncomingChatAlerts();
         }
       });
     }
@@ -604,7 +607,6 @@
       `;
     }
 
-    // UTILIDAD PARA LER ARCHIVOS LOCALES EN BASE64
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -612,6 +614,140 @@
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
+    }
+
+    // LISTENER DE NUEVOS MENSAJES PARA ALERTAS EN TIEMPO REAL
+    function listenIncomingChatAlerts() {
+      const friends = currentUserData?.friends || [];
+      const myUid = auth.currentUser?.uid;
+      if (!myUid) return;
+
+      friends.forEach(f => {
+        const chatId = [myUid, f.uid].sort().join('_');
+        db.collection('chats').doc(chatId).collection('messages')
+          .orderBy('createdAt', 'desc').limit(1)
+          .onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+              if (change.type === 'added') {
+                const msg = change.doc.data();
+                if (msg.senderId !== myUid) {
+                  // Si la ventana del chat no está abierta con ese amigo, activar alerta
+                  if (!activeChatFriend || activeChatFriend.uid !== f.uid || document.getElementById('active-chat-box').classList.contains('hidden')) {
+                    unreadCounts[f.uid] = (unreadCounts[f.uid] || 0) + 1;
+                    triggerChatAlert(f.uid, f.name);
+                  }
+                }
+              }
+            });
+          });
+      });
+    }
+
+    function triggerChatAlert(friendUid, friendName) {
+      addOrUpdateChatBubble(friendUid, friendName, true);
+    }
+
+    // BURBUJAS FLOTANTES DE CHAT
+    function addOrUpdateChatBubble(friendUid, friendName, hasUnread = false) {
+      const container = document.getElementById('floating-bubbles-container');
+      let existing = document.getElementById(`bubble-${friendUid}`);
+
+      const count = unreadCounts[friendUid] || 0;
+      const alertClasses = hasUnread || count > 0 ? 'ring-4 ring-red-500 animate-bounce' : 'border-2 border-white';
+
+      if (!existing) {
+        const bubble = `
+          <div id="bubble-${friendUid}" onclick="openDirectChat('${friendUid}', '${friendName}')" class="w-12 h-12 rounded-full bg-red-600 ${alertClasses} text-white font-bold text-sm flex items-center justify-center cursor-pointer shadow-2xl relative hover:scale-110 transition">
+            ${friendName.charAt(0)}
+            <span id="badge-unread-${friendUid}" class="${count > 0 ? '' : 'hidden'} absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900">${count}</span>
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-950"></span>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', bubble);
+      } else {
+        existing.className = `w-12 h-12 rounded-full bg-red-600 ${alertClasses} text-white font-bold text-sm flex items-center justify-center cursor-pointer shadow-2xl relative hover:scale-110 transition`;
+        const badge = document.getElementById(`badge-unread-${friendUid}`);
+        if (badge) {
+          badge.innerText = count;
+          badge.classList.toggle('hidden', count === 0);
+        }
+      }
+    }
+
+    // MANEJO DE TECLA ENTER EN EL CHAT
+    function handleChatKeyDown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    }
+
+    function openDirectChat(friendUid, friendName) {
+      activeChatFriend = { uid: friendUid, name: friendName };
+      
+      // Limpiar conteo de no leídos
+      unreadCounts[friendUid] = 0;
+      addOrUpdateChatBubble(friendUid, friendName, false);
+
+      document.getElementById('chat-title-text').innerText = friendName;
+      document.getElementById('active-chat-box').classList.remove('hidden');
+      document.getElementById('chat-dropdown').classList.add('hidden');
+      
+      // Enfocar input automáticamente
+      setTimeout(() => document.getElementById('chat-input').focus(), 100);
+
+      listenMessages();
+    }
+
+    function closeDirectChat() {
+      document.getElementById('active-chat-box').classList.add('hidden');
+      if (activeChatUnsubscribe) activeChatUnsubscribe();
+      activeChatFriend = null;
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text || !activeChatFriend || !auth.currentUser) return;
+
+      const chatId = [auth.currentUser.uid, activeChatFriend.uid].sort().join('_');
+
+      try {
+        await db.collection('chats').doc(chatId).collection('messages').add({
+          senderId: auth.currentUser.uid,
+          text,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        input.value = '';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function listenMessages() {
+      if (!activeChatFriend || !auth.currentUser) return;
+      if (activeChatUnsubscribe) activeChatUnsubscribe();
+
+      const chatId = [auth.currentUser.uid, activeChatFriend.uid].sort().join('_');
+
+      activeChatUnsubscribe = db.collection('chats').doc(chatId).collection('messages')
+        .orderBy('createdAt', 'asc')
+        .onSnapshot(snapshot => {
+          const msgBox = document.getElementById('chat-messages');
+          msgBox.innerHTML = '';
+
+          snapshot.forEach(doc => {
+            const m = doc.data();
+            const isMe = m.senderId === auth.currentUser.uid;
+            const bubble = `
+              <div class="p-2 rounded-lg max-w-[80%] text-xs shadow-md ${isMe ? 'bg-red-600 text-white ml-auto' : 'bg-slate-800 text-slate-200'}">
+                ${m.text}
+              </div>
+            `;
+            msgBox.insertAdjacentHTML('beforeend', bubble);
+          });
+          msgBox.scrollTop = msgBox.scrollHeight;
+        });
     }
 
     // EDITAR PERFIL COMPLETO
@@ -860,80 +996,7 @@
       `).join('');
     }
 
-    // BURBUJAS FLOTANTES DE CHAT
-    function addOrUpdateChatBubble(friendUid, friendName) {
-      const container = document.getElementById('floating-bubbles-container');
-      let existing = document.getElementById(`bubble-${friendUid}`);
-
-      if (!existing) {
-        const bubble = `
-          <div id="bubble-${friendUid}" onclick="openDirectChat('${friendUid}', '${friendName}')" class="w-12 h-12 rounded-full bg-red-600 border-2 border-white text-white font-bold text-sm flex items-center justify-center cursor-pointer shadow-2xl relative hover:scale-110 transition">
-            ${friendName.charAt(0)}
-            <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-950"></span>
-          </div>
-        `;
-        container.insertAdjacentHTML('beforeend', bubble);
-      }
-    }
-
-    function openDirectChat(friendUid, friendName) {
-      activeChatFriend = { uid: friendUid, name: friendName };
-      addOrUpdateChatBubble(friendUid, friendName);
-      document.getElementById('chat-title-text').innerText = friendName;
-      document.getElementById('active-chat-box').classList.remove('hidden');
-      document.getElementById('chat-dropdown').classList.add('hidden');
-      listenMessages();
-    }
-
-    function closeDirectChat() {
-      document.getElementById('active-chat-box').classList.add('hidden');
-      activeChatFriend = null;
-    }
-
-    async function sendChatMessage() {
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
-      if (!text || !activeChatFriend || !auth.currentUser) return;
-
-      const chatId = [auth.currentUser.uid, activeChatFriend.uid].sort().join('_');
-
-      try {
-        await db.collection('chats').doc(chatId).collection('messages').add({
-          senderId: auth.currentUser.uid,
-          text,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        input.value = '';
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function listenMessages() {
-      if (!activeChatFriend || !auth.currentUser) return;
-      const chatId = [auth.currentUser.uid, activeChatFriend.uid].sort().join('_');
-
-      db.collection('chats').doc(chatId).collection('messages')
-        .orderBy('createdAt', 'asc')
-        .onSnapshot(snapshot => {
-          const msgBox = document.getElementById('chat-messages');
-          msgBox.innerHTML = '';
-
-          snapshot.forEach(doc => {
-            const m = doc.data();
-            const isMe = m.senderId === auth.currentUser.uid;
-            const bubble = `
-              <div class="p-2 rounded-lg max-w-[80%] text-xs shadow-md ${isMe ? 'bg-red-600 text-white ml-auto' : 'bg-slate-800 text-slate-200'}">
-                ${m.text}
-              </div>
-            `;
-            msgBox.insertAdjacentHTML('beforeend', bubble);
-          });
-          msgBox.scrollTop = msgBox.scrollHeight;
-        });
-    }
-
-    // VEHÍCULOS / GARAGE CON ARCHIVO LOCAL
+    // VEHÍCULOS / GARAGE
     async function addNewVehicle() {
       if (!auth.currentUser) return;
       const name = prompt("Modelo del Vehículo:");
@@ -979,8 +1042,8 @@
       });
     }
 
-    // INTERACCIONES CON PUBLICACIONES (ME GUSTA, COMPARTIR, MENU DE OPCIONES)
-    async function toggleLikePost(postId, currentLikes) {
+    // ME GUSTA, COMPARTIR, REPORTES
+    async function toggleLikePost(postId) {
       if (!auth.currentUser) return openAuthModal('login');
       const postRef = db.collection('posts').doc(postId);
 
@@ -1058,7 +1121,7 @@
       closeReportModal();
     }
 
-    // CARGAR FEED Y ARCHIVOS MULTIMEDIA LOCALES
+    // CARGAR FEED Y MULTIMEDIA LOCAL
     function loadPosts() {
       db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const feedContainer = document.getElementById('posts-feed');
