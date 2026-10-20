@@ -16,7 +16,7 @@
 </head>
 <body id="app-global-container" class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col pt-16 pb-20 bg-cover bg-center bg-no-repeat bg-fixed transition-all duration-300" style="background-image: url('https://st.depositphotos.com/1167801/3262/i/950/depositphotos_32621051-stock-photo-nuts-and-bolts-background.jpg');">
 
-  <!-- CAPA DE OVERLAY OSCURA -->
+  <!-- OVERLAY OSCURO -->
   <div class="fixed inset-0 bg-slate-950/85 -z-10"></div>
 
   <!-- 1. BARRA SUPERIOR -->
@@ -29,22 +29,21 @@
         <span class="text-lg font-black tracking-wider text-white">MI<span class="text-red-500">GARAGE</span></span>
       </div>
 
-      <!-- BARRA DE BÚSQUEDA GLOBAL DE AMIGOS Y CONTENIDO -->
+      <!-- BÚSQUEDA GLOBAL / BUSCAR PERSONAS POR USERNAME -->
       <div class="relative flex-1 max-w-md hidden sm:block">
         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
         <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Buscar personas (@usuario), publicaciones, productos..." class="w-full bg-slate-900 border border-slate-700/80 rounded-full pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
         
-        <!-- DESPLEGABLE RESULTADOS DE BÚSQUEDA DE USUARIOS -->
+        <!-- DESPLEGABLE DE BÚSQUEDA DE AMIGOS/USUARIOS -->
         <div id="search-results-dropdown" class="hidden absolute top-10 left-0 right-0 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 space-y-2 z-50 max-h-60 overflow-y-auto"></div>
       </div>
 
-      <!-- ÁREA DE ACCIONES -->
+      <!-- ACCIONES -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <button onclick="requireAuthAction(() => togglePostModal())" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full font-bold transition flex items-center justify-center shadow-lg" title="Crear Publicación">
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
 
-        <!-- BOTÓN CHAT DE AMIGOS CON NOTIFICACIÓN DE SOLICITUDES -->
         <button onclick="requireAuthAction(() => toggleChatDropdown())" class="relative bg-slate-800 hover:bg-slate-700 p-2 rounded-full border border-slate-700 text-slate-200 transition flex items-center justify-center">
           <i data-lucide="message-square" class="w-5 h-5 text-red-500"></i>
           <span id="pending-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
@@ -59,7 +58,7 @@
     </div>
   </header>
 
-  <!-- MODAL DE AUTENTICACIÓN -->
+  <!-- MODAL AUTENTICACIÓN -->
   <div id="modal-auth" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -67,7 +66,6 @@
         <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
 
-      <!-- INICIO DE SESIÓN -->
       <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-3 text-xs">
         <div>
           <label class="text-[10px] font-bold text-slate-400 uppercase">Correo Electrónico</label>
@@ -81,7 +79,6 @@
         <p class="text-[11px] text-center text-slate-400 pt-2">¿No tienes cuenta? <button type="button" onclick="openAuthModal('signup')" class="text-red-400 font-bold underline">Regístrate aquí</button></p>
       </form>
 
-      <!-- REGISTRO DE USUARIO -->
       <form id="form-signup" onsubmit="handleSignupSubmit(event)" class="hidden space-y-3 text-xs">
         <div class="grid grid-cols-2 gap-2">
           <div>
@@ -134,7 +131,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE NUEVA PUBLICACIÓN -->
+  <!-- MODAL CREAR PUBLICACIÓN -->
   <div id="modal-post" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -153,6 +150,81 @@
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="togglePostModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs font-semibold">Cancelar</button>
           <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold">Publicar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL VENDER EN MARKET -->
+  <div id="modal-sell" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="plus-circle" class="text-emerald-500 w-4 h-4"></i> Publicar en Market
+        </h3>
+        <button onclick="toggleSellModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form onsubmit="handleSellSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Título del Producto</label>
+          <input id="sell-title" required type="text" placeholder="Ej. Kit de Suspensión" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Precio ($)</label>
+            <input id="sell-price" required type="number" placeholder="Ej. 150000" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Categoría</label>
+            <select id="sell-type" required class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+              <option value="repuesto">Repuesto</option>
+              <option value="servicio">Servicio / Taller</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Descripción</label>
+          <input id="sell-desc" required type="text" placeholder="Detalles de compatibilidad, estado, etc." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Foto del Producto (URL)</label>
+          <input id="sell-image" required type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="toggleSellModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded">Cancelar</button>
+          <button type="submit" class="px-5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold">Publicar Venta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL CREAR GRUPO -->
+  <div id="modal-group" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+          <i data-lucide="users" class="text-red-500 w-4 h-4"></i> Crear Nueva Comunidad / Grupo
+        </h3>
+        <button onclick="toggleGroupModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form onsubmit="createNewGroup(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Nombre del Grupo</label>
+          <input id="group-name" required type="text" placeholder="Ej. Club Suzuki 4x4" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Descripción Breve</label>
+          <textarea id="group-desc" required rows="2" placeholder="¿De qué trata el grupo?..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Imagen de Portada (URL)</label>
+          <input id="group-image" required type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="toggleGroupModal()" class="px-4 py-1.5 bg-slate-800 text-slate-300 rounded font-semibold">Cancelar</button>
+          <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Crear Grupo</button>
         </div>
       </form>
     </div>
@@ -235,6 +307,9 @@
           <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
           <input type="text" id="market-search" placeholder="Buscar productos..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
         </div>
+        <button onclick="toggleSellModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow transition">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Vender
+        </button>
       </div>
 
       <div id="market-catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -245,7 +320,27 @@
       </div>
     </section>
 
-    <!-- 3. PERFIL DE USUARIO -->
+    <!-- 3. GRUPOS -->
+    <section id="tab-groups" class="tab-content hidden space-y-6">
+      <div class="bg-slate-800/90 border border-slate-700 p-5 rounded-xl flex justify-between items-center shadow-lg backdrop-blur-sm">
+        <div>
+          <h1 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="users" class="w-6 h-6 text-red-500"></i> Grupos & Comunidades
+          </h1>
+        </div>
+        <button onclick="toggleGroupModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Crear Nuevo Grupo
+        </button>
+      </div>
+
+      <div id="groups-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
+          <p class="text-xs text-slate-400">No hay grupos creados aún.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PERFIL DE USUARIO CON SUB-PESTAÑAS Y GARAGE RESTAURADO -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
       <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
         <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 p-2 bg-slate-900/80 hover:bg-slate-700 text-slate-300 rounded-full border border-slate-700 transition shadow-lg" title="Opciones de Cuenta">
@@ -266,11 +361,69 @@
           </div>
         </div>
       </div>
+
+      <!-- SUB-PESTAÑAS DEL PERFIL (FEED, MARKET, GARAGE, GRUPOS) -->
+      <div class="flex justify-center border-b border-slate-800 gap-4 sm:gap-10 overflow-x-auto">
+        <button onclick="switchProfileSubTab('posts')" id="btn-subtab-posts" class="pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0">
+          <i data-lucide="newspaper" class="w-4 h-4"></i> Feed
+        </button>
+        <button onclick="switchProfileSubTab('market')" id="btn-subtab-market" class="pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i> Market
+        </button>
+        <button onclick="switchProfileSubTab('garage')" id="btn-subtab-garage" class="pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0">
+          <i data-lucide="car" class="w-4 h-4"></i> Garage
+        </button>
+        <button onclick="switchProfileSubTab('groups')" id="btn-subtab-groups" class="pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0">
+          <i data-lucide="users" class="w-4 h-4"></i> Grupos
+        </button>
+      </div>
+
+      <!-- CONTENIDOS DE LAS SUB-PESTAÑAS -->
+      <div id="profile-subtab-posts" class="space-y-4">
+        <div id="user-own-posts" class="space-y-4">
+          <div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
+            <p class="text-xs text-slate-400">Aún no has publicado nada. Tus publicaciones aparecerán aquí.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="profile-subtab-market" class="hidden space-y-4">
+        <div id="user-own-market" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
+            <p class="text-xs text-slate-400">No tienes artículos o servicios a la venta actualmente.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="profile-subtab-garage" class="hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="car" class="w-4 h-4 text-red-500"></i> Tus Vehículos & Proyectos
+          </h3>
+          <button onclick="addNewVehicle()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Agregar Vehículo
+          </button>
+        </div>
+
+        <div id="garage-vehicles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div id="empty-garage-msg" class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
+            <p class="text-xs text-slate-400">No has agregado vehículos a tu garage.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="profile-subtab-groups" class="hidden space-y-4">
+        <div id="user-joined-groups-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
+            <p class="text-xs text-slate-400">Aún no te has unido a ningún grupo.</p>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
 
-  <!-- NAVEGACIÓN INFERIOR -->
+  <!-- NAVEGACIÓN INFERIOR (3 PESTAÑAS) -->
   <nav class="bg-slate-950/95 backdrop-blur-md border-t border-slate-800 fixed bottom-0 left-0 right-0 z-40 h-16 flex items-center justify-around px-4 max-w-7xl mx-auto">
     <button onclick="switchTab('feed')" id="btn-feed" class="nav-btn flex flex-col items-center justify-center w-full h-full text-red-500 transition gap-1">
       <i data-lucide="newspaper" class="w-6 h-6"></i>
@@ -280,13 +433,13 @@
       <i data-lucide="shopping-bag" class="w-6 h-6"></i>
       <span class="text-xs font-semibold">Market</span>
     </button>
-    <button onclick="switchTabWithAuth('profile')" id="btn-profile" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-white transition gap-1">
-      <i data-lucide="user" class="w-6 h-6"></i>
-      <span class="text-xs font-semibold">Perfil</span>
+    <button onclick="switchTabWithAuth('groups')" id="btn-groups" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-white transition gap-1">
+      <i data-lucide="users" class="w-6 h-6"></i>
+      <span class="text-xs font-semibold">Grupos</span>
     </button>
   </nav>
 
-  <!-- CONFIGURACIÓN DE FIREBASE Y LÓGICA DE APLICACIÓN -->
+  <!-- LÓGICA JAVASCRIPT CON FIREBASE -->
   <script>
     lucide.createIcons();
 
@@ -308,7 +461,6 @@
     let currentUserData = null;
     let activeChatFriend = null;
 
-    // Escuchador del estado de autenticación
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         isLoggedIn = true;
@@ -319,6 +471,8 @@
         updateGuestUI();
       }
       loadPosts();
+      loadMarket();
+      loadGroups();
     });
 
     function listenCurrentUserData(uid) {
@@ -327,6 +481,7 @@
           currentUserData = doc.data();
           updateUserSessionUI();
           renderFriendsAndRequests();
+          loadVehicles();
         }
       });
     }
@@ -354,7 +509,7 @@
       `;
     }
 
-    // BÚSQUEDA GLOBAL DE USUARIOS/AMIGOS Y ENVIAR SOLICITUD
+    // BÚSQUEDA GLOBAL DE USUARIOS / AMIGOS
     async function handleGlobalSearch(query) {
       const dropdown = document.getElementById('search-results-dropdown');
       const cleanQuery = query.replace('@', '').trim().toLowerCase();
@@ -371,10 +526,10 @@
         const snapshot = await db.collection('users').get();
         const matches = snapshot.docs
           .map(doc => doc.data())
-          .filter(u => u.uid !== auth.currentUser?.uid && (u.username.toLowerCase().includes(cleanQuery) || u.name.toLowerCase().includes(cleanQuery)));
+          .filter(u => u.uid !== auth.currentUser?.uid && (u.username?.toLowerCase().includes(cleanQuery) || u.name?.toLowerCase().includes(cleanQuery)));
 
         if (matches.length === 0) {
-          dropdown.innerHTML = '<p class="text-xs text-slate-500 p-2 text-center">No se encontraron personas con ese usuario.</p>';
+          dropdown.innerHTML = '<p class="text-xs text-slate-500 p-2 text-center">No se encontraron usuarios.</p>';
           return;
         }
 
@@ -391,7 +546,7 @@
           if (isAlreadyFriend) {
             actionButton = `<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-bold">Amigos √</span>`;
           } else if (hasSentRequest) {
-            actionButton = `<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold">Solicitud Enviada</span>`;
+            actionButton = `<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold">Enviada</span>`;
           } else if (hasReceivedRequest) {
             actionButton = `<button onclick="acceptFriendRequest('${u.uid}', '${u.name}', '${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] px-2 py-1 rounded font-bold">Aceptar</button>`;
           } else {
@@ -420,27 +575,16 @@
       }
     }
 
-    // ENVIAR SOLICITUD DE AMISTAD
     async function sendFriendRequest(targetUid, targetName, targetUsername) {
       if (!isLoggedIn) return openAuthModal('login');
 
       try {
-        // Guardar en enviadas del usuario actual
         await db.collection('users').doc(auth.currentUser.uid).update({
-          sentRequests: firebase.firestore.FieldValue.arrayUnion({
-            uid: targetUid,
-            name: targetName,
-            username: targetUsername
-          })
+          sentRequests: firebase.firestore.FieldValue.arrayUnion({ uid: targetUid, name: targetName, username: targetUsername })
         });
 
-        // Guardar en recibidas del usuario destino
         await db.collection('users').doc(targetUid).update({
-          incomingRequests: firebase.firestore.FieldValue.arrayUnion({
-            uid: auth.currentUser.uid,
-            name: currentUserData.name,
-            username: currentUserData.username
-          })
+          incomingRequests: firebase.firestore.FieldValue.arrayUnion({ uid: auth.currentUser.uid, name: currentUserData.name, username: currentUserData.username })
         });
 
         alert(`Solicitud de amistad enviada a @${targetUsername}`);
@@ -451,12 +595,10 @@
       }
     }
 
-    // ACEPTAR SOLICITUD DE AMISTAD
     async function acceptFriendRequest(senderUid, senderName, senderUsername) {
       try {
         const myUid = auth.currentUser.uid;
 
-        // 1. Agregar a la lista de amigos mutua
         await db.collection('users').doc(myUid).update({
           friends: firebase.firestore.FieldValue.arrayUnion({ uid: senderUid, name: senderName, username: senderUsername }),
           incomingRequests: firebase.firestore.FieldValue.arrayRemove({ uid: senderUid, name: senderName, username: senderUsername })
@@ -473,7 +615,6 @@
       }
     }
 
-    // RECHAZAR SOLICITUD
     async function rejectFriendRequest(senderUid, senderName, senderUsername) {
       try {
         await db.collection('users').doc(auth.currentUser.uid).update({
@@ -484,14 +625,12 @@
       }
     }
 
-    // RENDERIZAR LISTA DE AMIGOS Y SOLICITUDES EN EL DROPDOWN DE CHAT
     function renderFriendsAndRequests() {
       if (!currentUserData) return;
 
       const incoming = currentUserData.incomingRequests || [];
       const friends = currentUserData.friends || [];
 
-      // Badge de notificaciones
       const badge = document.getElementById('pending-badge');
       if (incoming.length > 0) {
         badge.innerText = incoming.length;
@@ -500,7 +639,6 @@
         badge.classList.add('hidden');
       }
 
-      // Solicitudes recibidas
       const reqSection = document.getElementById('friend-requests-section');
       const reqList = document.getElementById('friend-requests-list');
 
@@ -522,7 +660,6 @@
         reqSection.classList.add('hidden');
       }
 
-      // Lista de amigos aceptados
       const friendsListEl = document.getElementById('chat-friends-list');
       if (friends.length === 0) {
         friendsListEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-3">No tienes amigos agregados aún.</p>';
@@ -545,7 +682,6 @@
       `).join('');
     }
 
-    // DESPLEGAR VENTANA DE CHAT
     function openDirectChat(friendUid, friendName) {
       activeChatFriend = { uid: friendUid, name: friendName };
       document.getElementById('chat-title-text').innerText = friendName;
@@ -559,7 +695,6 @@
       activeChatFriend = null;
     }
 
-    // ENVIAR MENSAJE
     async function sendChatMessage() {
       const input = document.getElementById('chat-input');
       const text = input.value.trim();
@@ -579,7 +714,6 @@
       }
     }
 
-    // ESCUCHAR MENSAJES EN TIEMPO REAL
     function listenMessages() {
       if (!activeChatFriend || !auth.currentUser) return;
       const chatId = [auth.currentUser.uid, activeChatFriend.uid].sort().join('_');
@@ -604,7 +738,66 @@
         });
     }
 
-    // MANEJO DE AUTENTICACIÓN
+    // VEHÍCULOS / GARAGE
+    async function addNewVehicle() {
+      if (!auth.currentUser) return;
+      const name = prompt("Modelo del Vehículo:");
+      if (!name) return;
+      const year = prompt("Año del Vehículo:") || "2024";
+      const desc = prompt("Detalles / Modificaciones:") || "";
+
+      try {
+        await db.collection('vehicles').add({
+          userId: auth.currentUser.uid,
+          name,
+          year,
+          desc,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (err) {
+        alert("Error al guardar vehículo: " + err.message);
+      }
+    }
+
+    function loadVehicles() {
+      if (!auth.currentUser) return;
+      db.collection('vehicles').where('userId', '==', auth.currentUser.uid).onSnapshot(snapshot => {
+        const grid = document.getElementById('garage-vehicles-grid');
+        grid.innerHTML = '';
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No has agregado vehículos a tu garage.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const v = doc.data();
+          const card = `
+            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 space-y-2">
+              <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/30">${v.year}</span>
+              <h4 class="font-bold text-sm text-white">${v.name}</h4>
+              <p class="text-xs text-slate-400">${v.desc}</p>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', card);
+        });
+      });
+    }
+
+    // SUB-PESTAÑAS DEL PERFIL
+    function switchProfileSubTab(sub) {
+      ['posts', 'market', 'garage', 'groups'].forEach(s => {
+        document.getElementById(`profile-subtab-${s}`)?.classList.add('hidden');
+        const btn = document.getElementById(`btn-subtab-${s}`);
+        if (btn) btn.className = "pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0";
+      });
+
+      document.getElementById(`profile-subtab-${sub}`)?.classList.remove('hidden');
+      const activeBtn = document.getElementById(`btn-subtab-${sub}`);
+      if (activeBtn) activeBtn.className = "pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0";
+    }
+
+    // CONTROL DE AUTENTICACIÓN
     async function handleSignupSubmit(e) {
       e.preventDefault();
       const pass = document.getElementById('signup-pass').value;
@@ -649,17 +842,16 @@
       toggleSettingsModal();
     }
 
-    // CARGAR FEED
+    // PUBLICACIONES Y CONTENIDOS
     function loadPosts() {
       db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const feedContainer = document.getElementById('posts-feed');
+        const userOwnPosts = document.getElementById('user-own-posts');
         feedContainer.innerHTML = '';
+        if (userOwnPosts) userOwnPosts.innerHTML = '';
 
         if (snapshot.empty) {
-          feedContainer.innerHTML = `
-            <div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center">
-              <p class="text-xs text-slate-400">Aún no hay publicaciones en la comunidad.</p>
-            </div>`;
+          feedContainer.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">Aún no hay publicaciones en la comunidad.</p></div>`;
           return;
         }
 
@@ -681,6 +873,9 @@
             </div>
           `;
           feedContainer.insertAdjacentHTML('beforeend', card);
+          if (auth.currentUser && post.userId === auth.currentUser.uid && userOwnPosts) {
+            userOwnPosts.insertAdjacentHTML('beforeend', card);
+          }
         });
       });
     }
@@ -702,6 +897,102 @@
         togglePostModal();
       } catch (err) {
         alert("Error al publicar: " + err.message);
+      }
+    }
+
+    function loadMarket() {
+      db.collection('market').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        const grid = document.getElementById('market-catalog-grid');
+        const userOwnMarket = document.getElementById('user-own-market');
+        grid.innerHTML = '';
+        if (userOwnMarket) userOwnMarket.innerHTML = '';
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay productos en venta.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const item = doc.data();
+          const card = `
+            <div class="market-card bg-slate-800/90 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3">
+              <img src="${item.imageUrl}" class="w-full h-44 object-cover rounded-lg">
+              <div class="flex justify-between items-start">
+                <h3 class="font-bold text-sm text-white">${item.title}</h3>
+                <span class="text-red-400 font-black text-sm">$${item.price.toLocaleString('es-CL')}</span>
+              </div>
+              <p class="text-[11px] text-slate-400">${item.desc}</p>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', card);
+          if (auth.currentUser && item.userId === auth.currentUser.uid && userOwnMarket) {
+            userOwnMarket.insertAdjacentHTML('beforeend', card);
+          }
+        });
+      });
+    }
+
+    async function handleSellSubmit(e) {
+      e.preventDefault();
+      if (!auth.currentUser) return;
+
+      try {
+        await db.collection('market').add({
+          userId: auth.currentUser.uid,
+          title: document.getElementById('sell-title').value,
+          price: Number(document.getElementById('sell-price').value),
+          type: document.getElementById('sell-type').value,
+          desc: document.getElementById('sell-desc').value,
+          imageUrl: document.getElementById('sell-image').value,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        toggleSellModal();
+        e.target.reset();
+      } catch (err) {
+        alert("Error en venta: " + err.message);
+      }
+    }
+
+    function loadGroups() {
+      db.collection('groups').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        const grid = document.getElementById('groups-grid');
+        grid.innerHTML = '';
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay grupos creados aún.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const group = doc.data();
+          const card = `
+            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3">
+              <img src="${group.imageUrl}" class="w-full h-40 object-cover rounded-lg">
+              <h3 class="font-bold text-base text-white">${group.name}</h3>
+              <p class="text-xs text-slate-400">${group.desc}</p>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', card);
+        });
+      });
+    }
+
+    async function createNewGroup(e) {
+      e.preventDefault();
+      if (!auth.currentUser) return;
+
+      try {
+        await db.collection('groups').add({
+          ownerId: auth.currentUser.uid,
+          name: document.getElementById('group-name').value,
+          desc: document.getElementById('group-desc').value,
+          imageUrl: document.getElementById('group-image').value,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        toggleGroupModal();
+        e.target.reset();
+      } catch (err) {
+        alert("Error al crear grupo: " + err.message);
       }
     }
 
@@ -750,6 +1041,8 @@
     function togglePostModal() { document.getElementById('modal-post').classList.toggle('hidden'); }
     function toggleSettingsModal() { document.getElementById('modal-settings').classList.toggle('hidden'); }
     function toggleChatDropdown() { document.getElementById('chat-dropdown').classList.toggle('hidden'); }
+    function toggleSellModal() { document.getElementById('modal-sell').classList.toggle('hidden'); }
+    function toggleGroupModal() { document.getElementById('modal-group').classList.toggle('hidden'); }
   </script>
 </body>
 </html>
