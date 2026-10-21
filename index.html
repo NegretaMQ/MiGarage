@@ -42,23 +42,19 @@
 
       <!-- ACCIONES DE BARRA SUPERIOR -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <!-- CREAR POST -->
         <button onclick="requireAuthAction(() => togglePostModal())" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full font-bold transition flex items-center justify-center shadow-lg" title="Crear Publicación">
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
 
-        <!-- BOTÓN NOTIFICACIONES -->
         <button onclick="requireAuthAction(() => toggleNotifsDropdown())" class="relative bg-slate-800 hover:bg-slate-700 p-2 rounded-full border border-slate-700 text-slate-200 transition flex items-center justify-center" title="Notificaciones">
           <i data-lucide="bell" class="w-5 h-5 text-amber-500"></i>
           <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-amber-500 text-slate-950 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
         </button>
 
-        <!-- CHATS -->
         <button onclick="requireAuthAction(() => toggleChatDropdown())" class="relative bg-slate-800 hover:bg-slate-700 p-2 rounded-full border border-slate-700 text-slate-200 transition flex items-center justify-center" title="Chats">
           <i data-lucide="message-square" class="w-5 h-5 text-red-500"></i>
         </button>
 
-        <!-- PERFIL / LOGIN -->
         <div id="auth-buttons-container" class="flex items-center gap-2">
           <button onclick="openAuthModal('login')" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg font-semibold transition hidden sm:inline-block">Iniciar Sesión</button>
           <button onclick="openAuthModal('signup')" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">Registrarse</button>
@@ -72,7 +68,7 @@
   <div id="notifs-dropdown" class="hidden fixed top-16 right-16 z-50 w-80 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl overflow-hidden">
     <div class="p-3 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
       <span class="text-xs font-bold text-white flex items-center gap-2">
-        <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i> Novedades y Notificaciones
+        <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i> Notificaciones
       </span>
       <button onclick="toggleNotifsDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
     </div>
@@ -91,6 +87,33 @@
     </div>
     <div id="chat-friends-list" class="p-2 space-y-1 max-h-64 overflow-y-auto">
       <p class="text-xs text-slate-500 text-center py-4">No tienes amigos agregados aún.</p>
+    </div>
+  </div>
+
+  <!-- MODAL COMPARTIR PUBLICACIÓN -->
+  <div id="modal-share-post" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="share-2" class="text-red-500 w-4 h-4"></i> Compartir Publicación</h3>
+        <button onclick="closeShareModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div class="space-y-2">
+        <button onclick="copyPostLink()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 p-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2">
+          <i data-lucide="copy" class="w-4 h-4"></i> Copiar URL / Texto de la publicación
+        </button>
+        <div class="pt-2 border-t border-slate-800">
+          <p class="text-[11px] font-bold text-slate-400 mb-2">Enviar por Chat Directo:</p>
+          <div id="share-friends-list" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLE DE PUBLICACIÓN PERFIL -->
+  <div id="modal-post-detail" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closePostDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white z-10">✕</button>
+      <div id="post-detail-container"></div>
     </div>
   </div>
 
@@ -149,7 +172,7 @@
     </div>
   </div>
 
-  <!-- MODAL EDITAR PERFIL (SIN OPCIÓN DE FONDO) -->
+  <!-- MODAL CONFIGURACIÓN / EDITAR PERFIL -->
   <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -200,7 +223,7 @@
     </div>
   </div>
 
-  <!-- MODAL SUBIR Y VER HISTORIA -->
+  <!-- MODAL SUBIR Y VER HISTORIA (CON TEMPORIZADOR Y PAUSA AL MANTENER CLICK) -->
   <div id="modal-upload-story" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -220,7 +243,13 @@
 
   <div id="modal-view-story" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4">
     <button onclick="closeViewStoryModal()" class="absolute top-4 right-4 text-white bg-slate-800 p-2 rounded-full border border-slate-700 z-50">✕</button>
-    <div class="max-w-md w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col items-center">
+    <div id="story-viewer-card" onmousedown="pauseStoryProgress()" onmouseup="resumeStoryProgress()" onmouseleave="resumeStoryProgress()" class="max-w-md w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col items-center select-none">
+      
+      <!-- BARRA DE PROGRESO DE HISTORIA -->
+      <div class="w-full h-1 bg-slate-800">
+        <div id="story-progress-bar" class="h-full bg-red-600 w-0 transition-all duration-100 ease-linear"></div>
+      </div>
+
       <div class="p-3 bg-slate-950 w-full flex items-center gap-3 border-b border-slate-800">
         <div id="story-viewer-avatar" class="w-8 h-8 rounded-full bg-red-600 font-bold text-xs flex items-center justify-center text-white">U</div>
         <div>
@@ -247,7 +276,7 @@
   <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="flag" class="text-red-500 w-4 h-4"></i> Reportar elementos</h3>
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="flag" class="text-red-500 w-4 h-4"></i> Reportar publicación</h3>
         <button onclick="closeReportModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
       <form onsubmit="handleReportSubmit(event)" class="space-y-3 text-xs">
@@ -457,11 +486,13 @@
       </div>
     </section>
 
-    <!-- 4. PERFIL (PROPIO Y DE OTROS USUARIOS) -->
+    <!-- 4. PERFIL (CON BOTÓN DE CONFIGURACIÓN VISIBLE Y CONTADOR DE SEGUIDORES) -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
       <div id="profile-header-card" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
-        <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 p-2 bg-slate-900/80 hover:bg-slate-700 text-slate-300 rounded-full border border-slate-700 transition shadow-lg" title="Opciones de Cuenta">
-          <i data-lucide="settings" class="w-5 h-5"></i>
+        
+        <!-- BOTÓN DE CONFIGURACIÓN BIEN VISIBLE CON ICONO Y TEXTO -->
+        <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition shadow-lg flex items-center gap-1.5 text-xs font-bold">
+          <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i> Configuración
         </button>
 
         <div class="flex flex-col sm:flex-row items-center gap-5">
@@ -473,19 +504,28 @@
           </div>
 
           <div class="space-y-1.5 text-center sm:text-left flex-1 bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 backdrop-blur-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pr-28">
               <div>
                 <h2 id="profile-display-name" class="text-xl sm:text-2xl font-bold text-white">Nombre de Usuario</h2>
                 <p id="profile-display-username" class="text-xs sm:text-sm text-red-400 font-semibold">@usuario</p>
               </div>
               <button id="profile-follow-btn" onclick="toggleFollowActiveProfile()" class="hidden bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition shrink-0 self-center sm:self-auto">+ Seguir</button>
             </div>
+
             <p id="profile-display-bio" class="text-xs sm:text-sm text-slate-300">Añade una descripción sobre ti y tus proyectos automotrices.</p>
             
-            <div onclick="openFriendsModal()" class="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg cursor-pointer transition">
-              <i data-lucide="users" class="w-4 h-4 text-red-500"></i>
-              <span class="text-xs text-slate-300"><strong id="friends-count-num" class="text-white font-bold">0</strong> Amigos (Ver todos)</span>
+            <!-- CONTADORES DE AMIGOS Y SEGUIDORES -->
+            <div class="flex items-center gap-3 pt-1">
+              <div onclick="openFriendsModal()" class="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg cursor-pointer transition">
+                <i data-lucide="users" class="w-4 h-4 text-red-500"></i>
+                <span class="text-xs text-slate-300"><strong id="friends-count-num" class="text-white font-bold">0</strong> Amigos</span>
+              </div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 border border-slate-700 rounded-lg">
+                <i data-lucide="user-check" class="w-4 h-4 text-amber-500"></i>
+                <span class="text-xs text-slate-300"><strong id="followers-count-num" class="text-white font-bold">0</strong> Seguidores</span>
+              </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -493,7 +533,7 @@
       <!-- SUB-PESTAÑAS PERFIL -->
       <div class="flex justify-center border-b border-slate-800 gap-4 sm:gap-10 overflow-x-auto">
         <button onclick="switchProfileSubTab('posts')" id="btn-subtab-posts" class="pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0">
-          <i data-lucide="newspaper" class="w-4 h-4"></i> Feed
+          <i data-lucide="grid" class="w-4 h-4"></i> Publicaciones
         </button>
         <button onclick="switchProfileSubTab('market')" id="btn-subtab-market" class="pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i> Market
@@ -506,9 +546,10 @@
         </button>
       </div>
 
+      <!-- PUBLICACIONES DEL PERFIL EN CUADRÍCULA ESTILO INSTAGRAM -->
       <div id="profile-subtab-posts" class="space-y-4">
-        <div id="user-own-posts" class="space-y-4">
-          <div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
+        <div id="user-own-posts-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
             <p class="text-xs text-slate-400">No hay publicaciones para mostrar.</p>
           </div>
         </div>
@@ -588,6 +629,14 @@
     let activeChatFriend = null;
     let activeChatUnsubscribe = null;
     let unreadCounts = {};
+    let activeSharePostContent = '';
+
+    // VARIABLES DE TEMPORIZADOR DE HISTORIAS
+    let storyTimer = null;
+    let storyProgressInterval = null;
+    let storyStartTime = 0;
+    let storyElapsedTime = 0;
+    let isStoryPaused = false;
 
     auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -647,7 +696,7 @@
       });
     }
 
-    // VISUALIZAR PERFIL DE CUALQUIER USUARIO
+    // VISUALIZAR PERFIL Y SEGUIDORES
     async function viewUserProfile(uid) {
       activeProfileUid = uid;
       switchTab('profile');
@@ -676,11 +725,13 @@
 
         document.getElementById('friends-count-num').innerText = u.friends ? u.friends.length : 0;
 
-        // Botón de opciones sólo en perfil propio
+        // CALCULAR CONTADOR DE SEGUIDORES REALES
+        const followersSnap = await db.collection('users').where('following', 'array-contains', uid).get();
+        document.getElementById('followers-count-num').innerText = followersSnap.size;
+
         document.getElementById('profile-settings-btn').classList.toggle('hidden', !isOwn);
         document.getElementById('add-vehicle-btn').classList.toggle('hidden', !isOwn);
 
-        // Botón de Seguir si es perfil ajeno
         const followBtn = document.getElementById('profile-follow-btn');
         if (!isOwn && isLoggedIn) {
           followBtn.classList.remove('hidden');
@@ -693,7 +744,7 @@
         }
 
         loadUserVehicles(uid);
-        loadUserOwnPosts(uid);
+        loadUserOwnPostsGrid(uid);
       } catch (err) { console.error(err); }
     }
 
@@ -713,61 +764,109 @@
           await db.collection('users').doc(myUid).update({
             following: firebase.firestore.FieldValue.arrayUnion(activeProfileUid)
           });
+          // Notificar solo al usuario seguido
           addNotification(activeProfileUid, 'follow', `${currentUserData.name} comenzó a seguirte.`);
-          addNotification(myUid, 'activity', `Ahora sigues a la cuenta.`);
         }
         viewUserProfile(activeProfileUid);
       } catch (err) { console.error(err); }
     }
 
-    function loadUserVehicles(uid) {
-      db.collection('vehicles').where('userId', '==', uid).onSnapshot(snapshot => {
-        const grid = document.getElementById('garage-vehicles-grid');
+    // CARGAR PUBLICACIONES EN CUADRÍCULA DENTRO DEL PERFIL
+    function loadUserOwnPostsGrid(uid) {
+      db.collection('posts').where('userId', '==', uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        const grid = document.getElementById('user-own-posts-grid');
         grid.innerHTML = '';
 
         if (snapshot.empty) {
-          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay vehículos agregados.</p></div>`;
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          const v = doc.data();
-          const card = `
-            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 space-y-2">
-              <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/30">${v.year}</span>
-              <h4 class="font-bold text-sm text-white">${v.name}</h4>
-              <p class="text-xs text-slate-400">${v.desc}</p>
-            </div>
-          `;
-          grid.insertAdjacentHTML('beforeend', card);
-        });
-      });
-    }
-
-    function loadUserOwnPosts(uid) {
-      db.collection('posts').where('userId', '==', uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-        const container = document.getElementById('user-own-posts');
-        container.innerHTML = '';
-
-        if (snapshot.empty) {
-          container.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay publicaciones disponibles.</p></div>`;
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay publicaciones disponibles.</p></div>`;
           return;
         }
 
         snapshot.forEach(doc => {
           const post = doc.data();
+          const postId = doc.id;
+
           const card = `
-            <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-4 space-y-2">
-              <p class="text-xs text-slate-200">${post.content}</p>
-              ${post.mediaUrl ? `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-60 object-cover border border-slate-700">` : ''}
+            <div onclick="openPostDetailModal('${postId}')" class="aspect-square bg-slate-950 border border-slate-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition relative group">
+              ${post.mediaUrl ? (post.mediaType === 'video' ? `<video src="${post.mediaUrl}" class="w-full h-full object-cover"></video>` : `<img src="${post.mediaUrl}" class="w-full h-full object-cover">`) : `<div class="p-3 text-xs text-slate-300 h-full flex items-center justify-center text-center overflow-hidden">${post.content}</div>`}
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 text-white font-bold text-xs transition">
+                <span class="flex items-center gap-1"><i data-lucide="heart" class="w-4 h-4 text-red-500 fill-red-500"></i> ${(post.likes || []).length}</span>
+              </div>
             </div>
           `;
-          container.insertAdjacentHTML('beforeend', card);
+          grid.insertAdjacentHTML('beforeend', card);
         });
+        lucide.createIcons();
       });
     }
 
-    // NOTIFICACIONES
+    // ABRIR PUBLICACIÓN EN MODAL DETALLADO
+    async function openPostDetailModal(postId) {
+      try {
+        const doc = await db.collection('posts').doc(postId).get();
+        if (!doc.exists) return;
+
+        const post = doc.data();
+        const likes = post.likes || [];
+        const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
+
+        let mediaHTML = '';
+        if (post.mediaUrl) {
+          if (post.mediaType === 'video') {
+            mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full max-h-96 object-cover border border-slate-700"></video>`;
+          } else {
+            mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">`;
+          }
+        }
+
+        const detailContainer = document.getElementById('post-detail-container');
+        detailContainer.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 border-b border-slate-800 pb-2">
+              <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white">
+                ${(post.authorName || 'U').charAt(0)}
+              </div>
+              <div>
+                <h3 class="font-semibold text-xs text-white">${post.authorName || 'Usuario'}</h3>
+                <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-200">${post.content}</p>
+            ${mediaHTML}
+
+            <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
+                <i data-lucide="heart" class="w-4 h-4"></i>
+                <span>${likes.length}</span>
+              </button>
+              <button onclick="openShareModal('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+                <i data-lucide="share-2" class="w-4 h-4"></i>
+                <span>Compartir</span>
+              </button>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800 space-y-2">
+              <div class="flex gap-2">
+                <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
+                <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
+              </div>
+              <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('modal-post-detail').classList.remove('hidden');
+        listenPostComments(postId);
+        lucide.createIcons();
+      } catch (err) { console.error(err); }
+    }
+
+    function closePostDetailModal() {
+      document.getElementById('modal-post-detail').classList.add('hidden');
+    }
+
+    // NOTIFICACIONES EXCLUSIVAS PARA ACCIONES DE OTROS
     function listenNotifications() {
       const uid = auth.currentUser?.uid;
       if (!uid) return;
@@ -824,6 +923,7 @@
     }
 
     async function addNotification(targetUid, type, text) {
+      if (!targetUid || targetUid === auth.currentUser?.uid) return; // NO NOTIFICAR ACCIONES PROPIAS
       try {
         await db.collection('users').doc(targetUid).collection('notifications').add({
           type,
@@ -844,7 +944,63 @@
       document.getElementById('notifs-dropdown').classList.add('hidden');
     }
 
-    // HISTORIAS ESTILO INSTAGRAM
+    // HISTORIAS CON TEMPORIZADOR DE 5 SEGUNDOS Y PAUSA AL MANTENER PRESIONADO
+    function viewStory(authorName, avatarUrl, mediaUrl, mediaType) {
+      document.getElementById('story-viewer-name').innerText = authorName;
+      const avatarContainer = document.getElementById('story-viewer-avatar');
+      avatarContainer.innerHTML = avatarUrl ? `<img src="${avatarUrl}" class="w-full h-full object-cover rounded-full">` : authorName.charAt(0);
+
+      const contentBox = document.getElementById('story-viewer-content');
+      if (mediaType === 'video') {
+        contentBox.innerHTML = `<video src="${mediaUrl}" controls autoplay class="max-h-[70vh] w-full object-contain"></video>`;
+      } else {
+        contentBox.innerHTML = `<img src="${mediaUrl}" class="max-h-[70vh] w-full object-contain">`;
+      }
+
+      document.getElementById('modal-view-story').classList.remove('hidden');
+      startStoryTimer(5000);
+    }
+
+    function startStoryTimer(duration) {
+      clearStoryTimers();
+      storyStartTime = Date.now();
+      storyElapsedTime = 0;
+      isStoryPaused = false;
+
+      const progressBar = document.getElementById('story-progress-bar');
+      progressBar.style.width = '0%';
+
+      storyProgressInterval = setInterval(() => {
+        if (!isStoryPaused) {
+          storyElapsedTime += 100;
+          const percent = Math.min((storyElapsedTime / duration) * 100, 100);
+          progressBar.style.width = `${percent}%`;
+
+          if (storyElapsedTime >= duration) {
+            closeViewStoryModal();
+          }
+        }
+      }, 100);
+    }
+
+    function pauseStoryProgress() {
+      isStoryPaused = true;
+    }
+
+    function resumeStoryProgress() {
+      isStoryPaused = false;
+    }
+
+    function clearStoryTimers() {
+      if (storyProgressInterval) clearInterval(storyProgressInterval);
+      storyProgressInterval = null;
+    }
+
+    function closeViewStoryModal() {
+      clearStoryTimers();
+      document.getElementById('modal-view-story').classList.add('hidden');
+    }
+
     function openUploadStoryModal() {
       document.getElementById('modal-upload-story').classList.remove('hidden');
     }
@@ -897,23 +1053,354 @@
       });
     }
 
-    function viewStory(authorName, avatarUrl, mediaUrl, mediaType) {
-      document.getElementById('story-viewer-name').innerText = authorName;
-      const avatarContainer = document.getElementById('story-viewer-avatar');
-      avatarContainer.innerHTML = avatarUrl ? `<img src="${avatarUrl}" class="w-full h-full object-cover rounded-full">` : authorName.charAt(0);
+    // LISTA DE AMIGOS CORREGIDA (SIN "(Ver todos)" Y CON CARGA COMPLETA EN MODAL)
+    function openFriendsModal() {
+      const container = document.getElementById('friends-modal-container');
+      const friends = currentUserData?.friends || [];
+      container.innerHTML = '';
 
-      const contentBox = document.getElementById('story-viewer-content');
-      if (mediaType === 'video') {
-        contentBox.innerHTML = `<video src="${mediaUrl}" controls autoplay class="max-h-[70vh] w-full object-contain"></video>`;
+      if (friends.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Aún no tienes amigos agregados.</p>';
       } else {
-        contentBox.innerHTML = `<img src="${mediaUrl}" class="max-h-[70vh] w-full object-contain">`;
+        friends.forEach(f => {
+          const item = `
+            <div onclick="viewUserProfile('${f.uid}'); closeFriendsModal();" class="flex items-center justify-between p-2.5 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:bg-slate-800 transition">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-bold text-xs text-white">
+                  ${f.name.charAt(0)}
+                </div>
+                <div>
+                  <p class="font-bold text-xs text-white">${f.name}</p>
+                  <p class="text-[10px] text-slate-400">@${f.username}</p>
+                </div>
+              </div>
+              <button onclick="event.stopPropagation(); openDirectChat('${f.uid}', '${f.name}'); closeFriendsModal();" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2.5 py-1 rounded">Mensaje</button>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', item);
+        });
       }
 
-      document.getElementById('modal-view-story').classList.remove('hidden');
+      document.getElementById('modal-friends-list').classList.remove('hidden');
     }
 
-    function closeViewStoryModal() {
-      document.getElementById('modal-view-story').classList.add('hidden');
+    function closeFriendsModal() {
+      document.getElementById('modal-friends-list').classList.add('hidden');
+    }
+
+    // OPCIÓN DE COMPARTIR POR CHAT O COPIAR URL/TEXTO
+    function openShareModal(content) {
+      activeSharePostContent = content;
+      const list = document.getElementById('share-friends-list');
+      const friends = currentUserData?.friends || [];
+      list.innerHTML = '';
+
+      if (friends.length === 0) {
+        list.innerHTML = '<p class="text-xs text-slate-500 text-center py-2">No tienes amigos para compartir por chat.</p>';
+      } else {
+        friends.forEach(f => {
+          const item = `
+            <div onclick="sendPostToFriend('${f.uid}', '${f.name}')" class="flex items-center justify-between p-2 bg-slate-950 hover:bg-slate-800 rounded cursor-pointer border border-slate-800">
+              <span class="text-xs text-white font-bold">${f.name}</span>
+              <span class="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded font-bold">Enviar</span>
+            </div>
+          `;
+          list.insertAdjacentHTML('beforeend', item);
+        });
+      }
+
+      document.getElementById('modal-share-post').classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('modal-share-post').classList.add('hidden');
+    }
+
+    function copyPostLink() {
+      navigator.clipboard.writeText(activeSharePostContent || window.location.href);
+      alert("¡Publicación / URL copiada al portapapeles!");
+      closeShareModal();
+    }
+
+    async function sendPostToFriend(friendUid, friendName) {
+      if (!auth.currentUser) return;
+      const chatId = [auth.currentUser.uid, friendUid].sort().join('_');
+
+      try {
+        await db.collection('chats').doc(chatId).collection('messages').add({
+          senderId: auth.currentUser.uid,
+          text: `Te comparto esta publicación: "${activeSharePostContent}"`,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert(`Publicación enviada a ${friendName}`);
+        closeShareModal();
+      } catch (err) { alert(err.message); }
+    }
+
+    // COMENTARIOS Y RESPUESTAS
+    function toggleCommentsBox(postId) {
+      const commentsSection = document.getElementById(`comments-section-${postId}`);
+      commentsSection.classList.toggle('hidden');
+      if (!commentsSection.classList.contains('hidden')) {
+        listenPostComments(postId);
+      }
+    }
+
+    async function addComment(postId, parentCommentId = null) {
+      if (!isLoggedIn) return openAuthModal('login');
+
+      const inputEl = document.getElementById(parentCommentId ? `reply-input-${parentCommentId}` : `comment-input-${postId}`);
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      try {
+        await db.collection('posts').doc(postId).collection('comments').add({
+          authorUid: auth.currentUser.uid,
+          authorName: currentUserData.name,
+          authorUsername: currentUserData.username,
+          text,
+          parentCommentId,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        const postDoc = await db.collection('posts').doc(postId).get();
+        if (postDoc.exists) {
+          addNotification(postDoc.data().userId, 'comment', `${currentUserData.name} comentó tu publicación.`);
+        }
+
+        inputEl.value = '';
+      } catch (err) { console.error(err); }
+    }
+
+    function toggleCommentMenu(commentId) {
+      const menu = document.getElementById(`comment-menu-${commentId}`);
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    async function deleteComment(postId, commentId) {
+      if (confirm("¿Deseas eliminar este comentario?")) {
+        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
+      }
+    }
+
+    async function editComment(postId, commentId, currentText) {
+      const newText = prompt("Edita tu comentario:", currentText);
+      if (newText && newText.trim() !== "") {
+        await db.collection('posts').doc(postId).collection('comments').doc(commentId).update({ text: newText.trim() });
+      }
+    }
+
+    function blockCommentUI(commentId) {
+      document.getElementById(`comment-card-${commentId}`)?.remove();
+      alert("Comentario oculto.");
+    }
+
+    function listenPostComments(postId) {
+      db.collection('posts').doc(postId).collection('comments')
+        .orderBy('createdAt', 'asc')
+        .onSnapshot(snapshot => {
+          const container = document.getElementById(`comments-list-${postId}`);
+          if (!container) return;
+          container.innerHTML = '';
+
+          const comments = [];
+          snapshot.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
+
+          const mainComments = comments.filter(c => !c.parentCommentId);
+
+          mainComments.forEach(c => {
+            const replies = comments.filter(r => r.parentCommentId === c.id);
+            const isCommentOwner = auth.currentUser && c.authorUid === auth.currentUser.uid;
+
+            const card = `
+              <div id="comment-card-${c.id}" class="p-2 bg-slate-900 border border-slate-800 rounded-lg space-y-1.5 relative">
+                <div class="flex items-center justify-between">
+                  <span onclick="viewUserProfile('${c.authorUid}')" class="font-bold text-xs text-white cursor-pointer hover:underline">${c.authorName} <span class="text-[10px] text-slate-400">@${c.authorUsername}</span></span>
+                  
+                  <div class="relative">
+                    <button onclick="toggleCommentMenu('${c.id}')" class="text-slate-500 hover:text-white p-0.5">
+                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <div id="comment-menu-${c.id}" class="hidden absolute right-0 top-5 w-32 bg-slate-950 border border-slate-800 rounded shadow-xl z-30 py-1 text-[11px]">
+                      ${isCommentOwner ? `
+                        <button onclick="editComment('${postId}', '${c.id}', '${c.text}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-slate-300">Editar</button>
+                        <button onclick="deleteComment('${postId}', '${c.id}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-red-400">Eliminar</button>
+                      ` : `
+                        <button onclick="blockCommentUI('${c.id}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-slate-300">Ocultar</button>
+                        <button onclick="openReportModal()" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-red-400">Reportar</button>
+                      `}
+                    </div>
+                  </div>
+                </div>
+
+                <p class="text-xs text-slate-200">${c.text}</p>
+                <button onclick="toggleReplyBox('${c.id}')" class="text-[10px] text-red-400 font-bold hover:underline">Responder</button>
+
+                <div class="pl-3 border-l border-slate-700 space-y-1 mt-1">
+                  ${replies.map(r => `
+                    <div class="p-1.5 bg-slate-950 rounded text-xs">
+                      <span onclick="viewUserProfile('${r.authorUid}')" class="font-bold text-white text-[11px] cursor-pointer hover:underline">${r.authorName}:</span>
+                      <span class="text-slate-300 text-[11px]">${r.text}</span>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <div id="reply-box-${c.id}" class="hidden flex gap-1 pt-1">
+                  <input id="reply-input-${c.id}" type="text" placeholder="Escribe una respuesta..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1 text-xs text-white">
+                  <button onclick="addComment('${postId}', '${c.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">Enviar</button>
+                </div>
+              </div>
+            `;
+            container.insertAdjacentHTML('beforeend', card);
+          });
+          lucide.createIcons();
+        });
+    }
+
+    function toggleReplyBox(commentId) {
+      document.getElementById(`reply-box-${commentId}`).classList.toggle('hidden');
+    }
+
+    // FEED PRINCIPAL DE PUBLICACIONES
+    function loadPosts() {
+      db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        const feedContainer = document.getElementById('posts-feed');
+        feedContainer.innerHTML = '';
+
+        if (snapshot.empty) {
+          feedContainer.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">Aún no hay publicaciones en la comunidad.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const post = doc.data();
+          const postId = doc.id;
+          const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
+          const likes = post.likes || [];
+          const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
+
+          let mediaHTML = '';
+          if (post.mediaUrl) {
+            if (post.mediaType === 'video') {
+              mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full max-h-96 object-cover border border-slate-700"></video>`;
+            } else {
+              mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">`;
+            }
+          }
+
+          const card = `
+            <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
+              <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
+                <div onclick="viewUserProfile('${post.userId}')" class="flex items-center gap-3 cursor-pointer group">
+                  <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white group-hover:scale-105 transition">
+                    ${(post.authorName || 'U').charAt(0)}
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-xs text-white group-hover:text-red-400 transition">${post.authorName || 'Usuario'}</h3>
+                    <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
+                  </div>
+                </div>
+
+                <div class="relative">
+                  <button onclick="togglePostMenu('${postId}')" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                  </button>
+                  <div id="menu-${postId}" class="hidden absolute right-0 top-6 w-36 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
+                    ${isOwner ? `
+                      <button onclick="editPost('${postId}', '${post.content}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Editar</button>
+                      <button onclick="deletePost('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Eliminar</button>
+                    ` : `
+                      <button onclick="blockPostUI('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Ocultar</button>
+                      <button onclick="openReportModal('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Reportar</button>
+                    `}
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-xs text-slate-200">${post.content}</p>
+              ${mediaHTML}
+
+              <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
+                <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
+                  <i data-lucide="heart" class="w-4 h-4"></i>
+                  <span>${likes.length}</span>
+                </button>
+                <button onclick="toggleCommentsBox('${postId}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  <span>Comentarios</span>
+                </button>
+                <button onclick="openShareModal('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+                  <i data-lucide="share-2" class="w-4 h-4"></i>
+                  <span>Compartir</span>
+                </button>
+              </div>
+
+              <div id="comments-section-${postId}" class="hidden pt-3 border-t border-slate-800 space-y-2">
+                <div class="flex gap-2">
+                  <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
+                  <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
+                </div>
+                <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
+              </div>
+            </div>
+          `;
+
+          feedContainer.insertAdjacentHTML('beforeend', card);
+        });
+
+        lucide.createIcons();
+      });
+    }
+
+    async function toggleLikePost(postId) {
+      if (!auth.currentUser) return openAuthModal('login');
+      const postRef = db.collection('posts').doc(postId);
+
+      try {
+        const doc = await postRef.get();
+        const postData = doc.data();
+        const likes = postData.likes || [];
+        const userUid = auth.currentUser.uid;
+
+        if (likes.includes(userUid)) {
+          await postRef.update({ likes: firebase.firestore.FieldValue.arrayRemove(userUid) });
+        } else {
+          await postRef.update({ likes: firebase.firestore.FieldValue.arrayUnion(userUid) });
+          addNotification(postData.userId, 'like', `${currentUserData.name} le dio Me Gusta a tu publicación.`);
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    async function createPost(e) {
+      e.preventDefault();
+      if (!auth.currentUser) return;
+
+      const fileInput = document.getElementById('post-file');
+      const file = fileInput.files[0];
+
+      let mediaUrl = null;
+      let mediaType = null;
+
+      if (file) {
+        mediaUrl = await readFileAsDataURL(file);
+        mediaType = file.type.startsWith('video') ? 'video' : 'image';
+      }
+
+      try {
+        await db.collection('posts').add({
+          userId: auth.currentUser.uid,
+          authorName: currentUserData.name,
+          authorUsername: currentUserData.username,
+          content: document.getElementById('post-text').value,
+          mediaUrl,
+          mediaType,
+          likes: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        document.getElementById('form-post').reset();
+        togglePostModal();
+      } catch (err) { alert("Error al publicar: " + err.message); }
     }
 
     // CHAT FLOTANTE
@@ -1047,275 +1534,7 @@
         });
     }
 
-    // COMENTARIOS: RESPUESTAS, EDICIÓN, ELIMINACIÓN Y REPORTES
-    function toggleCommentsBox(postId) {
-      const commentsSection = document.getElementById(`comments-section-${postId}`);
-      commentsSection.classList.toggle('hidden');
-      if (!commentsSection.classList.contains('hidden')) {
-        listenPostComments(postId);
-      }
-    }
-
-    async function addComment(postId, parentCommentId = null) {
-      if (!isLoggedIn) return openAuthModal('login');
-
-      const inputEl = document.getElementById(parentCommentId ? `reply-input-${parentCommentId}` : `comment-input-${postId}`);
-      const text = inputEl.value.trim();
-      if (!text) return;
-
-      try {
-        await db.collection('posts').doc(postId).collection('comments').add({
-          authorUid: auth.currentUser.uid,
-          authorName: currentUserData.name,
-          authorUsername: currentUserData.username,
-          text,
-          parentCommentId,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        const postDoc = await db.collection('posts').doc(postId).get();
-        if (postDoc.exists) {
-          addNotification(postDoc.data().userId, 'comment', `${currentUserData.name} comentó tu publicación.`);
-        }
-        addNotification(auth.currentUser.uid, 'activity', `Publicaste un comentario.`);
-
-        inputEl.value = '';
-      } catch (err) { console.error(err); }
-    }
-
-    function toggleCommentMenu(commentId) {
-      const menu = document.getElementById(`comment-menu-${commentId}`);
-      if (menu) menu.classList.toggle('hidden');
-    }
-
-    async function deleteComment(postId, commentId) {
-      if (confirm("¿Deseas eliminar este comentario?")) {
-        await db.collection('posts').doc(postId).collection('comments').doc(commentId).delete();
-      }
-    }
-
-    async function editComment(postId, commentId, currentText) {
-      const newText = prompt("Edita tu comentario:", currentText);
-      if (newText && newText.trim() !== "") {
-        await db.collection('posts').doc(postId).collection('comments').doc(commentId).update({ text: newText.trim() });
-      }
-    }
-
-    function blockCommentUI(commentId) {
-      document.getElementById(`comment-card-${commentId}`)?.remove();
-      alert("Comentario oculto.");
-    }
-
-    function listenPostComments(postId) {
-      db.collection('posts').doc(postId).collection('comments')
-        .orderBy('createdAt', 'asc')
-        .onSnapshot(snapshot => {
-          const container = document.getElementById(`comments-list-${postId}`);
-          container.innerHTML = '';
-
-          const comments = [];
-          snapshot.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
-
-          const mainComments = comments.filter(c => !c.parentCommentId);
-
-          mainComments.forEach(c => {
-            const replies = comments.filter(r => r.parentCommentId === c.id);
-            const isCommentOwner = auth.currentUser && c.authorUid === auth.currentUser.uid;
-
-            const card = `
-              <div id="comment-card-${c.id}" class="p-2 bg-slate-900 border border-slate-800 rounded-lg space-y-1.5 relative">
-                <div class="flex items-center justify-between">
-                  <span onclick="viewUserProfile('${c.authorUid}')" class="font-bold text-xs text-white cursor-pointer hover:underline">${c.authorName} <span class="text-[10px] text-slate-400">@${c.authorUsername}</span></span>
-                  
-                  <div class="relative">
-                    <button onclick="toggleCommentMenu('${c.id}')" class="text-slate-500 hover:text-white p-0.5">
-                      <i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i>
-                    </button>
-                    <div id="comment-menu-${c.id}" class="hidden absolute right-0 top-5 w-32 bg-slate-950 border border-slate-800 rounded shadow-xl z-30 py-1 text-[11px]">
-                      ${isCommentOwner ? `
-                        <button onclick="editComment('${postId}', '${c.id}', '${c.text}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-slate-300">Editar</button>
-                        <button onclick="deleteComment('${postId}', '${c.id}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-red-400">Eliminar</button>
-                      ` : `
-                        <button onclick="blockCommentUI('${c.id}')" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-slate-300">Ocultar</button>
-                        <button onclick="openReportModal()" class="w-full text-left px-2 py-1 hover:bg-slate-800 text-red-400">Reportar</button>
-                      `}
-                    </div>
-                  </div>
-                </div>
-
-                <p class="text-xs text-slate-200">${c.text}</p>
-                <button onclick="toggleReplyBox('${c.id}')" class="text-[10px] text-red-400 font-bold hover:underline">Responder</button>
-
-                <div class="pl-3 border-l border-slate-700 space-y-1 mt-1">
-                  ${replies.map(r => `
-                    <div class="p-1.5 bg-slate-950 rounded text-xs">
-                      <span onclick="viewUserProfile('${r.authorUid}')" class="font-bold text-white text-[11px] cursor-pointer hover:underline">${r.authorName}:</span>
-                      <span class="text-slate-300 text-[11px]">${r.text}</span>
-                    </div>
-                  `).join('')}
-                </div>
-
-                <div id="reply-box-${c.id}" class="hidden flex gap-1 pt-1">
-                  <input id="reply-input-${c.id}" type="text" placeholder="Escribe una respuesta..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1 text-xs text-white">
-                  <button onclick="addComment('${postId}', '${c.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">Enviar</button>
-                </div>
-              </div>
-            `;
-            container.insertAdjacentHTML('beforeend', card);
-          });
-          lucide.createIcons();
-        });
-    }
-
-    function toggleReplyBox(commentId) {
-      document.getElementById(`reply-box-${commentId}`).classList.toggle('hidden');
-    }
-
-    // FEED PRINCIPAL
-    function loadPosts() {
-      db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-        const feedContainer = document.getElementById('posts-feed');
-        feedContainer.innerHTML = '';
-
-        if (snapshot.empty) {
-          feedContainer.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">Aún no hay publicaciones en la comunidad.</p></div>`;
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          const post = doc.data();
-          const postId = doc.id;
-          const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
-          const likes = post.likes || [];
-          const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
-
-          let mediaHTML = '';
-          if (post.mediaUrl) {
-            if (post.mediaType === 'video') {
-              mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full max-h-96 object-cover border border-slate-700"></video>`;
-            } else {
-              mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">`;
-            }
-          }
-
-          const card = `
-            <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
-              <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
-                <div onclick="viewUserProfile('${post.userId}')" class="flex items-center gap-3 cursor-pointer group">
-                  <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white group-hover:scale-105 transition">
-                    ${(post.authorName || 'U').charAt(0)}
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-xs text-white group-hover:text-red-400 transition">${post.authorName || 'Usuario'}</h3>
-                    <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
-                  </div>
-                </div>
-
-                <div class="relative">
-                  <button onclick="togglePostMenu('${postId}')" class="text-slate-400 hover:text-white p-1">
-                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
-                  </button>
-                  <div id="menu-${postId}" class="hidden absolute right-0 top-6 w-36 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
-                    ${isOwner ? `
-                      <button onclick="editPost('${postId}', '${post.content}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Editar</button>
-                      <button onclick="deletePost('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Eliminar</button>
-                    ` : `
-                      <button onclick="blockPostUI('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Ocultar</button>
-                      <button onclick="openReportModal('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Reportar</button>
-                    `}
-                  </div>
-                </div>
-              </div>
-
-              <p class="text-xs text-slate-200">${post.content}</p>
-              ${mediaHTML}
-
-              <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
-                <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
-                  <i data-lucide="heart" class="w-4 h-4"></i>
-                  <span>${likes.length}</span>
-                </button>
-                <button onclick="toggleCommentsBox('${postId}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
-                  <i data-lucide="message-square" class="w-4 h-4"></i>
-                  <span>Comentarios</span>
-                </button>
-                <button onclick="sharePostByChat('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
-                  <i data-lucide="share-2" class="w-4 h-4"></i>
-                  <span>Compartir</span>
-                </button>
-              </div>
-
-              <div id="comments-section-${postId}" class="hidden pt-3 border-t border-slate-800 space-y-2">
-                <div class="flex gap-2">
-                  <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
-                  <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
-                </div>
-                <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
-              </div>
-            </div>
-          `;
-
-          feedContainer.insertAdjacentHTML('beforeend', card);
-        });
-
-        lucide.createIcons();
-      });
-    }
-
-    async function toggleLikePost(postId) {
-      if (!auth.currentUser) return openAuthModal('login');
-      const postRef = db.collection('posts').doc(postId);
-
-      try {
-        const doc = await postRef.get();
-        const postData = doc.data();
-        const likes = postData.likes || [];
-        const userUid = auth.currentUser.uid;
-
-        if (likes.includes(userUid)) {
-          await postRef.update({ likes: firebase.firestore.FieldValue.arrayRemove(userUid) });
-        } else {
-          await postRef.update({ likes: firebase.firestore.FieldValue.arrayUnion(userUid) });
-          addNotification(postData.userId, 'like', `${currentUserData.name} le dio Me Gusta a tu publicación.`);
-          addNotification(userUid, 'activity', `Le diste Me Gusta a una publicación.`);
-        }
-      } catch (err) { console.error(err); }
-    }
-
-    async function createPost(e) {
-      e.preventDefault();
-      if (!auth.currentUser) return;
-
-      const fileInput = document.getElementById('post-file');
-      const file = fileInput.files[0];
-
-      let mediaUrl = null;
-      let mediaType = null;
-
-      if (file) {
-        mediaUrl = await readFileAsDataURL(file);
-        mediaType = file.type.startsWith('video') ? 'video' : 'image';
-      }
-
-      try {
-        await db.collection('posts').add({
-          userId: auth.currentUser.uid,
-          authorName: currentUserData.name,
-          authorUsername: currentUserData.username,
-          content: document.getElementById('post-text').value,
-          mediaUrl,
-          mediaType,
-          likes: [],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        addNotification(auth.currentUser.uid, 'activity', `Creaste una nueva publicación.`);
-        document.getElementById('form-post').reset();
-        togglePostModal();
-      } catch (err) { alert("Error al publicar: " + err.message); }
-    }
-
-    // BÚSQUEDA GLOBAL Y SOLICITUDES
+    // BÚSQUEDA GLOBAL
     async function handleGlobalSearch(query) {
       const dropdown = document.getElementById('search-results-dropdown');
       const cleanQuery = query.replace('@', '').trim().toLowerCase();
@@ -1466,6 +1685,30 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
       } catch (err) { alert(err.message); }
+    }
+
+    function loadUserVehicles(uid) {
+      db.collection('vehicles').where('userId', '==', uid).onSnapshot(snapshot => {
+        const grid = document.getElementById('garage-vehicles-grid');
+        grid.innerHTML = '';
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay vehículos agregados.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const v = doc.data();
+          const card = `
+            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 space-y-2">
+              <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded border border-red-500/30">${v.year}</span>
+              <h4 class="font-bold text-sm text-white">${v.name}</h4>
+              <p class="text-xs text-slate-400">${v.desc}</p>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', card);
+        });
+      });
     }
 
     function loadMarket() {
@@ -1643,8 +1886,6 @@
     function toggleSettingsModal() { document.getElementById('modal-settings').classList.toggle('hidden'); }
     function toggleSellModal() { document.getElementById('modal-sell').classList.toggle('hidden'); }
     function toggleGroupModal() { document.getElementById('modal-group').classList.toggle('hidden'); }
-    function openFriendsModal() { document.getElementById('modal-friends-list').classList.remove('hidden'); }
-    function closeFriendsModal() { document.getElementById('modal-friends-list').classList.add('hidden'); }
     function closeReportModal() { document.getElementById('modal-report').classList.add('hidden'); }
     function openReportModal(postId) { document.getElementById('modal-report').classList.remove('hidden'); }
     function handleReportSubmit(e) { e.preventDefault(); alert("Reporte enviado."); closeReportModal(); }
@@ -1652,7 +1893,6 @@
     async function deletePost(id) { if (confirm("¿Eliminar?")) await db.collection('posts').doc(id).delete(); }
     async function editPost(id, txt) { const n = prompt("Editar:", txt); if(n) await db.collection('posts').doc(id).update({content: n}); }
     function blockPostUI(id) { document.getElementById(`post-card-${id}`)?.remove(); }
-    function sharePostByChat(txt) { alert("Publicación lista para compartir."); }
 
     function switchProfileSubTab(sub) {
       ['posts', 'market', 'garage', 'groups'].forEach(s => {
