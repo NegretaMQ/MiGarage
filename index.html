@@ -117,6 +117,62 @@
     </div>
   </div>
 
+  <!-- MODAL CREAR HILO EN GRUPO -->
+  <div id="modal-create-thread" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="message-square-plus" class="text-red-500 w-4 h-4"></i> Crear Hilo de Debate</h3>
+        <button onclick="closeCreateThreadModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <form onsubmit="handleCreateThreadSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Título del Hilo</label>
+          <input id="thread-title" required type="text" placeholder="Ej. Recomendaciones de lubricante para motor turbo" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Descripción o pregunta inicial</label>
+          <textarea id="thread-desc" required rows="4" placeholder="Escribe los detalles aquí..." class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Imagen o Video Local (Opcional)</label>
+          <input id="thread-file" type="file" accept="image/*,video/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeCreateThreadModal()" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded font-semibold">Cancelar</button>
+          <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Publicar Hilo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR PERFIL DE GRUPO (SÓLO ADMINISTRADORES) -->
+  <div id="modal-edit-group" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="edit-3" class="text-red-500 w-4 h-4"></i> Editar Perfil del Grupo</h3>
+        <button onclick="closeEditGroupModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <form onsubmit="handleSaveGroupEdit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Nombre del Grupo</label>
+          <input id="edit-group-name" required type="text" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Descripción</label>
+          <textarea id="edit-group-desc" required rows="3" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase">Foto de Perfil del Grupo (Archivo Local)</label>
+          <input id="edit-group-file" type="file" accept="image/*" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeEditGroupModal()" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded font-semibold">Cancelar</button>
+          <button type="submit" class="px-5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-bold">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL AUTENTICACIÓN -->
   <div id="modal-auth" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
@@ -172,7 +228,7 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIGURACIÓN / EDITAR PERFIL -->
+  <!-- MODAL CONFIGURACIÓN / EDITAR PERFIL PROPIO -->
   <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -245,7 +301,6 @@
     <button onclick="closeViewStoryModal()" class="absolute top-4 right-4 text-white bg-slate-800 p-2 rounded-full border border-slate-700 z-50">✕</button>
     <div id="story-viewer-card" onmousedown="pauseStoryProgress()" onmouseup="resumeStoryProgress()" onmouseleave="resumeStoryProgress()" class="max-w-md w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col items-center select-none">
       
-      <!-- BARRA DE PROGRESO DE HISTORIA -->
       <div class="w-full h-1 bg-slate-800">
         <div id="story-progress-bar" class="h-full bg-red-600 w-0 transition-all duration-100 ease-linear"></div>
       </div>
@@ -359,7 +414,7 @@
     </div>
   </div>
 
-  <!-- MODAL GRUPO -->
+  <!-- MODAL CREAR GRUPO -->
   <div id="modal-group" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -410,7 +465,7 @@
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="max-w-7xl mx-auto px-4 w-full flex-1">
 
-    <!-- 1. FEED CON BARRA DE HISTORIAS (VISTA PRINCIPAL AL INGRESAR) -->
+    <!-- 1. FEED CON BARRA DE HISTORIAS (VISTA PRINCIPAL) -->
     <section id="tab-feed" class="tab-content space-y-6">
 
       <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl backdrop-blur-sm overflow-x-auto no-scrollbar flex items-center gap-4">
@@ -468,22 +523,89 @@
       </div>
     </section>
 
-    <!-- 3. GRUPOS -->
+    <!-- 3. GRUPOS (LISTA Y PERFIL DE GRUPO INTEGRADO) -->
     <section id="tab-groups" class="tab-content hidden space-y-6">
-      <div class="bg-slate-800/90 border border-slate-700 p-5 rounded-xl flex justify-between items-center shadow-lg backdrop-blur-sm">
-        <div>
-          <h1 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="users" class="w-6 h-6 text-red-500"></i> Grupos & Comunidades</h1>
+      
+      <!-- VISTA 1: CATÁLOGO / LISTA DE GRUPOS -->
+      <div id="groups-list-view" class="space-y-6">
+        <div class="bg-slate-800/90 border border-slate-700 p-5 rounded-xl flex justify-between items-center shadow-lg backdrop-blur-sm">
+          <div>
+            <h1 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="users" class="w-6 h-6 text-red-500"></i> Grupos & Comunidades</h1>
+          </div>
+          <button onclick="toggleGroupModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Crear Nuevo Grupo
+          </button>
         </div>
-        <button onclick="toggleGroupModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> Crear Nuevo Grupo
-        </button>
+
+        <div id="groups-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
+            <p class="text-xs text-slate-400">No hay grupos creados aún.</p>
+          </div>
+        </div>
       </div>
 
-      <div id="groups-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-          <p class="text-xs text-slate-400">No hay grupos creados aún.</p>
+      <!-- VISTA 2: PERFIL DEL GRUPO SELECCIONADO -->
+      <div id="group-profile-view" class="hidden space-y-6">
+        
+        <!-- BOTÓN VOLVER A LA LISTA -->
+        <button onclick="backToGroupsList()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a Grupos
+        </button>
+
+        <!-- TARJETA DE PERFIL DEL GRUPO -->
+        <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl backdrop-blur-sm space-y-4">
+          <button id="group-edit-btn" onclick="openEditGroupModal()" class="hidden absolute top-4 right-4 bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition text-xs font-bold flex items-center gap-1">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-red-500"></i> Editar Grupo
+          </button>
+
+          <div class="flex flex-col sm:flex-row items-center gap-5">
+            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
+              <div id="group-profile-avatar" class="w-full h-full rounded-full bg-slate-950 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
+                <span id="group-avatar-initials">G</span>
+                <img id="group-avatar-img" src="" class="hidden w-full h-full object-cover">
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-center sm:text-left flex-1 bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 backdrop-blur-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h2 id="group-profile-name" class="text-xl sm:text-2xl font-bold text-white">Nombre del Grupo</h2>
+                  <p class="text-xs text-slate-400">Creado por: <span id="group-creator-name" onclick="viewUserProfile(activeGroupData.ownerId)" class="text-red-400 font-bold cursor-pointer hover:underline">Usuario</span></p>
+                </div>
+
+                <div class="flex items-center gap-2 self-center sm:self-auto">
+                  <div class="px-3 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">
+                    <span id="group-members-count">0</span> Miembros
+                  </div>
+                  <button id="group-join-btn" onclick="joinActiveGroup()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition">
+                    + Unirse al grupo
+                  </button>
+                </div>
+              </div>
+
+              <p id="group-profile-desc" class="text-xs sm:text-sm text-slate-300 pt-2 border-t border-slate-800">Descripción del grupo...</p>
+            </div>
+          </div>
         </div>
+
+        <!-- SECCIÓN DE HILOS Y DEBATES DEL GRUPO -->
+        <div class="space-y-4">
+          <div class="flex justify-between items-center bg-slate-800/90 border border-slate-700 p-4 rounded-xl">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="message-square" class="w-4 h-4 text-red-500"></i> Hilos de Debate del Grupo
+            </h3>
+            <button id="btn-new-thread" onclick="requireAuthAction(() => openCreateThreadModal())" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Crear Hilo
+            </button>
+          </div>
+
+          <div id="group-threads-container" class="space-y-4">
+            <p class="text-xs text-slate-400 text-center py-6 bg-slate-800/90 rounded-xl border border-slate-700">No hay hilos en este grupo. ¡Sé el primero en iniciar un tema!</p>
+          </div>
+        </div>
+
       </div>
+
     </section>
 
     <!-- 4. PERFIL -->
@@ -612,7 +734,7 @@
       projectId: "migarage-51e36",
       storageBucket: "migarage-51e36.firebasestorage.app",
       messagingSenderId: "1047979321757",
-      appId: "1:1:1047979321757:web:34c98bbe274d5074b4e774",
+      appId: "1:1047979321757:web:34c98bbe274d5074b4e774",
       measurementId: "G-T6K6VW84B6"
     };
 
@@ -623,13 +745,15 @@
     let isLoggedIn = false;
     let currentUserData = null;
     let activeProfileUid = null;
+    let activeGroupId = null;
+    let activeGroupData = null;
     let activeChatFriend = null;
     let activeChatUnsubscribe = null;
     let unreadCounts = {};
     let activeSharePostContent = '';
 
-    // ESTRUCTURAS Y CONTROL PARA REPRODUCCIÓN CONTINUA DE HISTORIAS
-    let userStoriesQueue = []; // Lista ordenada de usuarios con sus historias
+    // ESTRUCTURAS DE HISTORIAS
+    let userStoriesQueue = [];
     let currentUserIndex = 0;
     let currentStoryIndex = 0;
 
@@ -638,7 +762,6 @@
     let isStoryPaused = false;
 
     auth.onAuthStateChanged(async (user) => {
-      // SIEMPRE INICIAR EN LA PESTAÑA FEED
       switchTab('feed');
 
       if (user) {
@@ -695,7 +818,321 @@
       });
     }
 
-    // VISUALIZAR PERFIL Y SEGUIDORES
+    // PESTAÑA GRUPOS: FUNCIONALIDADES Y PERFIL DEL GRUPO
+    function loadGroups() {
+      db.collection('groups').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        const grid = document.getElementById('groups-grid');
+        grid.innerHTML = '';
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay grupos creados aún.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const group = doc.data();
+          const groupId = doc.id;
+          const members = group.members || [];
+
+          const card = `
+            <div onclick="openGroupProfile('${groupId}')" class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3 cursor-pointer hover:border-red-500/50 transition">
+              <img src="${group.imageUrl}" class="w-full h-40 object-cover rounded-lg">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base text-white">${group.name}</h3>
+                <span class="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 font-bold px-2 py-0.5 rounded">${members.length} miembros</span>
+              </div>
+              <p class="text-xs text-slate-400 line-clamp-2">${group.desc}</p>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', card);
+        });
+      });
+    }
+
+    async function openGroupProfile(groupId) {
+      activeGroupId = groupId;
+      document.getElementById('groups-list-view').classList.add('hidden');
+      document.getElementById('group-profile-view').classList.remove('hidden');
+
+      db.collection('groups').doc(groupId).onSnapshot(async doc => {
+        if (!doc.exists) return;
+        activeGroupData = { id: doc.id, ...doc.data() };
+
+        const g = activeGroupData;
+        const myUid = auth.currentUser?.uid;
+        const members = g.members || [];
+        const admins = g.admins || [g.ownerId];
+
+        const isMember = myUid && members.includes(myUid);
+        const isAdmin = myUid && admins.includes(myUid);
+
+        document.getElementById('group-profile-name').innerText = g.name;
+        document.getElementById('group-profile-desc').innerText = g.desc;
+        document.getElementById('group-members-count').innerText = members.length;
+
+        // Creador
+        const ownerDoc = await db.collection('users').doc(g.ownerId).get();
+        if (ownerDoc.exists) {
+          document.getElementById('group-creator-name').innerText = ownerDoc.data().name;
+        }
+
+        // Avatar
+        const avatarImg = document.getElementById('group-avatar-img');
+        const avatarInitials = document.getElementById('group-avatar-initials');
+        if (g.imageUrl) {
+          avatarImg.src = g.imageUrl;
+          avatarImg.classList.remove('hidden');
+          avatarInitials.classList.add('hidden');
+        } else {
+          avatarImg.classList.add('hidden');
+          avatarInitials.innerText = g.name.charAt(0).toUpperCase();
+          avatarInitials.classList.remove('hidden');
+        }
+
+        // Botón Editar Grupo (Solo administradores)
+        document.getElementById('group-edit-btn').classList.toggle('hidden', !isAdmin);
+
+        // Botón Unirse al Grupo
+        const joinBtn = document.getElementById('group-join-btn');
+        if (isMember) {
+          joinBtn.innerText = 'Miembro √';
+          joinBtn.className = 'bg-slate-900 text-slate-400 border border-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold cursor-default';
+          joinBtn.onclick = null;
+        } else {
+          joinBtn.innerText = '+ Unirse al grupo';
+          joinBtn.className = 'bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition';
+          joinBtn.onclick = () => joinActiveGroup();
+        }
+
+        loadGroupThreads(groupId);
+      });
+    }
+
+    function backToGroupsList() {
+      activeGroupId = null;
+      activeGroupData = null;
+      document.getElementById('group-profile-view').classList.add('hidden');
+      document.getElementById('groups-list-view').classList.remove('hidden');
+    }
+
+    async function joinActiveGroup() {
+      if (!isLoggedIn) return openAuthModal('login');
+      if (!activeGroupId) return;
+
+      try {
+        await db.collection('groups').doc(activeGroupId).update({
+          members: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.uid)
+        });
+      } catch (err) { console.error(err); }
+    }
+
+    async function createNewGroup(e) {
+      e.preventDefault();
+      if (!auth.currentUser) return;
+
+      const file = document.getElementById('group-file').files[0];
+      const imageUrl = await readFileAsDataURL(file);
+
+      try {
+        await db.collection('groups').add({
+          ownerId: auth.currentUser.uid,
+          admins: [auth.currentUser.uid],
+          members: [auth.currentUser.uid],
+          name: document.getElementById('group-name').value,
+          desc: document.getElementById('group-desc').value,
+          imageUrl,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        toggleGroupModal();
+        e.target.reset();
+      } catch (err) { alert(err.message); }
+    }
+
+    function openEditGroupModal() {
+      if (!activeGroupData) return;
+      document.getElementById('edit-group-name').value = activeGroupData.name;
+      document.getElementById('edit-group-desc').value = activeGroupData.desc;
+      document.getElementById('modal-edit-group').classList.remove('hidden');
+    }
+
+    function closeEditGroupModal() {
+      document.getElementById('modal-edit-group').classList.add('hidden');
+    }
+
+    async function handleSaveGroupEdit(e) {
+      e.preventDefault();
+      if (!activeGroupId) return;
+
+      const name = document.getElementById('edit-group-name').value;
+      const desc = document.getElementById('edit-group-desc').value;
+      const file = document.getElementById('edit-group-file').files[0];
+
+      let updates = { name, desc };
+      if (file) updates.imageUrl = await readFileAsDataURL(file);
+
+      try {
+        await db.collection('groups').doc(activeGroupId).update(updates);
+        closeEditGroupModal();
+      } catch (err) { alert(err.message); }
+    }
+
+    // HILOS Y RESPUESTAS EN GRUPOS
+    function openCreateThreadModal() {
+      document.getElementById('modal-create-thread').classList.remove('hidden');
+    }
+
+    function closeCreateThreadModal() {
+      document.getElementById('modal-create-thread').classList.add('hidden');
+    }
+
+    async function handleCreateThreadSubmit(e) {
+      e.preventDefault();
+      if (!auth.currentUser || !activeGroupId) return;
+
+      const title = document.getElementById('thread-title').value;
+      const desc = document.getElementById('thread-desc').value;
+      const file = document.getElementById('thread-file').files[0];
+
+      let mediaUrl = null;
+      let mediaType = null;
+
+      if (file) {
+        mediaUrl = await readFileAsDataURL(file);
+        mediaType = file.type.startsWith('video') ? 'video' : 'image';
+      }
+
+      try {
+        await db.collection('groups').doc(activeGroupId).collection('threads').add({
+          authorUid: auth.currentUser.uid,
+          authorName: currentUserData.name,
+          title,
+          desc,
+          mediaUrl,
+          mediaType,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeCreateThreadModal();
+        e.target.reset();
+      } catch (err) { alert(err.message); }
+    }
+
+    function loadGroupThreads(groupId) {
+      db.collection('groups').doc(groupId).collection('threads')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(snapshot => {
+          const container = document.getElementById('group-threads-container');
+          container.innerHTML = '';
+
+          if (snapshot.empty) {
+            container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6 bg-slate-800/90 rounded-xl border border-slate-700">No hay hilos en este grupo. ¡Sé el primero en iniciar un tema!</p>';
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            const t = doc.data();
+            const threadId = doc.id;
+
+            let mediaHTML = '';
+            if (t.mediaUrl) {
+              mediaHTML = t.mediaType === 'video' 
+                ? `<video src="${t.mediaUrl}" controls class="rounded-lg w-full max-h-80 object-cover border border-slate-700 mt-2"></video>`
+                : `<img src="${t.mediaUrl}" class="rounded-lg w-full max-h-80 object-cover border border-slate-700 mt-2">`;
+            }
+
+            const card = `
+              <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-4 space-y-3">
+                <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
+                  <span onclick="viewUserProfile('${t.authorUid}')" class="font-bold text-xs text-white cursor-pointer hover:underline">
+                    Iniciado por: ${t.authorName}
+                  </span>
+                </div>
+
+                <h4 class="font-bold text-sm text-white">${t.title}</h4>
+                <p class="text-xs text-slate-300">${t.desc}</p>
+                ${mediaHTML}
+
+                <!-- RESPUESTAS DEL HILO -->
+                <div class="pt-3 border-t border-slate-700/50 space-y-2">
+                  <div id="thread-replies-${threadId}" class="space-y-2"></div>
+
+                  <div class="flex flex-col gap-2 pt-2 border-t border-slate-800">
+                    <input id="thread-reply-input-${threadId}" type="text" placeholder="Escribe una respuesta al hilo..." class="bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
+                    <div class="flex items-center justify-between gap-2">
+                      <input id="thread-reply-file-${threadId}" type="file" accept="image/*,video/*" class="text-[10px] text-slate-400">
+                      <button onclick="addThreadReply('${threadId}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold transition">Responder</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+            container.insertAdjacentHTML('beforeend', card);
+            listenThreadReplies(groupId, threadId);
+          });
+        });
+    }
+
+    async function addThreadReply(threadId) {
+      if (!isLoggedIn) return openAuthModal('login');
+
+      const textEl = document.getElementById(`thread-reply-input-${threadId}`);
+      const fileEl = document.getElementById(`thread-reply-file-${threadId}`);
+      const text = textEl.value.trim();
+      const file = fileEl.files[0];
+
+      if (!text && !file) return;
+
+      let mediaUrl = null;
+      let mediaType = null;
+      if (file) {
+        mediaUrl = await readFileAsDataURL(file);
+        mediaType = file.type.startsWith('video') ? 'video' : 'image';
+      }
+
+      try {
+        await db.collection('groups').doc(activeGroupId).collection('threads').doc(threadId).collection('replies').add({
+          authorUid: auth.currentUser.uid,
+          authorName: currentUserData.name,
+          text,
+          mediaUrl,
+          mediaType,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        textEl.value = '';
+        fileEl.value = '';
+      } catch (err) { console.error(err); }
+    }
+
+    function listenThreadReplies(groupId, threadId) {
+      db.collection('groups').doc(groupId).collection('threads').doc(threadId).collection('replies')
+        .orderBy('createdAt', 'asc')
+        .onSnapshot(snapshot => {
+          const container = document.getElementById(`thread-replies-${threadId}`);
+          if (!container) return;
+          container.innerHTML = '';
+
+          snapshot.forEach(doc => {
+            const r = doc.data();
+            let mediaHTML = '';
+            if (r.mediaUrl) {
+              mediaHTML = r.mediaType === 'video'
+                ? `<video src="${r.mediaUrl}" controls class="rounded w-full max-h-48 object-cover mt-1"></video>`
+                : `<img src="${r.mediaUrl}" class="rounded w-full max-h-48 object-cover mt-1">`;
+            }
+
+            const replyCard = `
+              <div class="p-2 bg-slate-950 border border-slate-800 rounded-lg space-y-1">
+                <span onclick="viewUserProfile('${r.authorUid}')" class="font-bold text-[11px] text-red-400 cursor-pointer hover:underline">${r.authorName}:</span>
+                <p class="text-xs text-slate-200">${r.text}</p>
+                ${mediaHTML}
+              </div>
+            `;
+            container.insertAdjacentHTML('beforeend', replyCard);
+          });
+        });
+    }
+
+    // VISUALIZAR PERFIL INDIVIDUAL DE USUARIO
     async function viewUserProfile(uid) {
       activeProfileUid = uid;
       switchTab('profile');
@@ -861,7 +1298,7 @@
       document.getElementById('modal-post-detail').classList.add('hidden');
     }
 
-    // NOTIFICACIONES EXCLUSIVAS
+    // NOTIFICACIONES
     function listenNotifications() {
       const uid = auth.currentUser?.uid;
       if (!uid) return;
@@ -939,7 +1376,7 @@
       document.getElementById('notifs-dropdown').classList.add('hidden');
     }
 
-    // SISTEMA DE HISTORIAS COMPLETO (24 HRS, ORDEN RECIENTE, SEGMENTADO Y REPRODUCCIÓN AUTOMÁTICA)
+    // HISTORIAS
     function openUploadStoryModal() {
       document.getElementById('modal-upload-story').classList.remove('hidden');
     }
@@ -984,7 +1421,6 @@
           const s = doc.data();
           const createdAtMs = s.createdAt ? s.createdAt.toMillis() : Date.now();
 
-          // FILTRAR HISTORIAS CON MÁS DE 24 HORAS
           if (createdAtMs >= twentyFourHoursAgo) {
             if (!storiesByUser[s.userId]) {
               storiesByUser[s.userId] = {
@@ -999,13 +1435,11 @@
           }
         });
 
-        // RECIENTES MÁS A LA IZQUIERDA
         userStoriesQueue = Object.values(storiesByUser).sort((a, b) => b.latestTimestamp - a.latestTimestamp);
 
         userStoriesQueue.forEach((u, uIdx) => {
           const count = u.stories.length;
 
-          // ANILLO SEGMENTADO SEGÚN LA CANTIDAD DE HISTORIAS DEL USUARIO
           let dashArray = '100';
           if (count > 1) {
             dashArray = `${80 / count} ${20 / count}`;
@@ -1078,7 +1512,6 @@
           const percent = Math.min((storyElapsedTime / duration) * 100, 100);
           progressBar.style.width = `${percent}%`;
 
-          // REPRODUCCIÓN CONTINUA AUTOMÁTICA
           if (storyElapsedTime >= duration) {
             clearStoryTimers();
             nextStory();
@@ -1317,7 +1750,7 @@
       document.getElementById(`reply-box-${commentId}`).classList.toggle('hidden');
     }
 
-    // FEED PRINCIPAL DE PUBLICACIONES
+    // FEED PRINCIPAL
     function loadPosts() {
       db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const feedContainer = document.getElementById('posts-feed');
@@ -1724,7 +2157,7 @@
       `).join('');
     }
 
-    // VEHÍCULOS, MARKET Y GRUPOS
+    // VEHÍCULOS Y MARKET
     async function addNewVehicle() {
       if (!auth.currentUser) return;
       const name = prompt("Modelo del Vehículo:");
@@ -1821,51 +2254,7 @@
       } catch (err) { alert(err.message); }
     }
 
-    function loadGroups() {
-      db.collection('groups').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-        const grid = document.getElementById('groups-grid');
-        grid.innerHTML = '';
-
-        if (snapshot.empty) {
-          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No hay grupos creados aún.</p></div>`;
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          const group = doc.data();
-          const card = `
-            <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3">
-              <img src="${group.imageUrl}" class="w-full h-40 object-cover rounded-lg">
-              <h3 class="font-bold text-base text-white">${group.name}</h3>
-              <p class="text-xs text-slate-400">${group.desc}</p>
-            </div>
-          `;
-          grid.insertAdjacentHTML('beforeend', card);
-        });
-      });
-    }
-
-    async function createNewGroup(e) {
-      e.preventDefault();
-      if (!auth.currentUser) return;
-
-      const file = document.getElementById('group-file').files[0];
-      const imageUrl = await readFileAsDataURL(file);
-
-      try {
-        await db.collection('groups').add({
-          ownerId: auth.currentUser.uid,
-          name: document.getElementById('group-name').value,
-          desc: document.getElementById('group-desc').value,
-          imageUrl,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        toggleGroupModal();
-        e.target.reset();
-      } catch (err) { alert(err.message); }
-    }
-
-    // EDITAR PERFIL
+    // EDITAR PERFIL PROPIO
     function openEditProfileModal() {
       toggleSettingsModal();
       document.getElementById('edit-name').value = currentUserData.name || '';
@@ -1910,6 +2299,11 @@
       if (activeBtn) {
         activeBtn.classList.add('text-red-500');
         activeBtn.classList.remove('text-slate-400');
+      }
+
+      // Si se navega a la pestaña de Grupos, volver a la vista de lista
+      if (tabId === 'groups') {
+        backToGroupsList();
       }
     }
 
