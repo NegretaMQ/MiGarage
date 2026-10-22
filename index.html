@@ -64,7 +64,7 @@
     </div>
   </header>
 
-  <!-- DROPDOWN NOTIFICACIONES -->
+  <!-- DROPDOWN NOTIFICACIONES (MÁXIMO VISIBLE EQUIVALENTE A 10 NOTIFICACIONES) -->
   <div id="notifs-dropdown" class="hidden fixed top-16 right-16 z-50 w-80 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl overflow-hidden">
     <div class="p-3 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
       <span class="text-xs font-bold text-white flex items-center gap-2">
@@ -72,7 +72,7 @@
       </span>
       <button onclick="toggleNotifsDropdown()" class="text-slate-400 hover:text-white text-xs">✕</button>
     </div>
-    <div id="notifs-list" class="p-2 space-y-1.5 max-h-80 overflow-y-auto text-xs">
+    <div id="notifs-list" class="p-2 space-y-1.5 max-h-[380px] overflow-y-auto text-xs">
       <p class="text-xs text-slate-500 text-center py-4">No tienes notificaciones recientes.</p>
     </div>
   </div>
@@ -117,6 +117,25 @@
     </div>
   </div>
 
+  <!-- MODAL VER HILO DE GRUPO DESPLEGADO -->
+  <div id="modal-thread-detail" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeThreadDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white z-10">✕</button>
+      <div id="thread-detail-container"></div>
+    </div>
+  </div>
+
+  <!-- MODAL ADMINISTRAR MIEMBROS DE GRUPO -->
+  <div id="modal-manage-members" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="user-x" class="text-red-500 w-4 h-4"></i> Administrar Miembros</h3>
+        <button onclick="closeManageMembersModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div id="group-members-manage-list" class="space-y-2 max-h-72 overflow-y-auto"></div>
+    </div>
+  </div>
+
   <!-- MODAL CREAR HILO EN GRUPO -->
   <div id="modal-create-thread" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
@@ -145,7 +164,7 @@
     </div>
   </div>
 
-  <!-- MODAL EDITAR PERFIL DE GRUPO (SÓLO ADMINISTRADORES) -->
+  <!-- MODAL EDITAR PERFIL DE GRUPO -->
   <div id="modal-edit-group" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -312,7 +331,7 @@
           <p id="story-viewer-time" class="text-[10px] text-slate-400">Hace un momento</p>
         </div>
       </div>
-      <div id="story-viewer-content" class="w-full max-h-[70vh] flex items-center justify-center bg-black"></div>
+      <div id="story-viewer-content" class="w-full flex items-center justify-center bg-black"></div>
     </div>
   </div>
 
@@ -465,7 +484,7 @@
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="max-w-7xl mx-auto px-4 w-full flex-1">
 
-    <!-- 1. FEED CON BARRA DE HISTORIAS (VISTA PRINCIPAL) -->
+    <!-- 1. FEED CON BARRA DE HISTORIAS -->
     <section id="tab-feed" class="tab-content space-y-6">
 
       <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl backdrop-blur-sm overflow-x-auto no-scrollbar flex items-center gap-4">
@@ -523,10 +542,10 @@
       </div>
     </section>
 
-    <!-- 3. GRUPOS (LISTA Y PERFIL DE GRUPO INTEGRADO) -->
+    <!-- 3. GRUPOS -->
     <section id="tab-groups" class="tab-content hidden space-y-6">
       
-      <!-- VISTA 1: CATÁLOGO / LISTA DE GRUPOS -->
+      <!-- LISTA DE GRUPOS -->
       <div id="groups-list-view" class="space-y-6">
         <div class="bg-slate-800/90 border border-slate-700 p-5 rounded-xl flex justify-between items-center shadow-lg backdrop-blur-sm">
           <div>
@@ -544,25 +563,30 @@
         </div>
       </div>
 
-      <!-- VISTA 2: PERFIL DEL GRUPO SELECCIONADO -->
+      <!-- VISTA DETALLE / PERFIL DEL GRUPO -->
       <div id="group-profile-view" class="hidden space-y-6">
-        
-        <!-- BOTÓN VOLVER A LA LISTA -->
         <button onclick="backToGroupsList()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
           <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a Grupos
         </button>
 
-        <!-- TARJETA DE PERFIL DEL GRUPO -->
         <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl backdrop-blur-sm space-y-4">
-          <button id="group-edit-btn" onclick="openEditGroupModal()" class="hidden absolute top-4 right-4 bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition text-xs font-bold flex items-center gap-1">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-red-500"></i> Editar Grupo
-          </button>
+          <div id="group-admin-actions" class="hidden absolute top-4 right-4 flex items-center gap-2">
+            <button onclick="openManageMembersModal()" class="bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition text-xs font-bold flex items-center gap-1">
+              <i data-lucide="user-x" class="w-3.5 h-3.5 text-amber-500"></i> Miembros
+            </button>
+            <button onclick="openEditGroupModal()" class="bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition text-xs font-bold flex items-center gap-1">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-red-500"></i> Editar
+            </button>
+            <button onclick="deleteActiveGroup()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded-lg border border-red-500/30 transition text-xs font-bold flex items-center gap-1">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Grupo
+            </button>
+          </div>
 
           <div class="flex flex-col sm:flex-row items-center gap-5">
             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
               <div id="group-profile-avatar" class="w-full h-full rounded-full bg-slate-950 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
                 <span id="group-avatar-initials">G</span>
-                <img id="group-avatar-img" src="" class="hidden w-full h-full object-cover">
+                <img id="group-avatar-img" src="" class="hidden w-full h-full">
               </div>
             </div>
 
@@ -570,7 +594,7 @@
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <h2 id="group-profile-name" class="text-xl sm:text-2xl font-bold text-white">Nombre del Grupo</h2>
-                  <p class="text-xs text-slate-400">Creado por: <span id="group-creator-name" onclick="viewUserProfile(activeGroupData.ownerId)" class="text-red-400 font-bold cursor-pointer hover:underline">Usuario</span></p>
+                  <p class="text-xs text-slate-400">Creado por: <span id="group-creator-name" class="text-red-400 font-bold cursor-pointer hover:underline">Usuario</span></p>
                 </div>
 
                 <div class="flex items-center gap-2 self-center sm:self-auto">
@@ -588,18 +612,18 @@
           </div>
         </div>
 
-        <!-- SECCIÓN DE HILOS Y DEBATES DEL GRUPO -->
+        <!-- HILOS DEL GRUPO -->
         <div class="space-y-4">
           <div class="flex justify-between items-center bg-slate-800/90 border border-slate-700 p-4 rounded-xl">
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i data-lucide="message-square" class="w-4 h-4 text-red-500"></i> Hilos de Debate del Grupo
+              <i data-lucide="message-square" class="w-4 h-4 text-red-500"></i> Hilos de Debate
             </h3>
             <button id="btn-new-thread" onclick="requireAuthAction(() => openCreateThreadModal())" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
               <i data-lucide="plus" class="w-3.5 h-3.5"></i> Crear Hilo
             </button>
           </div>
 
-          <div id="group-threads-container" class="space-y-4">
+          <div id="group-threads-container" class="space-y-3">
             <p class="text-xs text-slate-400 text-center py-6 bg-slate-800/90 rounded-xl border border-slate-700">No hay hilos en este grupo. ¡Sé el primero en iniciar un tema!</p>
           </div>
         </div>
@@ -818,7 +842,103 @@
       });
     }
 
-    // PESTAÑA GRUPOS: FUNCIONALIDADES Y PERFIL DEL GRUPO
+    // HELPER PARA BOTÓN CLICABLE A PERFIL
+    function getUserLinkHTML(uid, name, username = '') {
+      const userText = username ? `${name} <span class="text-[10px] text-slate-400 font-normal">@${username}</span>` : name;
+      return `<span onclick="event.stopPropagation(); viewUserProfile('${uid}')" class="font-bold text-white cursor-pointer hover:text-red-400 hover:underline transition">${userText}</span>`;
+    }
+
+    // NOTIFICACIONES: MARCAR LEÍDAS AL ABRIR Y ACUMULACIÓN ORDENADA (MAX 10 EN VISTA)
+    function toggleNotifsDropdown() {
+      const dropdown = document.getElementById('notifs-dropdown');
+      const isHidden = dropdown.classList.contains('hidden');
+      dropdown.classList.toggle('hidden');
+      document.getElementById('chat-dropdown').classList.add('hidden');
+
+      if (isHidden && auth.currentUser) {
+        // MARCAR TODAS LAS NOTIFICACIONES COMO LEÍDAS AL ABRIR
+        document.getElementById('notif-badge').classList.add('hidden');
+        db.collection('users').doc(auth.currentUser.uid).collection('notifications')
+          .where('read', '==', false).get().then(snapshot => {
+            snapshot.forEach(doc => doc.ref.update({ read: true }));
+          });
+      }
+    }
+
+    function listenNotifications() {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return;
+
+      db.collection('users').doc(uid).collection('notifications')
+        .orderBy('createdAt', 'desc').limit(20)
+        .onSnapshot(snapshot => {
+          const notifList = document.getElementById('notifs-list');
+          const badge = document.getElementById('notif-badge');
+          
+          const incomingRequests = currentUserData?.incomingRequests || [];
+          let unreadCount = incomingRequests.length;
+
+          notifList.innerHTML = '';
+
+          incomingRequests.forEach(r => {
+            const reqItem = `
+              <div class="p-2 bg-slate-900 border border-amber-500/30 rounded-lg space-y-1.5">
+                <p class="text-white text-xs">${getUserLinkHTML(r.uid, r.name, r.username)} te envió una solicitud de amistad.</p>
+                <div class="flex items-center gap-1 pt-1">
+                  <button onclick="acceptFriendRequest('${r.uid}', '${r.name}', '${r.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] px-2 py-1 rounded font-bold">Aceptar</button>
+                  <button onclick="rejectFriendRequest('${r.uid}', '${r.name}', '${r.username}')" class="bg-slate-800 text-slate-400 text-[10px] px-2 py-1 rounded">Rechazar</button>
+                </div>
+              </div>
+            `;
+            notifList.insertAdjacentHTML('beforeend', reqItem);
+          });
+
+          snapshot.forEach(doc => {
+            const n = doc.data();
+            if (!n.read) unreadCount++;
+            const item = `
+              <div class="p-2 bg-slate-900 border border-slate-800 rounded-lg flex items-center gap-2">
+                <i data-lucide="bell" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                <p class="text-slate-300 text-xs">${n.text}</p>
+              </div>
+            `;
+            notifList.insertAdjacentHTML('beforeend', item);
+          });
+
+          if (incomingRequests.length === 0 && snapshot.empty) {
+            notifList.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No tienes notificaciones recientes.</p>';
+          }
+
+          const dropdown = document.getElementById('notifs-dropdown');
+          if (unreadCount > 0 && dropdown.classList.contains('hidden')) {
+            badge.innerText = unreadCount;
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
+
+          lucide.createIcons();
+        });
+    }
+
+    async function addNotification(targetUid, type, text) {
+      if (!targetUid || targetUid === auth.currentUser?.uid) return;
+      try {
+        await db.collection('users').doc(targetUid).collection('notifications').add({
+          type,
+          text,
+          read: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (err) { console.error(err); }
+    }
+
+    function toggleChatDropdown() {
+      document.getElementById('chat-dropdown').classList.toggle('hidden');
+      document.getElementById('notifs-dropdown').classList.add('hidden');
+    }
+
+    // PESTAÑA GRUPOS: ELIMINACIÓN DE GRUPO Y MIEMBROS
     function loadGroups() {
       db.collection('groups').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('groups-grid');
@@ -836,7 +956,7 @@
 
           const card = `
             <div onclick="openGroupProfile('${groupId}')" class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3 cursor-pointer hover:border-red-500/50 transition">
-              <img src="${group.imageUrl}" class="w-full h-40 object-cover rounded-lg">
+              <img src="${group.imageUrl}" class="w-full rounded-lg">
               <div class="flex items-center justify-between">
                 <h3 class="font-bold text-base text-white">${group.name}</h3>
                 <span class="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 font-bold px-2 py-0.5 rounded">${members.length} miembros</span>
@@ -855,7 +975,10 @@
       document.getElementById('group-profile-view').classList.remove('hidden');
 
       db.collection('groups').doc(groupId).onSnapshot(async doc => {
-        if (!doc.exists) return;
+        if (!doc.exists) {
+          backToGroupsList();
+          return;
+        }
         activeGroupData = { id: doc.id, ...doc.data() };
 
         const g = activeGroupData;
@@ -870,13 +993,11 @@
         document.getElementById('group-profile-desc').innerText = g.desc;
         document.getElementById('group-members-count').innerText = members.length;
 
-        // Creador
         const ownerDoc = await db.collection('users').doc(g.ownerId).get();
         if (ownerDoc.exists) {
-          document.getElementById('group-creator-name').innerText = ownerDoc.data().name;
+          document.getElementById('group-creator-name').innerHTML = getUserLinkHTML(g.ownerId, ownerDoc.data().name);
         }
 
-        // Avatar
         const avatarImg = document.getElementById('group-avatar-img');
         const avatarInitials = document.getElementById('group-avatar-initials');
         if (g.imageUrl) {
@@ -889,10 +1010,10 @@
           avatarInitials.classList.remove('hidden');
         }
 
-        // Botón Editar Grupo (Solo administradores)
-        document.getElementById('group-edit-btn').classList.toggle('hidden', !isAdmin);
+        // ACCIONES DE ADMINISTRADOR (EDITAR, ADMINISTRAR MIEMBROS Y ELIMINAR GRUPO)
+        document.getElementById('group-admin-actions').classList.toggle('hidden', !isAdmin);
 
-        // Botón Unirse al Grupo
+        // BOTÓN DE UNIRSE O ESTADO DE MIEMBRO
         const joinBtn = document.getElementById('group-join-btn');
         if (isMember) {
           joinBtn.innerText = 'Miembro √';
@@ -904,7 +1025,10 @@
           joinBtn.onclick = () => joinActiveGroup();
         }
 
-        loadGroupThreads(groupId);
+        // HILOS SOLO INTERACTUABLES POR MIEMBROS
+        document.getElementById('btn-new-thread').classList.toggle('hidden', !isMember);
+
+        loadGroupThreads(groupId, isMember);
       });
     }
 
@@ -934,6 +1058,7 @@
       const imageUrl = await readFileAsDataURL(file);
 
       try {
+        // CREADOR ES AUTOMÁTICAMENTE EL PRIMER MIEMBRO Y ADMINISTRADOR
         await db.collection('groups').add({
           ownerId: auth.currentUser.uid,
           admins: [auth.currentUser.uid],
@@ -946,6 +1071,63 @@
         toggleGroupModal();
         e.target.reset();
       } catch (err) { alert(err.message); }
+    }
+
+    async function deleteActiveGroup() {
+      if (!activeGroupId) return;
+      if (confirm("¿Estás seguro de que deseas eliminar este grupo? Esta acción no se puede deshacer.")) {
+        try {
+          await db.collection('groups').doc(activeGroupId).delete();
+          alert("El grupo ha sido eliminado.");
+          backToGroupsList();
+        } catch (err) { alert("Error al eliminar grupo: " + err.message); }
+      }
+    }
+
+    async function openManageMembersModal() {
+      if (!activeGroupData) return;
+      const listEl = document.getElementById('group-members-manage-list');
+      listEl.innerHTML = '<p class="text-xs text-slate-400 p-2">Cargando miembros...</p>';
+      document.getElementById('modal-manage-members').classList.remove('hidden');
+
+      const members = activeGroupData.members || [];
+      listEl.innerHTML = '';
+
+      for (let uid of members) {
+        const uDoc = await db.collection('users').doc(uid).get();
+        if (uDoc.exists) {
+          const u = uDoc.data();
+          const isOwner = uid === activeGroupData.ownerId;
+
+          const item = `
+            <div class="flex items-center justify-between p-2 bg-slate-950 border border-slate-800 rounded-lg">
+              <div>
+                <p class="font-bold text-xs text-white">${u.name} ${isOwner ? '<span class="text-[10px] text-red-500 font-bold">(Creador)</span>' : ''}</p>
+                <p class="text-[10px] text-slate-400">@${u.username}</p>
+              </div>
+              ${!isOwner ? `<button onclick="kickGroupMember('${uid}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white text-[10px] px-2 py-1 rounded font-bold transition">Expulsar</button>` : ''}
+            </div>
+          `;
+          listEl.insertAdjacentHTML('beforeend', item);
+        }
+      }
+    }
+
+    function closeManageMembersModal() {
+      document.getElementById('modal-manage-members').classList.add('hidden');
+    }
+
+    async function kickGroupMember(uid) {
+      if (!activeGroupId) return;
+      if (confirm("¿Expulsar a este usuario del grupo?")) {
+        try {
+          await db.collection('groups').doc(activeGroupId).update({
+            members: firebase.firestore.FieldValue.arrayRemove(uid),
+            admins: firebase.firestore.FieldValue.arrayRemove(uid)
+          });
+          openManageMembersModal();
+        } catch (err) { alert(err.message); }
+      }
     }
 
     function openEditGroupModal() {
@@ -976,7 +1158,98 @@
       } catch (err) { alert(err.message); }
     }
 
-    // HILOS Y RESPUESTAS EN GRUPOS
+    // LISTA RESUMIDA DE HILOS Y DESPLIEGUE EN MODAL
+    function loadGroupThreads(groupId, isMember) {
+      db.collection('groups').doc(groupId).collection('threads')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(snapshot => {
+          const container = document.getElementById('group-threads-container');
+          container.innerHTML = '';
+
+          if (snapshot.empty) {
+            container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6 bg-slate-800/90 rounded-xl border border-slate-700">No hay hilos en este grupo. ¡Sé el primero en iniciar un tema!</p>';
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            const t = doc.data();
+            const threadId = doc.id;
+
+            // VISTA RESUMIDA SIN IMÁGENES
+            const card = `
+              <div onclick="openThreadDetailModal('${threadId}')" class="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-xl p-4 cursor-pointer transition flex items-center justify-between gap-4">
+                <div class="space-y-1 flex-1">
+                  <h4 class="font-bold text-sm text-white hover:text-red-400 transition">${t.title}</h4>
+                  <p class="text-xs text-slate-400 line-clamp-1">${t.desc}</p>
+                  <p class="text-[10px] text-slate-500">Iniciado por: ${getUserLinkHTML(t.authorUid, t.authorName)}</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 text-slate-400 text-xs">
+                  <i data-lucide="message-square" class="w-4 h-4 text-red-500"></i>
+                  <span>Ver Hilo</span>
+                </div>
+              </div>
+            `;
+            container.insertAdjacentHTML('beforeend', card);
+          });
+          lucide.createIcons();
+        });
+    }
+
+    async function openThreadDetailModal(threadId) {
+      if (!activeGroupId) return;
+
+      try {
+        const doc = await db.collection('groups').doc(activeGroupId).collection('threads').doc(threadId).get();
+        if (!doc.exists) return;
+
+        const t = doc.data();
+        const myUid = auth.currentUser?.uid;
+        const isMember = activeGroupData?.members?.includes(myUid);
+
+        let mediaHTML = '';
+        if (t.mediaUrl) {
+          mediaHTML = t.mediaType === 'video' 
+            ? `<video src="${t.mediaUrl}" controls class="rounded-lg w-full border border-slate-700 mt-2"></video>`
+            : `<img src="${t.mediaUrl}" class="rounded-lg w-full border border-slate-700 mt-2">`;
+        }
+
+        const detailContainer = document.getElementById('thread-detail-container');
+        detailContainer.innerHTML = `
+          <div class="space-y-4">
+            <div class="border-b border-slate-800 pb-3">
+              <span class="text-[10px] text-slate-400">Iniciado por ${getUserLinkHTML(t.authorUid, t.authorName)}</span>
+              <h3 class="font-bold text-lg text-white mt-1">${t.title}</h3>
+              <p class="text-xs text-slate-200 mt-2">${t.desc}</p>
+              ${mediaHTML}
+            </div>
+
+            <div class="space-y-3">
+              <h4 class="font-bold text-xs text-slate-400 uppercase">Respuestas</h4>
+              <div id="thread-replies-${threadId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
+
+              ${isMember ? `
+                <div class="flex flex-col gap-2 pt-3 border-t border-slate-800">
+                  <input id="thread-reply-input-${threadId}" type="text" placeholder="Escribe una respuesta..." class="bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
+                  <div class="flex items-center justify-between gap-2">
+                    <input id="thread-reply-file-${threadId}" type="file" accept="image/*,video/*" class="text-[10px] text-slate-400">
+                    <button onclick="addThreadReply('${threadId}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded text-xs font-bold transition">Responder</button>
+                  </div>
+                </div>
+              ` : `<p class="text-xs text-amber-500 font-semibold text-center py-2 bg-slate-950 rounded-lg">Debes ser miembro del grupo para responder en este hilo.</p>`}
+            </div>
+          </div>
+        `;
+
+        document.getElementById('modal-thread-detail').classList.remove('hidden');
+        listenThreadReplies(activeGroupId, threadId);
+        lucide.createIcons();
+      } catch (err) { console.error(err); }
+    }
+
+    function closeThreadDetailModal() {
+      document.getElementById('modal-thread-detail').classList.add('hidden');
+    }
+
     function openCreateThreadModal() {
       document.getElementById('modal-create-thread').classList.remove('hidden');
     }
@@ -1014,61 +1287,6 @@
         closeCreateThreadModal();
         e.target.reset();
       } catch (err) { alert(err.message); }
-    }
-
-    function loadGroupThreads(groupId) {
-      db.collection('groups').doc(groupId).collection('threads')
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(snapshot => {
-          const container = document.getElementById('group-threads-container');
-          container.innerHTML = '';
-
-          if (snapshot.empty) {
-            container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6 bg-slate-800/90 rounded-xl border border-slate-700">No hay hilos en este grupo. ¡Sé el primero en iniciar un tema!</p>';
-            return;
-          }
-
-          snapshot.forEach(doc => {
-            const t = doc.data();
-            const threadId = doc.id;
-
-            let mediaHTML = '';
-            if (t.mediaUrl) {
-              mediaHTML = t.mediaType === 'video' 
-                ? `<video src="${t.mediaUrl}" controls class="rounded-lg w-full max-h-80 object-cover border border-slate-700 mt-2"></video>`
-                : `<img src="${t.mediaUrl}" class="rounded-lg w-full max-h-80 object-cover border border-slate-700 mt-2">`;
-            }
-
-            const card = `
-              <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-4 space-y-3">
-                <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
-                  <span onclick="viewUserProfile('${t.authorUid}')" class="font-bold text-xs text-white cursor-pointer hover:underline">
-                    Iniciado por: ${t.authorName}
-                  </span>
-                </div>
-
-                <h4 class="font-bold text-sm text-white">${t.title}</h4>
-                <p class="text-xs text-slate-300">${t.desc}</p>
-                ${mediaHTML}
-
-                <!-- RESPUESTAS DEL HILO -->
-                <div class="pt-3 border-t border-slate-700/50 space-y-2">
-                  <div id="thread-replies-${threadId}" class="space-y-2"></div>
-
-                  <div class="flex flex-col gap-2 pt-2 border-t border-slate-800">
-                    <input id="thread-reply-input-${threadId}" type="text" placeholder="Escribe una respuesta al hilo..." class="bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
-                    <div class="flex items-center justify-between gap-2">
-                      <input id="thread-reply-file-${threadId}" type="file" accept="image/*,video/*" class="text-[10px] text-slate-400">
-                      <button onclick="addThreadReply('${threadId}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold transition">Responder</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-            container.insertAdjacentHTML('beforeend', card);
-            listenThreadReplies(groupId, threadId);
-          });
-        });
     }
 
     async function addThreadReply(threadId) {
@@ -1116,13 +1334,13 @@
             let mediaHTML = '';
             if (r.mediaUrl) {
               mediaHTML = r.mediaType === 'video'
-                ? `<video src="${r.mediaUrl}" controls class="rounded w-full max-h-48 object-cover mt-1"></video>`
-                : `<img src="${r.mediaUrl}" class="rounded w-full max-h-48 object-cover mt-1">`;
+                ? `<video src="${r.mediaUrl}" controls class="rounded w-full mt-1"></video>`
+                : `<img src="${r.mediaUrl}" class="rounded w-full mt-1">`;
             }
 
             const replyCard = `
               <div class="p-2 bg-slate-950 border border-slate-800 rounded-lg space-y-1">
-                <span onclick="viewUserProfile('${r.authorUid}')" class="font-bold text-[11px] text-red-400 cursor-pointer hover:underline">${r.authorName}:</span>
+                <span>${getUserLinkHTML(r.authorUid, r.authorName)}:</span>
                 <p class="text-xs text-slate-200">${r.text}</p>
                 ${mediaHTML}
               </div>
@@ -1132,7 +1350,97 @@
         });
     }
 
-    // VISUALIZAR PERFIL INDIVIDUAL DE USUARIO
+    // MOSTRAR FOTOS Y VIDEOS EN TAMAÑO ORIGINAL EN PUBLICACIONES Y FEED
+    function loadPosts() {
+      db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        const feedContainer = document.getElementById('posts-feed');
+        feedContainer.innerHTML = '';
+
+        if (snapshot.empty) {
+          feedContainer.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">Aún no hay publicaciones en la comunidad.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const post = doc.data();
+          const postId = doc.id;
+          const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
+          const likes = post.likes || [];
+          const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
+
+          let mediaHTML = '';
+          if (post.mediaUrl) {
+            if (post.mediaType === 'video') {
+              mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full border border-slate-700"></video>`;
+            } else {
+              mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full border border-slate-700">`;
+            }
+          }
+
+          const card = `
+            <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
+              <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white shrink-0">
+                    ${(post.authorName || 'U').charAt(0)}
+                  </div>
+                  <div>
+                    ${getUserLinkHTML(post.userId, post.authorName, post.authorUsername)}
+                  </div>
+                </div>
+
+                <div class="relative">
+                  <button onclick="togglePostMenu('${postId}')" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                  </button>
+                  <div id="menu-${postId}" class="hidden absolute right-0 top-6 w-36 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
+                    ${isOwner ? `
+                      <button onclick="editPost('${postId}', '${post.content}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Editar</button>
+                      <button onclick="deletePost('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Eliminar</button>
+                    ` : `
+                      <button onclick="blockPostUI('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Ocultar</button>
+                      <button onclick="openReportModal('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Reportar</button>
+                    `}
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-xs text-slate-200">${post.content}</p>
+              ${mediaHTML}
+
+              <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
+                <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
+                  <i data-lucide="heart" class="w-4 h-4"></i>
+                  <span>${likes.length}</span>
+                </button>
+                <button onclick="toggleCommentsBox('${postId}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  <span>Comentarios</span>
+                </button>
+                <button onclick="openShareModal('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+                  <i data-lucide="share-2" class="w-4 h-4"></i>
+                  <span>Compartir</span>
+                </button>
+              </div>
+
+              <div id="comments-section-${postId}" class="hidden pt-3 border-t border-slate-800 space-y-2">
+                <div class="flex gap-2">
+                  <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
+                  <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
+                </div>
+                <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
+              </div>
+            </div>
+          `;
+
+          feedContainer.insertAdjacentHTML('beforeend', card);
+        });
+
+        lucide.createIcons();
+      });
+    }
+
+    // PERFIL DE USUARIO
     async function viewUserProfile(uid) {
       activeProfileUid = uid;
       switchTab('profile');
@@ -1245,9 +1553,9 @@
         let mediaHTML = '';
         if (post.mediaUrl) {
           if (post.mediaType === 'video') {
-            mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full max-h-96 object-cover border border-slate-700"></video>`;
+            mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full border border-slate-700"></video>`;
           } else {
-            mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">`;
+            mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full border border-slate-700">`;
           }
         }
 
@@ -1259,8 +1567,7 @@
                 ${(post.authorName || 'U').charAt(0)}
               </div>
               <div>
-                <h3 class="font-semibold text-xs text-white">${post.authorName || 'Usuario'}</h3>
-                <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
+                ${getUserLinkHTML(post.userId, post.authorName, post.authorUsername)}
               </div>
             </div>
 
@@ -1298,85 +1605,7 @@
       document.getElementById('modal-post-detail').classList.add('hidden');
     }
 
-    // NOTIFICACIONES
-    function listenNotifications() {
-      const uid = auth.currentUser?.uid;
-      if (!uid) return;
-
-      db.collection('users').doc(uid).collection('notifications')
-        .orderBy('createdAt', 'desc').limit(20)
-        .onSnapshot(snapshot => {
-          const notifList = document.getElementById('notifs-list');
-          const badge = document.getElementById('notif-badge');
-          
-          const incomingRequests = currentUserData?.incomingRequests || [];
-          let unreadCount = incomingRequests.length;
-
-          notifList.innerHTML = '';
-
-          incomingRequests.forEach(r => {
-            const reqItem = `
-              <div class="p-2 bg-slate-900 border border-amber-500/30 rounded-lg space-y-1.5">
-                <p class="text-white text-xs"><strong>${r.name}</strong> (@${r.username}) te envió una solicitud de amistad.</p>
-                <div class="flex items-center gap-1 pt-1">
-                  <button onclick="acceptFriendRequest('${r.uid}', '${r.name}', '${r.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] px-2 py-1 rounded font-bold">Aceptar</button>
-                  <button onclick="rejectFriendRequest('${r.uid}', '${r.name}', '${r.username}')" class="bg-slate-800 text-slate-400 text-[10px] px-2 py-1 rounded">Rechazar</button>
-                </div>
-              </div>
-            `;
-            notifList.insertAdjacentHTML('beforeend', reqItem);
-          });
-
-          snapshot.forEach(doc => {
-            const n = doc.data();
-            if (!n.read) unreadCount++;
-            const item = `
-              <div class="p-2 bg-slate-900 border border-slate-800 rounded-lg flex items-center gap-2">
-                <i data-lucide="bell" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                <p class="text-slate-300 text-xs">${n.text}</p>
-              </div>
-            `;
-            notifList.insertAdjacentHTML('beforeend', item);
-          });
-
-          if (incomingRequests.length === 0 && snapshot.empty) {
-            notifList.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No tienes notificaciones recientes.</p>';
-          }
-
-          if (unreadCount > 0) {
-            badge.innerText = unreadCount;
-            badge.classList.remove('hidden');
-          } else {
-            badge.classList.add('hidden');
-          }
-
-          lucide.createIcons();
-        });
-    }
-
-    async function addNotification(targetUid, type, text) {
-      if (!targetUid || targetUid === auth.currentUser?.uid) return;
-      try {
-        await db.collection('users').doc(targetUid).collection('notifications').add({
-          type,
-          text,
-          read: false,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      } catch (err) { console.error(err); }
-    }
-
-    function toggleNotifsDropdown() {
-      document.getElementById('notifs-dropdown').classList.toggle('hidden');
-      document.getElementById('chat-dropdown').classList.add('hidden');
-    }
-
-    function toggleChatDropdown() {
-      document.getElementById('chat-dropdown').classList.toggle('hidden');
-      document.getElementById('notifs-dropdown').classList.add('hidden');
-    }
-
-    // HISTORIAS
+    // HISTORIAS DE TAMAÑO ORIGINAL
     function openUploadStoryModal() {
       document.getElementById('modal-upload-story').classList.remove('hidden');
     }
@@ -1483,15 +1712,15 @@
       const userGroup = userStoriesQueue[currentUserIndex];
       const story = userGroup.stories[currentStoryIndex];
 
-      document.getElementById('story-viewer-name').innerText = `${userGroup.authorName} (${currentStoryIndex + 1}/${userGroup.stories.length})`;
+      document.getElementById('story-viewer-name').innerHTML = `${getUserLinkHTML(userGroup.userId, userGroup.authorName)} (${currentStoryIndex + 1}/${userGroup.stories.length})`;
       const avatarContainer = document.getElementById('story-viewer-avatar');
       avatarContainer.innerHTML = userGroup.authorAvatar ? `<img src="${userGroup.authorAvatar}" class="w-full h-full object-cover rounded-full">` : userGroup.authorName.charAt(0);
 
       const contentBox = document.getElementById('story-viewer-content');
       if (story.mediaType === 'video') {
-        contentBox.innerHTML = `<video src="${story.mediaUrl}" controls autoplay class="max-h-[70vh] w-full object-contain"></video>`;
+        contentBox.innerHTML = `<video src="${story.mediaUrl}" controls autoplay class="w-full"></video>`;
       } else {
-        contentBox.innerHTML = `<img src="${story.mediaUrl}" class="max-h-[70vh] w-full object-contain">`;
+        contentBox.innerHTML = `<img src="${story.mediaUrl}" class="w-full">`;
       }
 
       document.getElementById('modal-view-story').classList.remove('hidden');
@@ -1704,7 +1933,7 @@
             const card = `
               <div id="comment-card-${c.id}" class="p-2 bg-slate-900 border border-slate-800 rounded-lg space-y-1.5 relative">
                 <div class="flex items-center justify-between">
-                  <span onclick="viewUserProfile('${c.authorUid}')" class="font-bold text-xs text-white cursor-pointer hover:underline">${c.authorName} <span class="text-[10px] text-slate-400">@${c.authorUsername}</span></span>
+                  ${getUserLinkHTML(c.authorUid, c.authorName, c.authorUsername)}
                   
                   <div class="relative">
                     <button onclick="toggleCommentMenu('${c.id}')" class="text-slate-500 hover:text-white p-0.5">
@@ -1728,7 +1957,7 @@
                 <div class="pl-3 border-l border-slate-700 space-y-1 mt-1">
                   ${replies.map(r => `
                     <div class="p-1.5 bg-slate-950 rounded text-xs">
-                      <span onclick="viewUserProfile('${r.authorUid}')" class="font-bold text-white text-[11px] cursor-pointer hover:underline">${r.authorName}:</span>
+                      ${getUserLinkHTML(r.authorUid, r.authorName)}:
                       <span class="text-slate-300 text-[11px]">${r.text}</span>
                     </div>
                   `).join('')}
@@ -1748,97 +1977,6 @@
 
     function toggleReplyBox(commentId) {
       document.getElementById(`reply-box-${commentId}`).classList.toggle('hidden');
-    }
-
-    // FEED PRINCIPAL
-    function loadPosts() {
-      db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-        const feedContainer = document.getElementById('posts-feed');
-        feedContainer.innerHTML = '';
-
-        if (snapshot.empty) {
-          feedContainer.innerHTML = `<div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">Aún no hay publicaciones en la comunidad.</p></div>`;
-          return;
-        }
-
-        snapshot.forEach(doc => {
-          const post = doc.data();
-          const postId = doc.id;
-          const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
-          const likes = post.likes || [];
-          const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
-
-          let mediaHTML = '';
-          if (post.mediaUrl) {
-            if (post.mediaType === 'video') {
-              mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full max-h-96 object-cover border border-slate-700"></video>`;
-            } else {
-              mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full max-h-96 object-cover border border-slate-700">`;
-            }
-          }
-
-          const card = `
-            <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
-              <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
-                <div onclick="viewUserProfile('${post.userId}')" class="flex items-center gap-3 cursor-pointer group">
-                  <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white group-hover:scale-105 transition">
-                    ${(post.authorName || 'U').charAt(0)}
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-xs text-white group-hover:text-red-400 transition">${post.authorName || 'Usuario'}</h3>
-                    <p class="text-[11px] text-slate-400">@${post.authorUsername || 'usuario'}</p>
-                  </div>
-                </div>
-
-                <div class="relative">
-                  <button onclick="togglePostMenu('${postId}')" class="text-slate-400 hover:text-white p-1">
-                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
-                  </button>
-                  <div id="menu-${postId}" class="hidden absolute right-0 top-6 w-36 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
-                    ${isOwner ? `
-                      <button onclick="editPost('${postId}', '${post.content}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Editar</button>
-                      <button onclick="deletePost('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Eliminar</button>
-                    ` : `
-                      <button onclick="blockPostUI('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Ocultar</button>
-                      <button onclick="openReportModal('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Reportar</button>
-                    `}
-                  </div>
-                </div>
-              </div>
-
-              <p class="text-xs text-slate-200">${post.content}</p>
-              ${mediaHTML}
-
-              <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
-                <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
-                  <i data-lucide="heart" class="w-4 h-4"></i>
-                  <span>${likes.length}</span>
-                </button>
-                <button onclick="toggleCommentsBox('${postId}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
-                  <i data-lucide="message-square" class="w-4 h-4"></i>
-                  <span>Comentarios</span>
-                </button>
-                <button onclick="openShareModal('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
-                  <i data-lucide="share-2" class="w-4 h-4"></i>
-                  <span>Compartir</span>
-                </button>
-              </div>
-
-              <div id="comments-section-${postId}" class="hidden pt-3 border-t border-slate-800 space-y-2">
-                <div class="flex gap-2">
-                  <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
-                  <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
-                </div>
-                <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
-              </div>
-            </div>
-          `;
-
-          feedContainer.insertAdjacentHTML('beforeend', card);
-        });
-
-        lucide.createIcons();
-      });
     }
 
     async function toggleLikePost(postId) {
@@ -2069,13 +2207,12 @@
 
           return `
             <div class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg transition">
-              <div onclick="viewUserProfile('${u.uid}')" class="flex items-center gap-2 cursor-pointer">
+              <div class="flex items-center gap-2 cursor-pointer">
                 <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs text-white">
                   ${u.name.charAt(0)}
                 </div>
                 <div>
-                  <p class="font-semibold text-white text-xs">${u.name}</p>
-                  <p class="text-[10px] text-slate-400">@${u.username}</p>
+                  ${getUserLinkHTML(u.uid, u.name, u.username)}
                 </div>
               </div>
               ${actionButton}
@@ -2148,8 +2285,7 @@
               ${f.name.charAt(0)}
             </div>
             <div>
-              <p class="font-semibold text-white text-xs">${f.name}</p>
-              <p class="text-[10px] text-slate-400">@${f.username}</p>
+              ${getUserLinkHTML(f.uid, f.name, f.username)}
             </div>
           </div>
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -2216,7 +2352,7 @@
           const item = doc.data();
           const card = `
             <div class="market-card bg-slate-800/90 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3">
-              <img src="${item.imageUrl}" class="w-full h-44 object-cover rounded-lg">
+              <img src="${item.imageUrl}" class="w-full rounded-lg">
               <div class="flex justify-between items-start">
                 <h3 class="font-bold text-sm text-white">${item.title}</h3>
                 <span class="text-red-400 font-black text-sm">$${item.price.toLocaleString('es-CL')}</span>
@@ -2301,7 +2437,6 @@
         activeBtn.classList.remove('text-slate-400');
       }
 
-      // Si se navega a la pestaña de Grupos, volver a la vista de lista
       if (tabId === 'groups') {
         backToGroupsList();
       }
