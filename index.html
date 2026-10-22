@@ -33,11 +33,11 @@
         <span class="text-lg font-black tracking-wider text-white">MI<span class="text-red-500">GARAGE</span></span>
       </div>
 
-      <!-- BÚSQUEDA GLOBAL -->
+      <!-- BÚSQUEDA GLOBAL TOTAL -->
       <div class="relative flex-1 max-w-md hidden sm:block">
         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
-        <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Buscar personas (@usuario), publicaciones, productos..." class="w-full bg-slate-900 border border-slate-700/80 rounded-full pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
-        <div id="search-results-dropdown" class="hidden absolute top-10 left-0 right-0 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 space-y-2 z-50 max-h-60 overflow-y-auto"></div>
+        <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Buscar personas, autos, grupos, hilos o productos..." class="w-full bg-slate-900 border border-slate-700/80 rounded-full pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
+        <div id="search-results-dropdown" class="hidden absolute top-10 left-0 right-0 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 space-y-2 z-50 max-h-80 overflow-y-auto"></div>
       </div>
 
       <!-- ACCIONES DE BARRA SUPERIOR -->
@@ -64,7 +64,22 @@
     </div>
   </header>
 
-  <!-- DROPDOWN NOTIFICACIONES (MÁXIMO VISIBLE EQUIVALENTE A 10 NOTIFICACIONES) -->
+  <!-- MODAL / LIGHTBOX DE IMÁGENES CON ZOOM -->
+  <div id="modal-image-lightbox" onclick="closeImageLightbox()" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center">
+      <button onclick="closeImageLightbox()" class="absolute -top-10 right-0 text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-full border border-slate-700 z-50">✕</button>
+      <div class="overflow-hidden rounded-xl border border-slate-800 shadow-2xl relative flex items-center justify-center">
+        <img id="lightbox-image" src="" class="max-w-full max-h-[80vh] object-contain transition-transform duration-200 ease-out">
+      </div>
+      <div class="flex items-center gap-3 mt-3 bg-slate-900/90 border border-slate-700 px-4 py-1.5 rounded-full">
+        <button onclick="adjustLightboxZoom(-0.25)" class="text-white hover:text-red-500 font-bold text-sm"><i data-lucide="zoom-out" class="w-4 h-4"></i></button>
+        <button onclick="resetLightboxZoom()" class="text-slate-300 hover:text-white text-xs font-semibold">100%</button>
+        <button onclick="adjustLightboxZoom(0.25)" class="text-white hover:text-red-500 font-bold text-sm"><i data-lucide="zoom-in" class="w-4 h-4"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DROPDOWN NOTIFICACIONES -->
   <div id="notifs-dropdown" class="hidden fixed top-16 right-16 z-50 w-80 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl overflow-hidden">
     <div class="p-3 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
       <span class="text-xs font-bold text-white flex items-center gap-2">
@@ -91,8 +106,8 @@
   </div>
 
   <!-- MODAL COMPARTIR PUBLICACIÓN -->
-  <div id="modal-share-post" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-share-post" onclick="closeShareModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="share-2" class="text-red-500 w-4 h-4"></i> Compartir Publicación</h3>
         <button onclick="closeShareModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -110,24 +125,16 @@
   </div>
 
   <!-- MODAL DETALLE DE PUBLICACIÓN PERFIL -->
-  <div id="modal-post-detail" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+  <div id="modal-post-detail" onclick="closePostDetailModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button onclick="closePostDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white z-10">✕</button>
       <div id="post-detail-container"></div>
     </div>
   </div>
 
-  <!-- MODAL VER HILO DE GRUPO DESPLEGADO -->
-  <div id="modal-thread-detail" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeThreadDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white z-10">✕</button>
-      <div id="thread-detail-container"></div>
-    </div>
-  </div>
-
   <!-- MODAL ADMINISTRAR MIEMBROS DE GRUPO -->
-  <div id="modal-manage-members" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-manage-members" onclick="closeManageMembersModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="user-x" class="text-red-500 w-4 h-4"></i> Administrar Miembros</h3>
         <button onclick="closeManageMembersModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -137,8 +144,8 @@
   </div>
 
   <!-- MODAL CREAR HILO EN GRUPO -->
-  <div id="modal-create-thread" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-create-thread" onclick="closeCreateThreadModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="message-square-plus" class="text-red-500 w-4 h-4"></i> Crear Hilo de Debate</h3>
         <button onclick="closeCreateThreadModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -165,8 +172,8 @@
   </div>
 
   <!-- MODAL EDITAR PERFIL DE GRUPO -->
-  <div id="modal-edit-group" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-edit-group" onclick="closeEditGroupModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="edit-3" class="text-red-500 w-4 h-4"></i> Editar Perfil del Grupo</h3>
         <button onclick="closeEditGroupModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -193,8 +200,8 @@
   </div>
 
   <!-- MODAL AUTENTICACIÓN -->
-  <div id="modal-auth" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+  <div id="modal-auth" onclick="closeAuthModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 id="auth-title" class="font-bold text-sm text-white flex items-center gap-2">Iniciar Sesión</h3>
         <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -248,8 +255,8 @@
   </div>
 
   <!-- MODAL CONFIGURACIÓN / EDITAR PERFIL PROPIO -->
-  <div id="modal-settings" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-settings" onclick="toggleSettingsModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
           <i data-lucide="settings" class="text-slate-400 w-4 h-4"></i> Configuración de Cuenta
@@ -268,8 +275,8 @@
     </div>
   </div>
 
-  <div id="modal-edit-profile" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-edit-profile" onclick="closeEditProfileModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2">
           <i data-lucide="user-check" class="text-red-500 w-4 h-4"></i> Editar Perfil
@@ -299,8 +306,8 @@
   </div>
 
   <!-- MODAL SUBIR Y VER HISTORIAS -->
-  <div id="modal-upload-story" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-upload-story" onclick="closeUploadStoryModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="camera" class="text-red-500 w-4 h-4"></i> Crear Historia</h3>
         <button onclick="closeUploadStoryModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -316,16 +323,16 @@
     </div>
   </div>
 
-  <div id="modal-view-story" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4">
+  <div id="modal-view-story" onclick="closeViewStoryModal()" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4">
     <button onclick="closeViewStoryModal()" class="absolute top-4 right-4 text-white bg-slate-800 p-2 rounded-full border border-slate-700 z-50">✕</button>
-    <div id="story-viewer-card" onmousedown="pauseStoryProgress()" onmouseup="resumeStoryProgress()" onmouseleave="resumeStoryProgress()" class="max-w-md w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col items-center select-none">
+    <div id="story-viewer-card" onclick="event.stopPropagation()" onmousedown="pauseStoryProgress()" onmouseup="resumeStoryProgress()" onmouseleave="resumeStoryProgress()" class="max-w-md w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col items-center select-none">
       
       <div class="w-full h-1 bg-slate-800">
         <div id="story-progress-bar" class="h-full bg-red-600 w-0 transition-all duration-100 ease-linear"></div>
       </div>
 
       <div class="p-3 bg-slate-950 w-full flex items-center gap-3 border-b border-slate-800">
-        <div id="story-viewer-avatar" class="w-8 h-8 rounded-full bg-red-600 font-bold text-xs flex items-center justify-center text-white">U</div>
+        <div id="story-viewer-avatar" class="w-8 h-8 rounded-full bg-red-600 font-bold text-xs flex items-center justify-center text-white overflow-hidden">U</div>
         <div>
           <p id="story-viewer-name" class="font-bold text-xs text-white">Usuario</p>
           <p id="story-viewer-time" class="text-[10px] text-slate-400">Hace un momento</p>
@@ -336,8 +343,8 @@
   </div>
 
   <!-- VISOR DE AMIGOS -->
-  <div id="modal-friends-list" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-friends-list" onclick="closeFriendsModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="users" class="text-red-500 w-4 h-4"></i> Lista de Amigos</h3>
         <button onclick="closeFriendsModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -347,8 +354,8 @@
   </div>
 
   <!-- REPORTAR POST -->
-  <div id="modal-report" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-report" onclick="closeReportModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="flag" class="text-red-500 w-4 h-4"></i> Reportar publicación</h3>
         <button onclick="closeReportModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -370,8 +377,8 @@
   </div>
 
   <!-- MODAL CREAR PUBLICACIÓN -->
-  <div id="modal-post" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-post" onclick="togglePostModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="pen-tool" class="text-red-500 w-4 h-4"></i> Crear nueva publicación</h3>
         <button onclick="togglePostModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -392,8 +399,8 @@
   </div>
 
   <!-- MODAL MARKET -->
-  <div id="modal-sell" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-sell" onclick="toggleSellModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="plus-circle" class="text-emerald-500 w-4 h-4"></i> Publicar en Market</h3>
         <button onclick="toggleSellModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -434,8 +441,8 @@
   </div>
 
   <!-- MODAL CREAR GRUPO -->
-  <div id="modal-group" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+  <div id="modal-group" onclick="toggleGroupModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <h3 class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="users" class="text-red-500 w-4 h-4"></i> Crear Nueva Comunidad / Grupo</h3>
         <button onclick="toggleGroupModal()" class="text-slate-400 hover:text-white">✕</button>
@@ -545,7 +552,7 @@
     <!-- 3. GRUPOS -->
     <section id="tab-groups" class="tab-content hidden space-y-6">
       
-      <!-- LISTA DE GRUPOS -->
+      <!-- VISTA 1: LISTA DE GRUPOS -->
       <div id="groups-list-view" class="space-y-6">
         <div class="bg-slate-800/90 border border-slate-700 p-5 rounded-xl flex justify-between items-center shadow-lg backdrop-blur-sm">
           <div>
@@ -563,30 +570,38 @@
         </div>
       </div>
 
-      <!-- VISTA DETALLE / PERFIL DEL GRUPO -->
+      <!-- VISTA 2: PERFIL DEL GRUPO SELECCIONADO -->
       <div id="group-profile-view" class="hidden space-y-6">
         <button onclick="backToGroupsList()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
           <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a Grupos
         </button>
 
         <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl backdrop-blur-sm space-y-4">
-          <div id="group-admin-actions" class="hidden absolute top-4 right-4 flex items-center gap-2">
-            <button onclick="openManageMembersModal()" class="bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition text-xs font-bold flex items-center gap-1">
-              <i data-lucide="user-x" class="w-3.5 h-3.5 text-amber-500"></i> Miembros
+          
+          <!-- BOTÓN DE ENGRANAJE DE CONFIGURACIÓN DE GRUPO -->
+          <div id="group-admin-actions" class="hidden absolute top-4 right-4 relative">
+            <button onclick="toggleGroupSettingsMenu()" class="bg-slate-900 hover:bg-slate-700 text-white p-2 rounded-lg border border-slate-700 transition shadow-md flex items-center justify-center">
+              <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i>
             </button>
-            <button onclick="openEditGroupModal()" class="bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition text-xs font-bold flex items-center gap-1">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-red-500"></i> Editar
-            </button>
-            <button onclick="deleteActiveGroup()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded-lg border border-red-500/30 transition text-xs font-bold flex items-center gap-1">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Grupo
-            </button>
+            <div id="group-settings-dropdown" class="hidden absolute right-0 top-10 w-48 bg-slate-950 border border-slate-800 rounded-lg shadow-2xl z-30 py-1 text-xs">
+              <button onclick="openEditGroupModal()" class="w-full text-left px-3 py-2 hover:bg-slate-800 text-slate-200 flex items-center gap-2 font-semibold">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-red-500"></i> Editar Grupo
+              </button>
+              <button onclick="openManageMembersModal()" class="w-full text-left px-3 py-2 hover:bg-slate-800 text-slate-200 flex items-center gap-2 font-semibold">
+                <i data-lucide="user-x" class="w-3.5 h-3.5 text-amber-500"></i> Administrar Miembros
+              </button>
+              <div class="border-t border-slate-800 my-1"></div>
+              <button onclick="deleteActiveGroup()" class="w-full text-left px-3 py-2 hover:bg-red-600/20 text-red-400 hover:text-white flex items-center gap-2 font-semibold">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Eliminar Grupo
+              </button>
+            </div>
           </div>
 
           <div class="flex flex-col sm:flex-row items-center gap-5">
             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
               <div id="group-profile-avatar" class="w-full h-full rounded-full bg-slate-950 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
                 <span id="group-avatar-initials">G</span>
-                <img id="group-avatar-img" src="" class="hidden w-full h-full">
+                <img id="group-avatar-img" onclick="openImageLightbox(this.src)" class="hidden w-full h-full object-cover cursor-pointer">
               </div>
             </div>
 
@@ -630,6 +645,15 @@
 
       </div>
 
+      <!-- VISTA 3: VISTA INDIVIDUAL COMPLETA DEL HILO (EN LUGAR DE MODAL FLOTANTE) -->
+      <div id="thread-full-view" class="hidden space-y-6">
+        <button onclick="backToGroupProfile()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Grupo
+        </button>
+
+        <div id="thread-full-container" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 shadow-xl backdrop-blur-sm space-y-6"></div>
+      </div>
+
     </section>
 
     <!-- 4. PERFIL -->
@@ -644,7 +668,7 @@
           <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
             <div id="profile-avatar-display" class="w-full h-full rounded-full bg-red-600 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
               <span id="profile-avatar-initials">YO</span>
-              <img id="profile-avatar-img" src="" class="hidden w-full h-full object-cover">
+              <img id="profile-avatar-img" onclick="openImageLightbox(this.src)" class="hidden w-full h-full object-cover cursor-pointer">
             </div>
           </div>
 
@@ -775,12 +799,12 @@
     let activeChatUnsubscribe = null;
     let unreadCounts = {};
     let activeSharePostContent = '';
+    let currentZoom = 1;
 
-    // ESTRUCTURAS DE HISTORIAS
+    // HISTORIAS
     let userStoriesQueue = [];
     let currentUserIndex = 0;
     let currentStoryIndex = 0;
-
     let storyProgressInterval = null;
     let storyElapsedTime = 0;
     let isStoryPaused = false;
@@ -842,13 +866,36 @@
       });
     }
 
-    // HELPER PARA BOTÓN CLICABLE A PERFIL
     function getUserLinkHTML(uid, name, username = '') {
       const userText = username ? `${name} <span class="text-[10px] text-slate-400 font-normal">@${username}</span>` : name;
       return `<span onclick="event.stopPropagation(); viewUserProfile('${uid}')" class="font-bold text-white cursor-pointer hover:text-red-400 hover:underline transition">${userText}</span>`;
     }
 
-    // NOTIFICACIONES: MARCAR LEÍDAS AL ABRIR Y ACUMULACIÓN ORDENADA (MAX 10 EN VISTA)
+    // LIGHTBOX CON ZOOM PARA FOTOS
+    function openImageLightbox(src) {
+      const lightbox = document.getElementById('modal-image-lightbox');
+      const img = document.getElementById('lightbox-image');
+      img.src = src;
+      currentZoom = 1;
+      img.style.transform = `scale(${currentZoom})`;
+      lightbox.classList.remove('hidden');
+    }
+
+    function closeImageLightbox() {
+      document.getElementById('modal-image-lightbox').classList.add('hidden');
+    }
+
+    function adjustLightboxZoom(amount) {
+      currentZoom = Math.max(0.5, Math.min(3, currentZoom + amount));
+      document.getElementById('lightbox-image').style.transform = `scale(${currentZoom})`;
+    }
+
+    function resetLightboxZoom() {
+      currentZoom = 1;
+      document.getElementById('lightbox-image').style.transform = `scale(${currentZoom})`;
+    }
+
+    // NOTIFICACIONES
     function toggleNotifsDropdown() {
       const dropdown = document.getElementById('notifs-dropdown');
       const isHidden = dropdown.classList.contains('hidden');
@@ -856,7 +903,6 @@
       document.getElementById('chat-dropdown').classList.add('hidden');
 
       if (isHidden && auth.currentUser) {
-        // MARCAR TODAS LAS NOTIFICACIONES COMO LEÍDAS AL ABRIR
         document.getElementById('notif-badge').classList.add('hidden');
         db.collection('users').doc(auth.currentUser.uid).collection('notifications')
           .where('read', '==', false).get().then(snapshot => {
@@ -938,7 +984,7 @@
       document.getElementById('notifs-dropdown').classList.add('hidden');
     }
 
-    // PESTAÑA GRUPOS: ELIMINACIÓN DE GRUPO Y MIEMBROS
+    // PESTAÑA GRUPOS Y CONFIGURACIÓN TIPO ENGRANAJE
     function loadGroups() {
       db.collection('groups').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('groups-grid');
@@ -956,7 +1002,7 @@
 
           const card = `
             <div onclick="openGroupProfile('${groupId}')" class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3 cursor-pointer hover:border-red-500/50 transition">
-              <img src="${group.imageUrl}" class="w-full rounded-lg">
+              <img src="${group.imageUrl}" onclick="event.stopPropagation(); openImageLightbox('${group.imageUrl}')" class="w-full rounded-lg object-cover max-h-48">
               <div class="flex items-center justify-between">
                 <h3 class="font-bold text-base text-white">${group.name}</h3>
                 <span class="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 font-bold px-2 py-0.5 rounded">${members.length} miembros</span>
@@ -969,9 +1015,14 @@
       });
     }
 
+    function toggleGroupSettingsMenu() {
+      document.getElementById('group-settings-dropdown').classList.toggle('hidden');
+    }
+
     async function openGroupProfile(groupId) {
       activeGroupId = groupId;
       document.getElementById('groups-list-view').classList.add('hidden');
+      document.getElementById('thread-full-view').classList.add('hidden');
       document.getElementById('group-profile-view').classList.remove('hidden');
 
       db.collection('groups').doc(groupId).onSnapshot(async doc => {
@@ -1010,10 +1061,9 @@
           avatarInitials.classList.remove('hidden');
         }
 
-        // ACCIONES DE ADMINISTRADOR (EDITAR, ADMINISTRAR MIEMBROS Y ELIMINAR GRUPO)
+        // MOSTRAR U OCULTAR MENÚ ENGRANAJE DE ADMINISTRADOR
         document.getElementById('group-admin-actions').classList.toggle('hidden', !isAdmin);
 
-        // BOTÓN DE UNIRSE O ESTADO DE MIEMBRO
         const joinBtn = document.getElementById('group-join-btn');
         if (isMember) {
           joinBtn.innerText = 'Miembro √';
@@ -1025,7 +1075,6 @@
           joinBtn.onclick = () => joinActiveGroup();
         }
 
-        // HILOS SOLO INTERACTUABLES POR MIEMBROS
         document.getElementById('btn-new-thread').classList.toggle('hidden', !isMember);
 
         loadGroupThreads(groupId, isMember);
@@ -1036,7 +1085,13 @@
       activeGroupId = null;
       activeGroupData = null;
       document.getElementById('group-profile-view').classList.add('hidden');
+      document.getElementById('thread-full-view').classList.add('hidden');
       document.getElementById('groups-list-view').classList.remove('hidden');
+    }
+
+    function backToGroupProfile() {
+      document.getElementById('thread-full-view').classList.add('hidden');
+      document.getElementById('group-profile-view').classList.remove('hidden');
     }
 
     async function joinActiveGroup() {
@@ -1058,7 +1113,6 @@
       const imageUrl = await readFileAsDataURL(file);
 
       try {
-        // CREADOR ES AUTOMÁTICAMENTE EL PRIMER MIEMBRO Y ADMINISTRADOR
         await db.collection('groups').add({
           ownerId: auth.currentUser.uid,
           admins: [auth.currentUser.uid],
@@ -1085,6 +1139,7 @@
     }
 
     async function openManageMembersModal() {
+      document.getElementById('group-settings-dropdown').classList.add('hidden');
       if (!activeGroupData) return;
       const listEl = document.getElementById('group-members-manage-list');
       listEl.innerHTML = '<p class="text-xs text-slate-400 p-2">Cargando miembros...</p>';
@@ -1131,6 +1186,7 @@
     }
 
     function openEditGroupModal() {
+      document.getElementById('group-settings-dropdown').classList.add('hidden');
       if (!activeGroupData) return;
       document.getElementById('edit-group-name').value = activeGroupData.name;
       document.getElementById('edit-group-desc').value = activeGroupData.desc;
@@ -1158,7 +1214,7 @@
       } catch (err) { alert(err.message); }
     }
 
-    // LISTA RESUMIDA DE HILOS Y DESPLIEGUE EN MODAL
+    // LISTA DE HILOS Y NAVEGACIÓN A VISTA INDIVIDUAL DEL HILO
     function loadGroupThreads(groupId, isMember) {
       db.collection('groups').doc(groupId).collection('threads')
         .orderBy('createdAt', 'desc')
@@ -1175,9 +1231,8 @@
             const t = doc.data();
             const threadId = doc.id;
 
-            // VISTA RESUMIDA SIN IMÁGENES
             const card = `
-              <div onclick="openThreadDetailModal('${threadId}')" class="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-xl p-4 cursor-pointer transition flex items-center justify-between gap-4">
+              <div onclick="openThreadFullView('${threadId}')" class="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-xl p-4 cursor-pointer transition flex items-center justify-between gap-4">
                 <div class="space-y-1 flex-1">
                   <h4 class="font-bold text-sm text-white hover:text-red-400 transition">${t.title}</h4>
                   <p class="text-xs text-slate-400 line-clamp-1">${t.desc}</p>
@@ -1185,7 +1240,7 @@
                 </div>
                 <div class="flex items-center gap-2 shrink-0 text-slate-400 text-xs">
                   <i data-lucide="message-square" class="w-4 h-4 text-red-500"></i>
-                  <span>Ver Hilo</span>
+                  <span>Ver Hilo completo</span>
                 </div>
               </div>
             `;
@@ -1195,7 +1250,7 @@
         });
     }
 
-    async function openThreadDetailModal(threadId) {
+    async function openThreadFullView(threadId) {
       if (!activeGroupId) return;
 
       try {
@@ -1209,45 +1264,43 @@
         let mediaHTML = '';
         if (t.mediaUrl) {
           mediaHTML = t.mediaType === 'video' 
-            ? `<video src="${t.mediaUrl}" controls class="rounded-lg w-full border border-slate-700 mt-2"></video>`
-            : `<img src="${t.mediaUrl}" class="rounded-lg w-full border border-slate-700 mt-2">`;
+            ? `<video src="${t.mediaUrl}" controls class="rounded-lg w-full border border-slate-700 mt-3"></video>`
+            : `<img src="${t.mediaUrl}" onclick="openImageLightbox('${t.mediaUrl}')" class="rounded-lg w-full border border-slate-700 mt-3 cursor-pointer">`;
         }
 
-        const detailContainer = document.getElementById('thread-detail-container');
-        detailContainer.innerHTML = `
+        const fullContainer = document.getElementById('thread-full-container');
+        fullContainer.innerHTML = `
+          <div class="border-b border-slate-800 pb-4 space-y-2">
+            <span class="text-xs text-slate-400">Iniciado por ${getUserLinkHTML(t.authorUid, t.authorName)}</span>
+            <h2 class="font-bold text-xl text-white">${t.title}</h2>
+            <p class="text-sm text-slate-200">${t.desc}</p>
+            ${mediaHTML}
+          </div>
+
           <div class="space-y-4">
-            <div class="border-b border-slate-800 pb-3">
-              <span class="text-[10px] text-slate-400">Iniciado por ${getUserLinkHTML(t.authorUid, t.authorName)}</span>
-              <h3 class="font-bold text-lg text-white mt-1">${t.title}</h3>
-              <p class="text-xs text-slate-200 mt-2">${t.desc}</p>
-              ${mediaHTML}
-            </div>
+            <h3 class="font-bold text-sm text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="message-circle" class="w-4 h-4 text-red-500"></i> Respuestas
+            </h3>
+            <div id="thread-replies-${threadId}" class="space-y-3"></div>
 
-            <div class="space-y-3">
-              <h4 class="font-bold text-xs text-slate-400 uppercase">Respuestas</h4>
-              <div id="thread-replies-${threadId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
-
-              ${isMember ? `
-                <div class="flex flex-col gap-2 pt-3 border-t border-slate-800">
-                  <input id="thread-reply-input-${threadId}" type="text" placeholder="Escribe una respuesta..." class="bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white">
-                  <div class="flex items-center justify-between gap-2">
-                    <input id="thread-reply-file-${threadId}" type="file" accept="image/*,video/*" class="text-[10px] text-slate-400">
-                    <button onclick="addThreadReply('${threadId}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded text-xs font-bold transition">Responder</button>
-                  </div>
+            ${isMember ? `
+              <div class="flex flex-col gap-2 pt-4 border-t border-slate-800">
+                <input id="thread-reply-input-${threadId}" type="text" placeholder="Escribe una respuesta al hilo..." class="bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-red-500">
+                <div class="flex items-center justify-between gap-2">
+                  <input id="thread-reply-file-${threadId}" type="file" accept="image/*,video/*" class="text-[10px] text-slate-400">
+                  <button onclick="addThreadReply('${threadId}')" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-xs font-bold transition">Responder</button>
                 </div>
-              ` : `<p class="text-xs text-amber-500 font-semibold text-center py-2 bg-slate-950 rounded-lg">Debes ser miembro del grupo para responder en este hilo.</p>`}
-            </div>
+              </div>
+            ` : `<p class="text-xs text-amber-500 font-semibold text-center py-3 bg-slate-950 rounded-lg border border-slate-800">Debes ser miembro del grupo para responder en este hilo.</p>`}
           </div>
         `;
 
-        document.getElementById('modal-thread-detail').classList.remove('hidden');
+        document.getElementById('group-profile-view').classList.add('hidden');
+        document.getElementById('thread-full-view').classList.remove('hidden');
+
         listenThreadReplies(activeGroupId, threadId);
         lucide.createIcons();
       } catch (err) { console.error(err); }
-    }
-
-    function closeThreadDetailModal() {
-      document.getElementById('modal-thread-detail').classList.add('hidden');
     }
 
     function openCreateThreadModal() {
@@ -1334,12 +1387,12 @@
             let mediaHTML = '';
             if (r.mediaUrl) {
               mediaHTML = r.mediaType === 'video'
-                ? `<video src="${r.mediaUrl}" controls class="rounded w-full mt-1"></video>`
-                : `<img src="${r.mediaUrl}" class="rounded w-full mt-1">`;
+                ? `<video src="${r.mediaUrl}" controls class="rounded w-full mt-2 border border-slate-800"></video>`
+                : `<img src="${r.mediaUrl}" onclick="openImageLightbox('${r.mediaUrl}')" class="rounded w-full mt-2 cursor-pointer border border-slate-800">`;
             }
 
             const replyCard = `
-              <div class="p-2 bg-slate-950 border border-slate-800 rounded-lg space-y-1">
+              <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-1">
                 <span>${getUserLinkHTML(r.authorUid, r.authorName)}:</span>
                 <p class="text-xs text-slate-200">${r.text}</p>
                 ${mediaHTML}
@@ -1350,7 +1403,7 @@
         });
     }
 
-    // MOSTRAR FOTOS Y VIDEOS EN TAMAÑO ORIGINAL EN PUBLICACIONES Y FEED
+    // CARGAR PUBLICACIONES
     function loadPosts() {
       db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const feedContainer = document.getElementById('posts-feed');
@@ -1373,7 +1426,7 @@
             if (post.mediaType === 'video') {
               mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full border border-slate-700"></video>`;
             } else {
-              mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full border border-slate-700">`;
+              mediaHTML = `<img src="${post.mediaUrl}" onclick="openImageLightbox('${post.mediaUrl}')" class="rounded-lg w-full border border-slate-700 cursor-pointer">`;
             }
           }
 
@@ -1440,7 +1493,101 @@
       });
     }
 
-    // PERFIL DE USUARIO
+    // BÚSQUEDA GLOBAL MULTI-SECCIÓN
+    async function handleGlobalSearch(query) {
+      const dropdown = document.getElementById('search-results-dropdown');
+      const cleanQuery = query.replace('@', '').trim().toLowerCase();
+
+      if (!cleanQuery) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      dropdown.classList.remove('hidden');
+      dropdown.innerHTML = '<p class="text-xs text-slate-400 p-2 text-center">Buscando en toda la plataforma...</p>';
+
+      try {
+        const [usersSnap, vehiclesSnap, groupsSnap, marketSnap] = await Promise.all([
+          db.collection('users').get(),
+          db.collection('vehicles').get(),
+          db.collection('groups').get(),
+          db.collection('market').get()
+        ]);
+
+        let resultsHTML = '';
+
+        // 1. USUARIOS
+        const users = usersSnap.docs.map(doc => doc.data()).filter(u => u.uid !== auth.currentUser?.uid && (u.username?.toLowerCase().includes(cleanQuery) || u.name?.toLowerCase().includes(cleanQuery)));
+        if (users.length > 0) {
+          resultsHTML += `<div class="text-[10px] font-bold text-red-500 uppercase px-2 pt-1">Personas</div>`;
+          users.forEach(u => {
+            resultsHTML += `
+              <div onclick="viewUserProfile('${u.uid}'); document.getElementById('search-results-dropdown').classList.add('hidden');" class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg cursor-pointer transition">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center font-bold text-[10px] text-white">${u.name.charAt(0)}</div>
+                  <span class="font-semibold text-white text-xs">${u.name} (@${u.username})</span>
+                </div>
+              </div>
+            `;
+          });
+        }
+
+        // 2. VEHÍCULOS
+        const vehicles = vehiclesSnap.docs.map(doc => doc.data()).filter(v => v.name?.toLowerCase().includes(cleanQuery) || v.desc?.toLowerCase().includes(cleanQuery));
+        if (vehicles.length > 0) {
+          resultsHTML += `<div class="text-[10px] font-bold text-amber-500 uppercase px-2 pt-2 border-t border-slate-800">Vehículos</div>`;
+          vehicles.forEach(v => {
+            resultsHTML += `
+              <div onclick="viewUserProfile('${v.userId}'); document.getElementById('search-results-dropdown').classList.add('hidden');" class="p-2 hover:bg-slate-800 rounded-lg cursor-pointer transition">
+                <p class="font-bold text-xs text-white">${v.name} (${v.year})</p>
+                <p class="text-[10px] text-slate-400">${v.desc}</p>
+              </div>
+            `;
+          });
+        }
+
+        // 3. GRUPOS
+        const groups = groupsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(g => g.name?.toLowerCase().includes(cleanQuery) || g.desc?.toLowerCase().includes(cleanQuery));
+        if (groups.length > 0) {
+          resultsHTML += `<div class="text-[10px] font-bold text-blue-500 uppercase px-2 pt-2 border-t border-slate-800">Grupos</div>`;
+          groups.forEach(g => {
+            resultsHTML += `
+              <div onclick="openGroupProfile('${g.id}'); document.getElementById('search-results-dropdown').classList.add('hidden');" class="p-2 hover:bg-slate-800 rounded-lg cursor-pointer transition">
+                <p class="font-bold text-xs text-white">${g.name}</p>
+                <p class="text-[10px] text-slate-400 line-clamp-1">${g.desc}</p>
+              </div>
+            `;
+          });
+        }
+
+        // 4. MARKET
+        const marketItems = marketSnap.docs.map(doc => doc.data()).filter(m => m.title?.toLowerCase().includes(cleanQuery) || m.desc?.toLowerCase().includes(cleanQuery));
+        if (marketItems.length > 0) {
+          resultsHTML += `<div class="text-[10px] font-bold text-emerald-500 uppercase px-2 pt-2 border-t border-slate-800">Market</div>`;
+          marketItems.forEach(m => {
+            resultsHTML += `
+              <div onclick="switchTab('market'); document.getElementById('search-results-dropdown').classList.add('hidden');" class="p-2 hover:bg-slate-800 rounded-lg cursor-pointer transition flex justify-between items-center">
+                <div>
+                  <p class="font-bold text-xs text-white">${m.title}</p>
+                  <p class="text-[10px] text-slate-400 line-clamp-1">${m.desc}</p>
+                </div>
+                <span class="text-red-400 font-bold text-xs">$${m.price.toLocaleString('es-CL')}</span>
+              </div>
+            `;
+          });
+        }
+
+        if (!resultsHTML) {
+          dropdown.innerHTML = '<p class="text-xs text-slate-500 p-3 text-center">No se encontraron resultados para tu búsqueda.</p>';
+        } else {
+          dropdown.innerHTML = resultsHTML;
+        }
+
+        lucide.createIcons();
+      } catch (err) { console.error(err); }
+    }
+
+    // RESTO DE FUNCIONALIDADES
     async function viewUserProfile(uid) {
       activeProfileUid = uid;
       switchTab('profile');
@@ -1555,7 +1702,7 @@
           if (post.mediaType === 'video') {
             mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full border border-slate-700"></video>`;
           } else {
-            mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full border border-slate-700">`;
+            mediaHTML = `<img src="${post.mediaUrl}" onclick="openImageLightbox('${post.mediaUrl}')" class="rounded-lg w-full border border-slate-700 cursor-pointer">`;
           }
         }
 
@@ -1605,7 +1752,7 @@
       document.getElementById('modal-post-detail').classList.add('hidden');
     }
 
-    // HISTORIAS DE TAMAÑO ORIGINAL
+    // HISTORIAS
     function openUploadStoryModal() {
       document.getElementById('modal-upload-story').classList.remove('hidden');
     }
@@ -1720,7 +1867,7 @@
       if (story.mediaType === 'video') {
         contentBox.innerHTML = `<video src="${story.mediaUrl}" controls autoplay class="w-full"></video>`;
       } else {
-        contentBox.innerHTML = `<img src="${story.mediaUrl}" class="w-full">`;
+        contentBox.innerHTML = `<img src="${story.mediaUrl}" onclick="openImageLightbox('${story.mediaUrl}')" class="w-full cursor-pointer">`;
       }
 
       document.getElementById('modal-view-story').classList.remove('hidden');
@@ -1806,7 +1953,7 @@
       document.getElementById('modal-friends-list').classList.add('hidden');
     }
 
-    // OPCIÓN DE COMPARTIR
+    // COMPARTIR
     function openShareModal(content) {
       activeSharePostContent = content;
       const list = document.getElementById('share-friends-list');
@@ -1855,7 +2002,7 @@
       } catch (err) { alert(err.message); }
     }
 
-    // COMENTARIOS Y RESPUESTAS
+    // COMENTARIOS
     function toggleCommentsBox(postId) {
       const commentsSection = document.getElementById(`comments-section-${postId}`);
       commentsSection.classList.toggle('hidden');
@@ -2161,69 +2308,6 @@
         });
     }
 
-    // BÚSQUEDA GLOBAL
-    async function handleGlobalSearch(query) {
-      const dropdown = document.getElementById('search-results-dropdown');
-      const cleanQuery = query.replace('@', '').trim().toLowerCase();
-
-      if (!cleanQuery) {
-        dropdown.classList.add('hidden');
-        return;
-      }
-
-      dropdown.classList.remove('hidden');
-      dropdown.innerHTML = '<p class="text-xs text-slate-400 p-2 text-center">Buscando usuarios...</p>';
-
-      try {
-        const snapshot = await db.collection('users').get();
-        const matches = snapshot.docs
-          .map(doc => doc.data())
-          .filter(u => u.uid !== auth.currentUser?.uid && (u.username?.toLowerCase().includes(cleanQuery) || u.name?.toLowerCase().includes(cleanQuery)));
-
-        if (matches.length === 0) {
-          dropdown.innerHTML = '<p class="text-xs text-slate-500 p-2 text-center">No se encontraron usuarios.</p>';
-          return;
-        }
-
-        dropdown.innerHTML = matches.map(u => {
-          const friendsList = currentUserData?.friends || [];
-          const sentReqs = currentUserData?.sentRequests || [];
-          const recvReqs = currentUserData?.incomingRequests || [];
-
-          const isAlreadyFriend = friendsList.some(f => f.uid === u.uid);
-          const hasSentRequest = sentReqs.some(r => r.uid === u.uid);
-          const hasReceivedRequest = recvReqs.some(r => r.uid === u.uid);
-
-          let actionButton = '';
-          if (isAlreadyFriend) {
-            actionButton = `<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-bold">Amigos √</span>`;
-          } else if (hasSentRequest) {
-            actionButton = `<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold">Enviada</span>`;
-          } else if (hasReceivedRequest) {
-            actionButton = `<button onclick="acceptFriendRequest('${u.uid}', '${u.name}', '${u.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] px-2 py-1 rounded font-bold">Aceptar</button>`;
-          } else {
-            actionButton = `<button onclick="sendFriendRequest('${u.uid}', '${u.name}', '${u.username}')" class="bg-red-600 hover:bg-red-700 text-white text-[10px] px-2 py-1 rounded font-bold">+ Agregar</button>`;
-          }
-
-          return `
-            <div class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg transition">
-              <div class="flex items-center gap-2 cursor-pointer">
-                <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs text-white">
-                  ${u.name.charAt(0)}
-                </div>
-                <div>
-                  ${getUserLinkHTML(u.uid, u.name, u.username)}
-                </div>
-              </div>
-              ${actionButton}
-            </div>
-          `;
-        }).join('');
-
-        lucide.createIcons();
-      } catch (err) { console.error(err); }
-    }
-
     async function sendFriendRequest(targetUid, targetName, targetUsername) {
       if (!isLoggedIn) return openAuthModal('login');
 
@@ -2352,7 +2436,7 @@
           const item = doc.data();
           const card = `
             <div class="market-card bg-slate-800/90 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3">
-              <img src="${item.imageUrl}" class="w-full rounded-lg">
+              <img src="${item.imageUrl}" onclick="openImageLightbox('${item.imageUrl}')" class="w-full rounded-lg cursor-pointer">
               <div class="flex justify-between items-start">
                 <h3 class="font-bold text-sm text-white">${item.title}</h3>
                 <span class="text-red-400 font-black text-sm">$${item.price.toLocaleString('es-CL')}</span>
