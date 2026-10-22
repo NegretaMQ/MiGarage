@@ -23,7 +23,7 @@
   <!-- OVERLAY OSCURO -->
   <div class="fixed inset-0 bg-slate-950/85 -z-10"></div>
 
-  <!-- 1. BARRA SUPERIOR -->
+  <!-- BARRA SUPERIOR -->
   <header class="bg-slate-950/95 backdrop-blur-md border-b border-slate-800 fixed top-0 left-0 right-0 z-40 h-16">
     <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-4">
       
@@ -223,7 +223,7 @@
     </div>
   </div>
 
-  <!-- MODAL SUBIR Y VER HISTORIA (CON TEMPORIZADOR Y PAUSA AL MANTENER CLICK) -->
+  <!-- MODAL SUBIR Y VER HISTORIAS -->
   <div id="modal-upload-story" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -410,7 +410,7 @@
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="max-w-7xl mx-auto px-4 w-full flex-1">
 
-    <!-- 1. FEED CON BARRA DE HISTORIAS -->
+    <!-- 1. FEED CON BARRA DE HISTORIAS (VISTA PRINCIPAL AL INGRESAR) -->
     <section id="tab-feed" class="tab-content space-y-6">
 
       <div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl backdrop-blur-sm overflow-x-auto no-scrollbar flex items-center gap-4">
@@ -486,11 +486,10 @@
       </div>
     </section>
 
-    <!-- 4. PERFIL (CON BOTÓN DE CONFIGURACIÓN VISIBLE Y CONTADOR DE SEGUIDORES) -->
+    <!-- 4. PERFIL -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
       <div id="profile-header-card" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
         
-        <!-- BOTÓN DE CONFIGURACIÓN BIEN VISIBLE CON ICONO Y TEXTO -->
         <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition shadow-lg flex items-center gap-1.5 text-xs font-bold">
           <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i> Configuración
         </button>
@@ -514,7 +513,6 @@
 
             <p id="profile-display-bio" class="text-xs sm:text-sm text-slate-300">Añade una descripción sobre ti y tus proyectos automotrices.</p>
             
-            <!-- CONTADORES DE AMIGOS Y SEGUIDORES -->
             <div class="flex items-center gap-3 pt-1">
               <div onclick="openFriendsModal()" class="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg cursor-pointer transition">
                 <i data-lucide="users" class="w-4 h-4 text-red-500"></i>
@@ -546,7 +544,6 @@
         </button>
       </div>
 
-      <!-- PUBLICACIONES DEL PERFIL EN CUADRÍCULA ESTILO INSTAGRAM -->
       <div id="profile-subtab-posts" class="space-y-4">
         <div id="user-own-posts-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
@@ -615,7 +612,7 @@
       projectId: "migarage-51e36",
       storageBucket: "migarage-51e36.firebasestorage.app",
       messagingSenderId: "1047979321757",
-      appId: "1:1047979321757:web:34c98bbe274d5074b4e774",
+      appId: "1:1:1047979321757:web:34c98bbe274d5074b4e774",
       measurementId: "G-T6K6VW84B6"
     };
 
@@ -631,14 +628,19 @@
     let unreadCounts = {};
     let activeSharePostContent = '';
 
-    // VARIABLES DE TEMPORIZADOR DE HISTORIAS
-    let storyTimer = null;
+    // ESTRUCTURAS Y CONTROL PARA REPRODUCCIÓN CONTINUA DE HISTORIAS
+    let userStoriesQueue = []; // Lista ordenada de usuarios con sus historias
+    let currentUserIndex = 0;
+    let currentStoryIndex = 0;
+
     let storyProgressInterval = null;
-    let storyStartTime = 0;
     let storyElapsedTime = 0;
     let isStoryPaused = false;
 
     auth.onAuthStateChanged(async (user) => {
+      // SIEMPRE INICIAR EN LA PESTAÑA FEED
+      switchTab('feed');
+
       if (user) {
         isLoggedIn = true;
         listenCurrentUserData(user.uid);
@@ -661,9 +663,6 @@
           renderFriendsList();
           listenNotifications();
           listenIncomingChatAlerts();
-          if (!activeProfileUid) {
-            viewUserProfile(uid);
-          }
         }
       });
     }
@@ -725,7 +724,6 @@
 
         document.getElementById('friends-count-num').innerText = u.friends ? u.friends.length : 0;
 
-        // CALCULAR CONTADOR DE SEGUIDORES REALES
         const followersSnap = await db.collection('users').where('following', 'array-contains', uid).get();
         document.getElementById('followers-count-num').innerText = followersSnap.size;
 
@@ -764,14 +762,12 @@
           await db.collection('users').doc(myUid).update({
             following: firebase.firestore.FieldValue.arrayUnion(activeProfileUid)
           });
-          // Notificar solo al usuario seguido
           addNotification(activeProfileUid, 'follow', `${currentUserData.name} comenzó a seguirte.`);
         }
         viewUserProfile(activeProfileUid);
       } catch (err) { console.error(err); }
     }
 
-    // CARGAR PUBLICACIONES EN CUADRÍCULA DENTRO DEL PERFIL
     function loadUserOwnPostsGrid(uid) {
       db.collection('posts').where('userId', '==', uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('user-own-posts-grid');
@@ -800,7 +796,6 @@
       });
     }
 
-    // ABRIR PUBLICACIÓN EN MODAL DETALLADO
     async function openPostDetailModal(postId) {
       try {
         const doc = await db.collection('posts').doc(postId).get();
@@ -866,7 +861,7 @@
       document.getElementById('modal-post-detail').classList.add('hidden');
     }
 
-    // NOTIFICACIONES EXCLUSIVAS PARA ACCIONES DE OTROS
+    // NOTIFICACIONES EXCLUSIVAS
     function listenNotifications() {
       const uid = auth.currentUser?.uid;
       if (!uid) return;
@@ -923,7 +918,7 @@
     }
 
     async function addNotification(targetUid, type, text) {
-      if (!targetUid || targetUid === auth.currentUser?.uid) return; // NO NOTIFICAR ACCIONES PROPIAS
+      if (!targetUid || targetUid === auth.currentUser?.uid) return;
       try {
         await db.collection('users').doc(targetUid).collection('notifications').add({
           type,
@@ -944,63 +939,7 @@
       document.getElementById('notifs-dropdown').classList.add('hidden');
     }
 
-    // HISTORIAS CON TEMPORIZADOR DE 5 SEGUNDOS Y PAUSA AL MANTENER PRESIONADO
-    function viewStory(authorName, avatarUrl, mediaUrl, mediaType) {
-      document.getElementById('story-viewer-name').innerText = authorName;
-      const avatarContainer = document.getElementById('story-viewer-avatar');
-      avatarContainer.innerHTML = avatarUrl ? `<img src="${avatarUrl}" class="w-full h-full object-cover rounded-full">` : authorName.charAt(0);
-
-      const contentBox = document.getElementById('story-viewer-content');
-      if (mediaType === 'video') {
-        contentBox.innerHTML = `<video src="${mediaUrl}" controls autoplay class="max-h-[70vh] w-full object-contain"></video>`;
-      } else {
-        contentBox.innerHTML = `<img src="${mediaUrl}" class="max-h-[70vh] w-full object-contain">`;
-      }
-
-      document.getElementById('modal-view-story').classList.remove('hidden');
-      startStoryTimer(5000);
-    }
-
-    function startStoryTimer(duration) {
-      clearStoryTimers();
-      storyStartTime = Date.now();
-      storyElapsedTime = 0;
-      isStoryPaused = false;
-
-      const progressBar = document.getElementById('story-progress-bar');
-      progressBar.style.width = '0%';
-
-      storyProgressInterval = setInterval(() => {
-        if (!isStoryPaused) {
-          storyElapsedTime += 100;
-          const percent = Math.min((storyElapsedTime / duration) * 100, 100);
-          progressBar.style.width = `${percent}%`;
-
-          if (storyElapsedTime >= duration) {
-            closeViewStoryModal();
-          }
-        }
-      }, 100);
-    }
-
-    function pauseStoryProgress() {
-      isStoryPaused = true;
-    }
-
-    function resumeStoryProgress() {
-      isStoryPaused = false;
-    }
-
-    function clearStoryTimers() {
-      if (storyProgressInterval) clearInterval(storyProgressInterval);
-      storyProgressInterval = null;
-    }
-
-    function closeViewStoryModal() {
-      clearStoryTimers();
-      document.getElementById('modal-view-story').classList.add('hidden');
-    }
-
+    // SISTEMA DE HISTORIAS COMPLETO (24 HRS, ORDEN RECIENTE, SEGMENTADO Y REPRODUCCIÓN AUTOMÁTICA)
     function openUploadStoryModal() {
       document.getElementById('modal-upload-story').classList.remove('hidden');
     }
@@ -1032,20 +971,65 @@
     }
 
     function loadStories() {
+      const now = Date.now();
+      const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
+
       db.collection('stories').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const container = document.getElementById('stories-container');
         container.innerHTML = '';
 
+        const storiesByUser = {};
+
         snapshot.forEach(doc => {
           const s = doc.data();
+          const createdAtMs = s.createdAt ? s.createdAt.toMillis() : Date.now();
+
+          // FILTRAR HISTORIAS CON MÁS DE 24 HORAS
+          if (createdAtMs >= twentyFourHoursAgo) {
+            if (!storiesByUser[s.userId]) {
+              storiesByUser[s.userId] = {
+                userId: s.userId,
+                authorName: s.authorName,
+                authorAvatar: s.authorAvatar,
+                latestTimestamp: createdAtMs,
+                stories: []
+              };
+            }
+            storiesByUser[s.userId].stories.push({ id: doc.id, ...s });
+          }
+        });
+
+        // RECIENTES MÁS A LA IZQUIERDA
+        userStoriesQueue = Object.values(storiesByUser).sort((a, b) => b.latestTimestamp - a.latestTimestamp);
+
+        userStoriesQueue.forEach((u, uIdx) => {
+          const count = u.stories.length;
+
+          // ANILLO SEGMENTADO SEGÚN LA CANTIDAD DE HISTORIAS DEL USUARIO
+          let dashArray = '100';
+          if (count > 1) {
+            dashArray = `${80 / count} ${20 / count}`;
+          }
+
           const bubble = `
-            <div onclick="viewStory('${s.authorName}', '${s.authorAvatar}', '${s.mediaUrl}', '${s.mediaType}')" class="flex flex-col items-center gap-1 cursor-pointer shrink-0">
-              <div class="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-amber-500 to-red-600 shadow-lg">
-                <div class="w-full h-full rounded-full bg-slate-900 border-2 border-slate-950 flex items-center justify-center font-bold text-xs text-white overflow-hidden">
-                  ${s.authorAvatar ? `<img src="${s.authorAvatar}" class="w-full h-full object-cover">` : s.authorName.charAt(0)}
+            <div onclick="startStoryPlayback(${uIdx}, 0)" class="flex flex-col items-center gap-1 cursor-pointer shrink-0">
+              <div class="w-14 h-14 rounded-full relative flex items-center justify-center">
+                <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    class="text-red-600"
+                    stroke-width="2.5"
+                    stroke-dasharray="${dashArray}"
+                    stroke-linecap="round"
+                    stroke="currentColor"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+                <div class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center font-bold text-xs text-white overflow-hidden border border-slate-950 z-10">
+                  ${u.authorAvatar ? `<img src="${u.authorAvatar}" class="w-full h-full object-cover">` : u.authorName.charAt(0)}
                 </div>
               </div>
-              <span class="text-[10px] text-slate-300 font-medium truncate w-14 text-center">${s.authorName}</span>
+              <span class="text-[10px] text-slate-300 font-medium truncate w-14 text-center">${u.authorName}</span>
             </div>
           `;
           container.insertAdjacentHTML('beforeend', bubble);
@@ -1053,7 +1037,79 @@
       });
     }
 
-    // LISTA DE AMIGOS CORREGIDA (SIN "(Ver todos)" Y CON CARGA COMPLETA EN MODAL)
+    function startStoryPlayback(userIndex, storyIndex) {
+      if (userIndex >= userStoriesQueue.length) {
+        closeViewStoryModal();
+        return;
+      }
+
+      currentUserIndex = userIndex;
+      currentStoryIndex = storyIndex;
+
+      const userGroup = userStoriesQueue[currentUserIndex];
+      const story = userGroup.stories[currentStoryIndex];
+
+      document.getElementById('story-viewer-name').innerText = `${userGroup.authorName} (${currentStoryIndex + 1}/${userGroup.stories.length})`;
+      const avatarContainer = document.getElementById('story-viewer-avatar');
+      avatarContainer.innerHTML = userGroup.authorAvatar ? `<img src="${userGroup.authorAvatar}" class="w-full h-full object-cover rounded-full">` : userGroup.authorName.charAt(0);
+
+      const contentBox = document.getElementById('story-viewer-content');
+      if (story.mediaType === 'video') {
+        contentBox.innerHTML = `<video src="${story.mediaUrl}" controls autoplay class="max-h-[70vh] w-full object-contain"></video>`;
+      } else {
+        contentBox.innerHTML = `<img src="${story.mediaUrl}" class="max-h-[70vh] w-full object-contain">`;
+      }
+
+      document.getElementById('modal-view-story').classList.remove('hidden');
+      runStoryTimer(5000);
+    }
+
+    function runStoryTimer(duration) {
+      clearStoryTimers();
+      storyElapsedTime = 0;
+      isStoryPaused = false;
+
+      const progressBar = document.getElementById('story-progress-bar');
+      progressBar.style.width = '0%';
+
+      storyProgressInterval = setInterval(() => {
+        if (!isStoryPaused) {
+          storyElapsedTime += 100;
+          const percent = Math.min((storyElapsedTime / duration) * 100, 100);
+          progressBar.style.width = `${percent}%`;
+
+          // REPRODUCCIÓN CONTINUA AUTOMÁTICA
+          if (storyElapsedTime >= duration) {
+            clearStoryTimers();
+            nextStory();
+          }
+        }
+      }, 100);
+    }
+
+    function nextStory() {
+      const userGroup = userStoriesQueue[currentUserIndex];
+      if (currentStoryIndex + 1 < userGroup.stories.length) {
+        startStoryPlayback(currentUserIndex, currentStoryIndex + 1);
+      } else {
+        startStoryPlayback(currentUserIndex + 1, 0);
+      }
+    }
+
+    function pauseStoryProgress() { isStoryPaused = true; }
+    function resumeStoryProgress() { isStoryPaused = false; }
+
+    function clearStoryTimers() {
+      if (storyProgressInterval) clearInterval(storyProgressInterval);
+      storyProgressInterval = null;
+    }
+
+    function closeViewStoryModal() {
+      clearStoryTimers();
+      document.getElementById('modal-view-story').classList.add('hidden');
+    }
+
+    // LISTA DE AMIGOS
     function openFriendsModal() {
       const container = document.getElementById('friends-modal-container');
       const friends = currentUserData?.friends || [];
@@ -1088,7 +1144,7 @@
       document.getElementById('modal-friends-list').classList.add('hidden');
     }
 
-    // OPCIÓN DE COMPARTIR POR CHAT O COPIAR URL/TEXTO
+    // OPCIÓN DE COMPARTIR
     function openShareModal(content) {
       activeSharePostContent = content;
       const list = document.getElementById('share-friends-list');
