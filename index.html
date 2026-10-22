@@ -64,7 +64,7 @@
     </div>
   </header>
 
-  <!-- MODAL DE IMÁGENES CON ZOOM (SOLO PARA FOTOS DE PERFIL) -->
+  <!-- MODAL DE IMÁGENES CON ZOOM (SOLO FOTOS DE PERFIL) -->
   <div id="modal-image-lightbox" onclick="closeImageLightbox()" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div onclick="event.stopPropagation()" class="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center">
       <button onclick="closeImageLightbox()" class="absolute -top-10 right-0 text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-full border border-slate-700 z-50">✕</button>
@@ -114,7 +114,7 @@
       </div>
       <div class="space-y-2">
         <button onclick="copyPostLink()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 p-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2">
-          <i data-lucide="copy" class="w-4 h-4"></i> Copiar URL / Texto de la publicación
+          <i data-lucide="copy" class="w-4 h-4"></i> Copiar URL de la publicación
         </button>
         <div class="pt-2 border-t border-slate-800">
           <p class="text-[11px] font-bold text-slate-400 mb-2">Enviar por Chat Directo:</p>
@@ -298,7 +298,7 @@
     </div>
   </div>
 
-  <!-- MODAL SUBIR Y VER HISTORIAS CON NAVEGACIÓN A LOS LADOS -->
+  <!-- MODAL SUBIR Y VER HISTORIAS CON NAVEGACIÓN -->
   <div id="modal-upload-story" onclick="closeUploadStoryModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -331,7 +331,7 @@
       <div class="p-3 bg-slate-950 w-full flex items-center gap-3 border-b border-slate-800 z-20">
         <div id="story-viewer-avatar" class="w-8 h-8 rounded-full bg-red-600 font-bold text-xs flex items-center justify-center text-white overflow-hidden cursor-pointer">U</div>
         <div>
-          <p id="story-viewer-name" class="font-bold text-xs text-white">Usuario</p>
+          <p id="story-viewer-name" class="font-bold text-xs text-white">@usuario</p>
           <p id="story-viewer-time" class="text-[10px] text-slate-400">Hace un momento</p>
         </div>
       </div>
@@ -662,9 +662,9 @@
     <section id="tab-profile" class="tab-content hidden space-y-6">
       <div id="profile-header-card" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl backdrop-blur-sm">
         
-        <!-- BOTÓN CONFIGURACIÓN ARREGLADO CON Z-INDEX ALTO Y POSICIONAMIENTO LIMPIO -->
-        <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 z-30 bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition shadow-lg flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-          <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i> Configuración
+        <!-- BOTÓN DE CONFIGURACIÓN CON SOLO EL ICONO DE ENGRANAJE -->
+        <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 z-30 bg-slate-900 hover:bg-slate-700 text-white p-2 rounded-lg border border-slate-700 transition shadow-lg flex items-center justify-center cursor-pointer" title="Configuración de Cuenta">
+          <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i>
         </button>
 
         <div class="flex flex-col sm:flex-row items-center gap-5 relative z-10">
@@ -677,7 +677,7 @@
           </div>
 
           <div class="space-y-1.5 text-center sm:text-left flex-1 bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 backdrop-blur-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pr-0 sm:pr-28">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pr-0 sm:pr-12">
               <div>
                 <!-- NOMBRE REAL VISIBLE EXCLUSIVAMENTE EN EL PERFIL -->
                 <h2 id="profile-display-name" class="text-xl sm:text-2xl font-bold text-white">Nombre de Usuario</h2>
@@ -703,7 +703,7 @@
         </div>
       </div>
 
-      <!-- SUB-PESTAÑAS PERFIL CON 'MiGarage' EN LUGAR DE GARAGE -->
+      <!-- SUB-PESTAÑAS PERFIL -->
       <div class="flex justify-center border-b border-slate-800 gap-4 sm:gap-10 overflow-x-auto">
         <button onclick="switchProfileSubTab('posts')" id="btn-subtab-posts" class="pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0">
           <i data-lucide="grid" class="w-4 h-4"></i> Publicaciones
@@ -849,6 +849,10 @@
       db.collection('users').doc(uid).onSnapshot(doc => {
         if (doc.exists) {
           currentUserData = doc.data();
+          // Aseguramos que username esté definido
+          if (!currentUserData.username) {
+            currentUserData.username = (currentUserData.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
+          }
           updateUserSessionUI();
           renderFriendsList();
           listenNotifications();
@@ -915,7 +919,7 @@
       document.getElementById('lightbox-image').style.transform = `scale(${currentZoom})`;
     }
 
-    // NOTIFICACIONES
+    // NOTIFICACIONES (CON NOMBRE DE USUARIO @)
     function toggleNotifsDropdown() {
       const dropdown = document.getElementById('notifs-dropdown');
       const isHidden = dropdown.classList.contains('hidden');
@@ -1020,7 +1024,6 @@
           const groupId = doc.id;
           const members = group.members || [];
 
-          // CLIC EN LA IMAGEN O EN EL CARD TE LLEVA AL GRUPO DIRECTAMENTE
           const card = `
             <div onclick="openGroupProfile('${groupId}')" class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3 cursor-pointer hover:border-red-500/50 transition">
               <img src="${group.imageUrl}" class="w-full rounded-lg object-cover max-h-48 cursor-pointer">
@@ -1067,7 +1070,9 @@
 
         const ownerDoc = await db.collection('users').doc(g.ownerId).get();
         if (ownerDoc.exists) {
-          document.getElementById('group-creator-name').innerHTML = getUserLinkHTML(g.ownerId, ownerDoc.data().username);
+          const ownerData = ownerDoc.data();
+          const ownerUsername = ownerData.username || (ownerData.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
+          document.getElementById('group-creator-name').innerHTML = getUserLinkHTML(g.ownerId, ownerUsername);
         }
 
         const avatarImg = document.getElementById('group-avatar-img');
@@ -1172,12 +1177,13 @@
         const uDoc = await db.collection('users').doc(uid).get();
         if (uDoc.exists) {
           const u = uDoc.data();
+          const username = u.username || (u.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
           const isOwner = uid === activeGroupData.ownerId;
 
           const item = `
             <div class="flex items-center justify-between p-2 bg-slate-950 border border-slate-800 rounded-lg">
               <div>
-                <p class="font-bold text-xs text-white">${getUserLinkHTML(uid, u.username)} ${isOwner ? '<span class="text-[10px] text-red-500 font-bold">(Creador)</span>' : ''}</p>
+                <p class="font-bold text-xs text-white">${getUserLinkHTML(uid, username)} ${isOwner ? '<span class="text-[10px] text-red-500 font-bold">(Creador)</span>' : ''}</p>
               </div>
               ${!isOwner ? `<button onclick="kickGroupMember('${uid}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white text-[10px] px-2 py-1 rounded font-bold transition">Expulsar</button>` : ''}
             </div>
@@ -1327,7 +1333,7 @@
 
     async function handleCreateThreadSubmit(e) {
       e.preventDefault();
-      if (!auth.currentUser || !activeGroupId) return;
+      if (!auth.currentUser) return;
 
       const title = document.getElementById('thread-title').value;
       const desc = document.getElementById('thread-desc').value;
@@ -1341,10 +1347,12 @@
         mediaType = file.type.startsWith('video') ? 'video' : 'image';
       }
 
+      const myUsername = currentUserData?.username || 'usuario';
+
       try {
         await db.collection('groups').doc(activeGroupId).collection('threads').add({
           authorUid: auth.currentUser.uid,
-          authorUsername: currentUserData.username,
+          authorUsername: myUsername,
           title,
           desc,
           mediaUrl,
@@ -1373,10 +1381,12 @@
         mediaType = file.type.startsWith('video') ? 'video' : 'image';
       }
 
+      const myUsername = currentUserData?.username || 'usuario';
+
       try {
         await db.collection('groups').doc(activeGroupId).collection('threads').doc(threadId).collection('replies').add({
           authorUid: auth.currentUser.uid,
-          authorUsername: currentUserData.username,
+          authorUsername: myUsername,
           text,
           mediaUrl,
           mediaType,
@@ -1438,11 +1448,12 @@
       });
     }
 
-    // RENDERIZADOR REUTILIZABLE PARA PUBLICACIONES CON CONTADOR DE COMENTARIOS ()
+    // RENDERIZADOR REUTILIZABLE PARA PUBLICACIONES CON CONTADOR ()
     function renderPostCard(postId, post, container) {
       const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
       const likes = post.likes || [];
       const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
+      const displayUsername = post.authorUsername || 'usuario';
 
       let mediaHTML = '';
       if (post.mediaUrl) {
@@ -1458,10 +1469,10 @@
           <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
             <div class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white shrink-0">
-                ${(post.authorUsername || 'U').charAt(0).toUpperCase()}
+                ${displayUsername.charAt(0).toUpperCase()}
               </div>
               <div>
-                ${getUserLinkHTML(post.userId, post.authorUsername)}
+                ${getUserLinkHTML(post.userId, displayUsername)}
               </div>
             </div>
 
@@ -1490,7 +1501,7 @@
               <span>${likes.length}</span>
             </button>
 
-            <!-- BOTÓN COMENTARIOS CON CONTADOR DE COMENTARIOS () -->
+            <!-- BOTÓN COMENTARIOS CON CONTADOR () -->
             <button onclick="toggleCommentsBox('${postId}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
               <i data-lucide="message-square" class="w-4 h-4"></i>
               <span>Comentarios (<strong id="comment-count-num-${postId}">0</strong>)</span>
@@ -1523,7 +1534,7 @@
       });
     }
 
-    // VISTA INDIVIDUAL DE PUBLICACIÓN (URL ÚNICA QUE SE PUEDE COMPARTIR)
+    // VISTA INDIVIDUAL DE PUBLICACIÓN (URL ÚNICA)
     async function renderSinglePostView(postId) {
       switchTab('single-post');
       const container = document.getElementById('single-post-render-container');
@@ -1567,15 +1578,16 @@
         let resultsHTML = '';
 
         // USUARIOS
-        const users = usersSnap.docs.map(doc => doc.data()).filter(u => u.uid !== auth.currentUser?.uid && (u.username?.toLowerCase().includes(cleanQuery) || u.name?.toLowerCase().includes(cleanQuery)));
+        const users = usersSnap.docs.map(doc => doc.data()).filter(u => u.uid !== auth.currentUser?.uid && ((u.username && u.username.toLowerCase().includes(cleanQuery)) || (u.name && u.name.toLowerCase().includes(cleanQuery))));
         if (users.length > 0) {
           resultsHTML += `<div class="text-[10px] font-bold text-red-500 uppercase px-2 pt-1">Personas</div>`;
           users.forEach(u => {
+            const displayU = u.username || (u.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
             resultsHTML += `
               <div onclick="viewUserProfile('${u.uid}'); document.getElementById('search-results-dropdown').classList.add('hidden');" class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg cursor-pointer transition">
                 <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center font-bold text-[10px] text-white">${u.username.charAt(0).toUpperCase()}</div>
-                  <span class="font-semibold text-white text-xs">${getUserLinkHTML(u.uid, u.username)}</span>
+                  <div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center font-bold text-[10px] text-white">${displayU.charAt(0).toUpperCase()}</div>
+                  <span class="font-semibold text-white text-xs">${getUserLinkHTML(u.uid, displayU)}</span>
                 </div>
               </div>
             `;
@@ -1648,12 +1660,12 @@
 
         const u = userDoc.data();
         const isOwn = auth.currentUser && auth.currentUser.uid === uid;
+        const displayUsername = u.username || (u.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
 
-        // EL NOMBRE REAL ES LO ÚNICO QUE SE MUESTRA EXCLUSIVAMENTE AQUÍ
-        document.getElementById('profile-display-name').innerText = u.name || u.username;
-        document.getElementById('profile-display-username').innerText = '@' + u.username;
+        document.getElementById('profile-display-name').innerText = u.name || displayUsername;
+        document.getElementById('profile-display-username').innerText = '@' + displayUsername;
         document.getElementById('profile-display-bio').innerText = u.bio || 'Sin biografía agregada.';
-        document.getElementById('profile-avatar-initials').innerText = u.username.charAt(0).toUpperCase();
+        document.getElementById('profile-avatar-initials').innerText = displayUsername.charAt(0).toUpperCase();
 
         const img = document.getElementById('profile-avatar-img');
         if (u.avatarUrl) {
@@ -1696,6 +1708,7 @@
       const myUid = auth.currentUser.uid;
       const following = currentUserData?.following || [];
       const isFollowing = following.includes(activeProfileUid);
+      const myUsername = currentUserData?.username || 'usuario';
 
       try {
         if (isFollowing) {
@@ -1706,13 +1719,13 @@
           await db.collection('users').doc(myUid).update({
             following: firebase.firestore.FieldValue.arrayUnion(activeProfileUid)
           });
-          addNotification(activeProfileUid, 'follow', `@${currentUserData.username} comenzó a seguirte.`);
+          addNotification(activeProfileUid, 'follow', `@${myUsername} comenzó a seguirte.`);
         }
         viewUserProfile(activeProfileUid);
       } catch (err) { console.error(err); }
     }
 
-    // MOSTRAR GRUPOS A LOS QUE PERTENECE EN EL PERFIL
+    // GRUPOS EN EL PERFIL
     function loadUserJoinedGroups(uid) {
       db.collection('groups').where('members', 'array-contains', uid).onSnapshot(snapshot => {
         const grid = document.getElementById('user-joined-groups-grid');
@@ -1739,7 +1752,6 @@
       });
     }
 
-    // PRESIONAR POST EN PERFIL MANDA A NUEVA NAVEGACIÓN Y URL ÚNICA
     function loadUserOwnPostsGrid(uid) {
       db.collection('posts').where('userId', '==', uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('user-own-posts-grid');
@@ -1768,7 +1780,7 @@
       });
     }
 
-    // HISTORIAS CON NAVEGACIÓN CRONOLÓGICA Y CONTROLES A LOS LADOS
+    // HISTORIAS
     function openUploadStoryModal() { document.getElementById('modal-upload-story').classList.remove('hidden'); }
     function closeUploadStoryModal() { document.getElementById('modal-upload-story').classList.add('hidden'); }
 
@@ -1779,12 +1791,13 @@
       const file = document.getElementById('story-file').files[0];
       const mediaUrl = await readFileAsDataURL(file);
       const mediaType = file.type.startsWith('video') ? 'video' : 'image';
+      const myUsername = currentUserData?.username || 'usuario';
 
       try {
         await db.collection('stories').add({
           userId: auth.currentUser.uid,
-          authorUsername: currentUserData.username,
-          authorAvatar: currentUserData.avatarUrl || '',
+          authorUsername: myUsername,
+          authorAvatar: currentUserData?.avatarUrl || '',
           mediaUrl,
           mediaType,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1798,7 +1811,6 @@
       const now = Date.now();
       const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
 
-      // ORDEN CRONOLÓGICO: MÁS ANTIGUO PRIMERO
       db.collection('stories').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
         const container = document.getElementById('stories-container');
         container.innerHTML = '';
@@ -1951,17 +1963,18 @@
         container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Aún no tienes amigos agregados.</p>';
       } else {
         friends.forEach(f => {
+          const displayU = f.username || (f.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
           const item = `
             <div onclick="viewUserProfile('${f.uid}'); closeFriendsModal();" class="flex items-center justify-between p-2.5 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:bg-slate-800 transition">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-bold text-xs text-white">
-                  ${f.username.charAt(0).toUpperCase()}
+                  ${displayU.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p class="font-bold text-xs text-white">${getUserLinkHTML(f.uid, f.username)}</p>
+                  <p class="font-bold text-xs text-white">${getUserLinkHTML(f.uid, displayU)}</p>
                 </div>
               </div>
-              <button onclick="event.stopPropagation(); openDirectChat('${f.uid}', '${f.username}'); closeFriendsModal();" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2.5 py-1 rounded">Mensaje</button>
+              <button onclick="event.stopPropagation(); openDirectChat('${f.uid}', '${displayU}'); closeFriendsModal();" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2.5 py-1 rounded">Mensaje</button>
             </div>
           `;
           container.insertAdjacentHTML('beforeend', item);
@@ -1984,9 +1997,10 @@
         list.innerHTML = '<p class="text-xs text-slate-500 text-center py-2">No tienes amigos para compartir por chat.</p>';
       } else {
         friends.forEach(f => {
+          const displayU = f.username || (f.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
           const item = `
-            <div onclick="sendPostToFriend('${f.uid}', '${f.username}')" class="flex items-center justify-between p-2 bg-slate-950 hover:bg-slate-800 rounded cursor-pointer border border-slate-800">
-              <span class="text-xs text-white font-bold">@${f.username}</span>
+            <div onclick="sendPostToFriend('${f.uid}', '${displayU}')" class="flex items-center justify-between p-2 bg-slate-950 hover:bg-slate-800 rounded cursor-pointer border border-slate-800">
+              <span class="text-xs text-white font-bold">@${displayU}</span>
               <span class="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded font-bold">Enviar</span>
             </div>
           `;
@@ -2036,10 +2050,12 @@
       const text = inputEl.value.trim();
       if (!text) return;
 
+      const myUsername = currentUserData?.username || 'usuario';
+
       try {
         await db.collection('posts').doc(postId).collection('comments').add({
           authorUid: auth.currentUser.uid,
-          authorUsername: currentUserData.username,
+          authorUsername: myUsername,
           text,
           parentCommentId,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -2047,7 +2063,7 @@
 
         const postDoc = await db.collection('posts').doc(postId).get();
         if (postDoc.exists) {
-          addNotification(postDoc.data().userId, 'comment', `@${currentUserData.username} comentó tu publicación.`);
+          addNotification(postDoc.data().userId, 'comment', `@${myUsername} comentó tu publicación.`);
         }
 
         inputEl.value = '';
@@ -2146,6 +2162,7 @@
     async function toggleLikePost(postId) {
       if (!auth.currentUser) return openAuthModal('login');
       const postRef = db.collection('posts').doc(postId);
+      const myUsername = currentUserData?.username || 'usuario';
 
       try {
         const doc = await postRef.get();
@@ -2157,7 +2174,7 @@
           await postRef.update({ likes: firebase.firestore.FieldValue.arrayRemove(userUid) });
         } else {
           await postRef.update({ likes: firebase.firestore.FieldValue.arrayUnion(userUid) });
-          addNotification(postData.userId, 'like', `@${currentUserData.username} le dio Me Gusta a tu publicación.`);
+          addNotification(postData.userId, 'like', `@${myUsername} le dio Me Gusta a tu publicación.`);
         }
       } catch (err) { console.error(err); }
     }
@@ -2177,10 +2194,12 @@
         mediaType = file.type.startsWith('video') ? 'video' : 'image';
       }
 
+      const myUsername = currentUserData?.username || 'usuario';
+
       try {
         await db.collection('posts').add({
           userId: auth.currentUser.uid,
-          authorUsername: currentUserData.username,
+          authorUsername: myUsername,
           content: document.getElementById('post-text').value,
           mediaUrl,
           mediaType,
@@ -2201,6 +2220,8 @@
 
       friends.forEach(f => {
         const chatId = [myUid, f.uid].sort().join('_');
+        const displayU = f.username || (f.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
+
         db.collection('chats').doc(chatId).collection('messages')
           .orderBy('createdAt', 'desc').limit(1)
           .onSnapshot(snapshot => {
@@ -2210,7 +2231,7 @@
                 if (msg.senderId !== myUid) {
                   if (!activeChatFriend || activeChatFriend.uid !== f.uid || document.getElementById('active-chat-box').classList.contains('hidden')) {
                     unreadCounts[f.uid] = (unreadCounts[f.uid] || 0) + 1;
-                    addOrUpdateChatBubble(f.uid, f.username, true);
+                    addOrUpdateChatBubble(f.uid, displayU, true);
                   }
                 }
               }
@@ -2327,13 +2348,15 @@
     async function sendFriendRequest(targetUid, targetUsername) {
       if (!isLoggedIn) return openAuthModal('login');
 
+      const myUsername = currentUserData?.username || 'usuario';
+
       try {
         await db.collection('users').doc(auth.currentUser.uid).update({
           sentRequests: firebase.firestore.FieldValue.arrayUnion({ uid: targetUid, username: targetUsername })
         });
 
         await db.collection('users').doc(targetUid).update({
-          incomingRequests: firebase.firestore.FieldValue.arrayUnion({ uid: auth.currentUser.uid, username: currentUserData.username })
+          incomingRequests: firebase.firestore.FieldValue.arrayUnion({ uid: auth.currentUser.uid, username: myUsername })
         });
 
         alert(`Solicitud enviada a @${targetUsername}`);
@@ -2345,6 +2368,7 @@
     async function acceptFriendRequest(senderUid, senderUsername) {
       try {
         const myUid = auth.currentUser.uid;
+        const myUsername = currentUserData?.username || 'usuario';
 
         await db.collection('users').doc(myUid).update({
           friends: firebase.firestore.FieldValue.arrayUnion({ uid: senderUid, username: senderUsername }),
@@ -2352,8 +2376,8 @@
         });
 
         await db.collection('users').doc(senderUid).update({
-          friends: firebase.firestore.FieldValue.arrayUnion({ uid: myUid, username: currentUserData.username }),
-          sentRequests: firebase.firestore.FieldValue.arrayRemove({ uid: myUid, username: currentUserData.username })
+          friends: firebase.firestore.FieldValue.arrayUnion({ uid: myUid, username: myUsername }),
+          sentRequests: firebase.firestore.FieldValue.arrayRemove({ uid: myUid, username: myUsername })
         });
 
         alert(`¡Ahora eres amigo de @${senderUsername}!`);
@@ -2378,19 +2402,22 @@
         return;
       }
 
-      friendsListEl.innerHTML = friends.map(f => `
-        <div onclick="openDirectChat('${f.uid}', '${f.username}')" class="flex items-center justify-between p-2 hover:bg-slate-900 rounded-lg cursor-pointer transition border border-slate-800">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs text-white">
-              ${f.username.charAt(0).toUpperCase()}
+      friendsListEl.innerHTML = friends.map(f => {
+        const displayU = f.username || (f.name || 'usuario').toLowerCase().replace(/\s+/g, '_');
+        return `
+          <div onclick="openDirectChat('${f.uid}', '${displayU}')" class="flex items-center justify-between p-2 hover:bg-slate-900 rounded-lg cursor-pointer transition border border-slate-800">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs text-white">
+                ${displayU.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                ${getUserLinkHTML(f.uid, displayU)}
+              </div>
             </div>
-            <div>
-              ${getUserLinkHTML(f.uid, f.username)}
-            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           </div>
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // VEHÍCULOS Y MARKET
@@ -2601,7 +2628,7 @@
       if (pass !== document.getElementById('signup-pass-confirm').value) return alert('Las contraseñas no coinciden.');
 
       const name = document.getElementById('signup-fullname').value;
-      const username = document.getElementById('signup-username').value.replace('@', '').trim();
+      const username = document.getElementById('signup-username').value.replace('@', '').trim().toLowerCase();
       const email = document.getElementById('signup-email').value;
 
       try {
