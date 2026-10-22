@@ -33,7 +33,7 @@
         <span class="text-lg font-black tracking-wider text-white">MI<span class="text-red-500">GARAGE</span></span>
       </div>
 
-      <!-- BÚSQUEDA GLOBAL TOTAL -->
+      <!-- BÚSQUEDA GLOBAL -->
       <div class="relative flex-1 max-w-md hidden sm:block">
         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
         <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Buscar personas, autos, grupos, hilos o productos..." class="w-full bg-slate-900 border border-slate-700/80 rounded-full pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-red-500 text-white placeholder-slate-500">
@@ -64,7 +64,7 @@
     </div>
   </header>
 
-  <!-- MODAL / LIGHTBOX DE IMÁGENES CON ZOOM -->
+  <!-- MODAL DE IMÁGENES CON ZOOM (SOLO PARA FOTOS DE PERFIL) -->
   <div id="modal-image-lightbox" onclick="closeImageLightbox()" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div onclick="event.stopPropagation()" class="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center">
       <button onclick="closeImageLightbox()" class="absolute -top-10 right-0 text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-full border border-slate-700 z-50">✕</button>
@@ -121,14 +121,6 @@
           <div id="share-friends-list" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- MODAL DETALLE DE PUBLICACIÓN PERFIL -->
-  <div id="modal-post-detail" onclick="closePostDetailModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closePostDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white z-10">✕</button>
-      <div id="post-detail-container"></div>
     </div>
   </div>
 
@@ -254,7 +246,7 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIGURACIÓN / EDITAR PERFIL PROPIO -->
+  <!-- MODAL CONFIGURACIÓN -->
   <div id="modal-settings" onclick="toggleSettingsModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -275,6 +267,7 @@
     </div>
   </div>
 
+  <!-- MODAL EDITAR PERFIL -->
   <div id="modal-edit-profile" onclick="closeEditProfileModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -305,7 +298,7 @@
     </div>
   </div>
 
-  <!-- MODAL SUBIR Y VER HISTORIAS -->
+  <!-- MODAL SUBIR Y VER HISTORIAS CON NAVEGACIÓN A LOS LADOS -->
   <div id="modal-upload-story" onclick="closeUploadStoryModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div onclick="event.stopPropagation()" class="bg-slate-900 border border-slate-700 rounded-xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -327,18 +320,22 @@
     <button onclick="closeViewStoryModal()" class="absolute top-4 right-4 text-white bg-slate-800 p-2 rounded-full border border-slate-700 z-50">✕</button>
     <div id="story-viewer-card" onclick="event.stopPropagation()" onmousedown="pauseStoryProgress()" onmouseup="resumeStoryProgress()" onmouseleave="resumeStoryProgress()" class="max-w-md w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col items-center select-none">
       
-      <div class="w-full h-1 bg-slate-800">
+      <!-- CONTROLES TÁCTILES IZQUIERDA / DERECHA EN HISTORIAS -->
+      <div onclick="prevStory(); event.stopPropagation();" class="absolute left-0 top-12 bottom-0 w-1/3 z-30 cursor-pointer" title="Anterior"></div>
+      <div onclick="nextStory(); event.stopPropagation();" class="absolute right-0 top-12 bottom-0 w-1/3 z-30 cursor-pointer" title="Siguiente"></div>
+
+      <div class="w-full h-1 bg-slate-800 z-20">
         <div id="story-progress-bar" class="h-full bg-red-600 w-0 transition-all duration-100 ease-linear"></div>
       </div>
 
-      <div class="p-3 bg-slate-950 w-full flex items-center gap-3 border-b border-slate-800">
-        <div id="story-viewer-avatar" class="w-8 h-8 rounded-full bg-red-600 font-bold text-xs flex items-center justify-center text-white overflow-hidden">U</div>
+      <div class="p-3 bg-slate-950 w-full flex items-center gap-3 border-b border-slate-800 z-20">
+        <div id="story-viewer-avatar" class="w-8 h-8 rounded-full bg-red-600 font-bold text-xs flex items-center justify-center text-white overflow-hidden cursor-pointer">U</div>
         <div>
           <p id="story-viewer-name" class="font-bold text-xs text-white">Usuario</p>
           <p id="story-viewer-time" class="text-[10px] text-slate-400">Hace un momento</p>
         </div>
       </div>
-      <div id="story-viewer-content" class="w-full flex items-center justify-center bg-black"></div>
+      <div id="story-viewer-content" class="w-full flex items-center justify-center bg-black relative z-10"></div>
     </div>
   </div>
 
@@ -469,10 +466,9 @@
     </div>
   </div>
 
-  <!-- CONTENEDOR BURBUJAS FLOTANTES DE CHAT -->
+  <!-- BURBUJAS DE CHAT Y VENTANA DE CHAT -->
   <div id="floating-bubbles-container" class="fixed bottom-20 right-4 z-50 flex flex-col gap-2 items-end"></div>
 
-  <!-- VENTANA FLOTANTE CHAT -->
   <div id="active-chat-box" class="hidden fixed bottom-20 right-20 z-50 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl flex flex-col h-80">
     <div class="p-2.5 bg-slate-950 border-b border-slate-800 flex justify-between items-center rounded-t-xl">
       <span id="chat-user-name" class="text-xs font-bold text-white flex items-center gap-2">
@@ -529,6 +525,14 @@
       </div>
     </section>
 
+    <!-- VISTA DEDICADA PARA COMPARTIR/VER PUBLICACIÓN ÚNICA CON URL -->
+    <section id="tab-single-post" class="tab-content hidden space-y-6">
+      <button onclick="switchTab('feed')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Feed
+      </button>
+      <div id="single-post-render-container" class="max-w-2xl mx-auto space-y-4"></div>
+    </section>
+
     <!-- 2. MARKET -->
     <section id="tab-market" class="tab-content hidden space-y-6">
       <div class="bg-slate-800/90 border border-slate-700 p-4 rounded-xl flex justify-between items-center shadow-lg backdrop-blur-sm">
@@ -578,8 +582,7 @@
 
         <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl backdrop-blur-sm space-y-4">
           
-          <!-- BOTÓN DE ENGRANAJE DE CONFIGURACIÓN DE GRUPO -->
-          <div id="group-admin-actions" class="hidden absolute top-4 right-4 relative">
+          <div id="group-admin-actions" class="hidden absolute top-4 right-4 relative z-20">
             <button onclick="toggleGroupSettingsMenu()" class="bg-slate-900 hover:bg-slate-700 text-white p-2 rounded-lg border border-slate-700 transition shadow-md flex items-center justify-center">
               <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i>
             </button>
@@ -601,7 +604,7 @@
             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
               <div id="group-profile-avatar" class="w-full h-full rounded-full bg-slate-950 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
                 <span id="group-avatar-initials">G</span>
-                <img id="group-avatar-img" onclick="openImageLightbox(this.src)" class="hidden w-full h-full object-cover cursor-pointer">
+                <img id="group-avatar-img" class="hidden w-full h-full object-cover">
               </div>
             </div>
 
@@ -609,7 +612,7 @@
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <h2 id="group-profile-name" class="text-xl sm:text-2xl font-bold text-white">Nombre del Grupo</h2>
-                  <p class="text-xs text-slate-400">Creado por: <span id="group-creator-name" class="text-red-400 font-bold cursor-pointer hover:underline">Usuario</span></p>
+                  <p class="text-xs text-slate-400">Creado por: <span id="group-creator-name" class="text-red-400 font-bold">@usuario</span></p>
                 </div>
 
                 <div class="flex items-center gap-2 self-center sm:self-auto">
@@ -627,7 +630,6 @@
           </div>
         </div>
 
-        <!-- HILOS DEL GRUPO -->
         <div class="space-y-4">
           <div class="flex justify-between items-center bg-slate-800/90 border border-slate-700 p-4 rounded-xl">
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
@@ -645,7 +647,7 @@
 
       </div>
 
-      <!-- VISTA 3: VISTA INDIVIDUAL COMPLETA DEL HILO (EN LUGAR DE MODAL FLOTANTE) -->
+      <!-- VISTA 3: VISTA INDIVIDUAL COMPLETA DEL HILO -->
       <div id="thread-full-view" class="hidden space-y-6">
         <button onclick="backToGroupProfile()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
           <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Grupo
@@ -658,23 +660,26 @@
 
     <!-- 4. PERFIL -->
     <section id="tab-profile" class="tab-content hidden space-y-6">
-      <div id="profile-header-card" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl overflow-hidden backdrop-blur-sm">
+      <div id="profile-header-card" class="bg-slate-800/90 border border-slate-700 rounded-xl p-6 relative shadow-xl backdrop-blur-sm">
         
-        <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition shadow-lg flex items-center gap-1.5 text-xs font-bold">
+        <!-- BOTÓN CONFIGURACIÓN ARREGLADO CON Z-INDEX ALTO Y POSICIONAMIENTO LIMPIO -->
+        <button id="profile-settings-btn" onclick="toggleSettingsModal()" class="absolute top-4 right-4 z-30 bg-slate-900 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg border border-slate-700 transition shadow-lg flex items-center gap-1.5 text-xs font-bold cursor-pointer">
           <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i> Configuración
         </button>
 
-        <div class="flex flex-col sm:flex-row items-center gap-5">
+        <div class="flex flex-col sm:flex-row items-center gap-5 relative z-10">
+          <!-- AVATAR / FOTO DE PERFIL CON ZOOM ACTIVADO -->
           <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-1 shadow-2xl overflow-hidden shrink-0">
             <div id="profile-avatar-display" class="w-full h-full rounded-full bg-red-600 font-black text-2xl flex items-center justify-center text-white border-4 border-slate-900 overflow-hidden">
               <span id="profile-avatar-initials">YO</span>
-              <img id="profile-avatar-img" onclick="openImageLightbox(this.src)" class="hidden w-full h-full object-cover cursor-pointer">
+              <img id="profile-avatar-img" onclick="openImageLightbox(this.src)" class="hidden w-full h-full object-cover cursor-pointer" title="Haz clic para ampliar la foto de perfil">
             </div>
           </div>
 
           <div class="space-y-1.5 text-center sm:text-left flex-1 bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 backdrop-blur-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pr-28">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pr-0 sm:pr-28">
               <div>
+                <!-- NOMBRE REAL VISIBLE EXCLUSIVAMENTE EN EL PERFIL -->
                 <h2 id="profile-display-name" class="text-xl sm:text-2xl font-bold text-white">Nombre de Usuario</h2>
                 <p id="profile-display-username" class="text-xs sm:text-sm text-red-400 font-semibold">@usuario</p>
               </div>
@@ -698,7 +703,7 @@
         </div>
       </div>
 
-      <!-- SUB-PESTAÑAS PERFIL -->
+      <!-- SUB-PESTAÑAS PERFIL CON 'MiGarage' EN LUGAR DE GARAGE -->
       <div class="flex justify-center border-b border-slate-800 gap-4 sm:gap-10 overflow-x-auto">
         <button onclick="switchProfileSubTab('posts')" id="btn-subtab-posts" class="pb-3 text-xs font-bold border-b-2 border-red-500 text-red-500 transition flex items-center gap-1.5 shrink-0">
           <i data-lucide="grid" class="w-4 h-4"></i> Publicaciones
@@ -707,7 +712,7 @@
           <i data-lucide="shopping-bag" class="w-4 h-4"></i> Market
         </button>
         <button onclick="switchProfileSubTab('garage')" id="btn-subtab-garage" class="pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0">
-          <i data-lucide="car" class="w-4 h-4"></i> Garage
+          <i data-lucide="car" class="w-4 h-4"></i> MiGarage
         </button>
         <button onclick="switchProfileSubTab('groups')" id="btn-subtab-groups" class="pb-3 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-white transition flex items-center gap-1.5 shrink-0">
           <i data-lucide="users" class="w-4 h-4"></i> Grupos
@@ -748,7 +753,7 @@
       <div id="profile-subtab-groups" class="hidden space-y-4">
         <div id="user-joined-groups-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center backdrop-blur-sm">
-            <p class="text-xs text-slate-400">No se ha unido a ningún grupo.</p>
+            <p class="text-xs text-slate-400">Cargando grupos a los que pertenece...</p>
           </div>
         </div>
       </div>
@@ -809,9 +814,10 @@
     let storyElapsedTime = 0;
     let isStoryPaused = false;
 
-    auth.onAuthStateChanged(async (user) => {
-      switchTab('feed');
+    // CONTROLADOR DE NAVEGACIÓN POR URL
+    window.addEventListener('hashchange', checkUrlHash);
 
+    auth.onAuthStateChanged(async (user) => {
       if (user) {
         isLoggedIn = true;
         listenCurrentUserData(user.uid);
@@ -824,7 +830,20 @@
       loadMarket();
       loadGroups();
       loadStories();
+      checkUrlHash();
     });
+
+    function checkUrlHash() {
+      const hash = window.location.hash;
+      if (hash.startsWith('#post/')) {
+        const postId = hash.replace('#post/', '');
+        renderSinglePostView(postId);
+      } else {
+        if (!document.getElementById('tab-single-post').classList.contains('hidden')) {
+          switchTab('feed');
+        }
+      }
+    }
 
     function listenCurrentUserData(uid) {
       db.collection('users').doc(uid).onSnapshot(doc => {
@@ -839,12 +858,12 @@
     }
 
     function updateUserSessionUI() {
-      const initials = (currentUserData.name || 'U').charAt(0).toUpperCase();
+      const username = currentUserData.username || 'usuario';
 
       document.getElementById('auth-buttons-container').innerHTML = `
         <button onclick="viewUserProfile('${auth.currentUser.uid}')" title="Ir a tu Perfil" class="w-9 h-9 rounded-full bg-gradient-to-tr from-red-600 to-amber-500 p-[2px] shadow-lg">
           <div class="w-full h-full rounded-full bg-red-600 font-black text-xs flex items-center justify-center text-white border border-slate-950 overflow-hidden">
-            ${currentUserData.avatarUrl ? `<img src="${currentUserData.avatarUrl}" class="w-full h-full object-cover">` : initials}
+            ${currentUserData.avatarUrl ? `<img src="${currentUserData.avatarUrl}" class="w-full h-full object-cover">` : username.charAt(0).toUpperCase()}
           </div>
         </button>
       `;
@@ -866,12 +885,13 @@
       });
     }
 
-    function getUserLinkHTML(uid, name, username = '') {
-      const userText = username ? `${name} <span class="text-[10px] text-slate-400 font-normal">@${username}</span>` : name;
-      return `<span onclick="event.stopPropagation(); viewUserProfile('${uid}')" class="font-bold text-white cursor-pointer hover:text-red-400 hover:underline transition">${userText}</span>`;
+    // CADA NOMBRE DE USUARIO ES SU @ Y ES LINK DIRECTO A SU PERFIL
+    function getUserLinkHTML(uid, username) {
+      const cleanUsername = username ? (username.startsWith('@') ? username : `@${username}`) : '@usuario';
+      return `<span onclick="event.stopPropagation(); viewUserProfile('${uid}')" class="font-bold text-red-400 hover:text-red-300 cursor-pointer hover:underline transition">${cleanUsername}</span>`;
     }
 
-    // LIGHTBOX CON ZOOM PARA FOTOS
+    // LIGHTBOX SOLO PARA FOTOS DE PERFIL CON ZOOM
     function openImageLightbox(src) {
       const lightbox = document.getElementById('modal-image-lightbox');
       const img = document.getElementById('lightbox-image');
@@ -929,10 +949,10 @@
           incomingRequests.forEach(r => {
             const reqItem = `
               <div class="p-2 bg-slate-900 border border-amber-500/30 rounded-lg space-y-1.5">
-                <p class="text-white text-xs">${getUserLinkHTML(r.uid, r.name, r.username)} te envió una solicitud de amistad.</p>
+                <p class="text-white text-xs">${getUserLinkHTML(r.uid, r.username)} te envió una solicitud de amistad.</p>
                 <div class="flex items-center gap-1 pt-1">
-                  <button onclick="acceptFriendRequest('${r.uid}', '${r.name}', '${r.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] px-2 py-1 rounded font-bold">Aceptar</button>
-                  <button onclick="rejectFriendRequest('${r.uid}', '${r.name}', '${r.username}')" class="bg-slate-800 text-slate-400 text-[10px] px-2 py-1 rounded">Rechazar</button>
+                  <button onclick="acceptFriendRequest('${r.uid}', '${r.username}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] px-2 py-1 rounded font-bold">Aceptar</button>
+                  <button onclick="rejectFriendRequest('${r.uid}', '${r.username}')" class="bg-slate-800 text-slate-400 text-[10px] px-2 py-1 rounded">Rechazar</button>
                 </div>
               </div>
             `;
@@ -984,7 +1004,7 @@
       document.getElementById('notifs-dropdown').classList.add('hidden');
     }
 
-    // PESTAÑA GRUPOS Y CONFIGURACIÓN TIPO ENGRANAJE
+    // PESTAÑA GRUPOS
     function loadGroups() {
       db.collection('groups').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('groups-grid');
@@ -1000,11 +1020,12 @@
           const groupId = doc.id;
           const members = group.members || [];
 
+          // CLIC EN LA IMAGEN O EN EL CARD TE LLEVA AL GRUPO DIRECTAMENTE
           const card = `
             <div onclick="openGroupProfile('${groupId}')" class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3 cursor-pointer hover:border-red-500/50 transition">
-              <img src="${group.imageUrl}" onclick="event.stopPropagation(); openImageLightbox('${group.imageUrl}')" class="w-full rounded-lg object-cover max-h-48">
+              <img src="${group.imageUrl}" class="w-full rounded-lg object-cover max-h-48 cursor-pointer">
               <div class="flex items-center justify-between">
-                <h3 class="font-bold text-base text-white">${group.name}</h3>
+                <h3 class="font-bold text-base text-white hover:text-red-400 transition">${group.name}</h3>
                 <span class="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 font-bold px-2 py-0.5 rounded">${members.length} miembros</span>
               </div>
               <p class="text-xs text-slate-400 line-clamp-2">${group.desc}</p>
@@ -1046,7 +1067,7 @@
 
         const ownerDoc = await db.collection('users').doc(g.ownerId).get();
         if (ownerDoc.exists) {
-          document.getElementById('group-creator-name').innerHTML = getUserLinkHTML(g.ownerId, ownerDoc.data().name);
+          document.getElementById('group-creator-name').innerHTML = getUserLinkHTML(g.ownerId, ownerDoc.data().username);
         }
 
         const avatarImg = document.getElementById('group-avatar-img');
@@ -1061,7 +1082,6 @@
           avatarInitials.classList.remove('hidden');
         }
 
-        // MOSTRAR U OCULTAR MENÚ ENGRANAJE DE ADMINISTRADOR
         document.getElementById('group-admin-actions').classList.toggle('hidden', !isAdmin);
 
         const joinBtn = document.getElementById('group-join-btn');
@@ -1157,8 +1177,7 @@
           const item = `
             <div class="flex items-center justify-between p-2 bg-slate-950 border border-slate-800 rounded-lg">
               <div>
-                <p class="font-bold text-xs text-white">${u.name} ${isOwner ? '<span class="text-[10px] text-red-500 font-bold">(Creador)</span>' : ''}</p>
-                <p class="text-[10px] text-slate-400">@${u.username}</p>
+                <p class="font-bold text-xs text-white">${getUserLinkHTML(uid, u.username)} ${isOwner ? '<span class="text-[10px] text-red-500 font-bold">(Creador)</span>' : ''}</p>
               </div>
               ${!isOwner ? `<button onclick="kickGroupMember('${uid}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white text-[10px] px-2 py-1 rounded font-bold transition">Expulsar</button>` : ''}
             </div>
@@ -1214,7 +1233,7 @@
       } catch (err) { alert(err.message); }
     }
 
-    // LISTA DE HILOS Y NAVEGACIÓN A VISTA INDIVIDUAL DEL HILO
+    // HILOS Y REPLIES EN GRUPOS
     function loadGroupThreads(groupId, isMember) {
       db.collection('groups').doc(groupId).collection('threads')
         .orderBy('createdAt', 'desc')
@@ -1236,11 +1255,11 @@
                 <div class="space-y-1 flex-1">
                   <h4 class="font-bold text-sm text-white hover:text-red-400 transition">${t.title}</h4>
                   <p class="text-xs text-slate-400 line-clamp-1">${t.desc}</p>
-                  <p class="text-[10px] text-slate-500">Iniciado por: ${getUserLinkHTML(t.authorUid, t.authorName)}</p>
+                  <p class="text-[10px] text-slate-500">Iniciado por: ${getUserLinkHTML(t.authorUid, t.authorUsername)}</p>
                 </div>
                 <div class="flex items-center gap-2 shrink-0 text-slate-400 text-xs">
                   <i data-lucide="message-square" class="w-4 h-4 text-red-500"></i>
-                  <span>Ver Hilo completo</span>
+                  <span>Ver Hilo</span>
                 </div>
               </div>
             `;
@@ -1265,13 +1284,13 @@
         if (t.mediaUrl) {
           mediaHTML = t.mediaType === 'video' 
             ? `<video src="${t.mediaUrl}" controls class="rounded-lg w-full border border-slate-700 mt-3"></video>`
-            : `<img src="${t.mediaUrl}" onclick="openImageLightbox('${t.mediaUrl}')" class="rounded-lg w-full border border-slate-700 mt-3 cursor-pointer">`;
+            : `<img src="${t.mediaUrl}" class="rounded-lg w-full border border-slate-700 mt-3">`;
         }
 
         const fullContainer = document.getElementById('thread-full-container');
         fullContainer.innerHTML = `
           <div class="border-b border-slate-800 pb-4 space-y-2">
-            <span class="text-xs text-slate-400">Iniciado por ${getUserLinkHTML(t.authorUid, t.authorName)}</span>
+            <span class="text-xs text-slate-400">Iniciado por ${getUserLinkHTML(t.authorUid, t.authorUsername)}</span>
             <h2 class="font-bold text-xl text-white">${t.title}</h2>
             <p class="text-sm text-slate-200">${t.desc}</p>
             ${mediaHTML}
@@ -1303,13 +1322,8 @@
       } catch (err) { console.error(err); }
     }
 
-    function openCreateThreadModal() {
-      document.getElementById('modal-create-thread').classList.remove('hidden');
-    }
-
-    function closeCreateThreadModal() {
-      document.getElementById('modal-create-thread').classList.add('hidden');
-    }
+    function openCreateThreadModal() { document.getElementById('modal-create-thread').classList.remove('hidden'); }
+    function closeCreateThreadModal() { document.getElementById('modal-create-thread').classList.add('hidden'); }
 
     async function handleCreateThreadSubmit(e) {
       e.preventDefault();
@@ -1330,7 +1344,7 @@
       try {
         await db.collection('groups').doc(activeGroupId).collection('threads').add({
           authorUid: auth.currentUser.uid,
-          authorName: currentUserData.name,
+          authorUsername: currentUserData.username,
           title,
           desc,
           mediaUrl,
@@ -1362,7 +1376,7 @@
       try {
         await db.collection('groups').doc(activeGroupId).collection('threads').doc(threadId).collection('replies').add({
           authorUid: auth.currentUser.uid,
-          authorName: currentUserData.name,
+          authorUsername: currentUserData.username,
           text,
           mediaUrl,
           mediaType,
@@ -1388,12 +1402,12 @@
             if (r.mediaUrl) {
               mediaHTML = r.mediaType === 'video'
                 ? `<video src="${r.mediaUrl}" controls class="rounded w-full mt-2 border border-slate-800"></video>`
-                : `<img src="${r.mediaUrl}" onclick="openImageLightbox('${r.mediaUrl}')" class="rounded w-full mt-2 cursor-pointer border border-slate-800">`;
+                : `<img src="${r.mediaUrl}" class="rounded w-full mt-2 border border-slate-800">`;
             }
 
             const replyCard = `
               <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-1">
-                <span>${getUserLinkHTML(r.authorUid, r.authorName)}:</span>
+                <span>${getUserLinkHTML(r.authorUid, r.authorUsername)}:</span>
                 <p class="text-xs text-slate-200">${r.text}</p>
                 ${mediaHTML}
               </div>
@@ -1403,7 +1417,7 @@
         });
     }
 
-    // CARGAR PUBLICACIONES
+    // FEED PRINCIPAL Y CARGAR PUBLICACIONES
     function loadPosts() {
       db.collection('posts').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const feedContainer = document.getElementById('posts-feed');
@@ -1417,83 +1431,119 @@
         snapshot.forEach(doc => {
           const post = doc.data();
           const postId = doc.id;
-          const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
-          const likes = post.likes || [];
-          const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
-
-          let mediaHTML = '';
-          if (post.mediaUrl) {
-            if (post.mediaType === 'video') {
-              mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full border border-slate-700"></video>`;
-            } else {
-              mediaHTML = `<img src="${post.mediaUrl}" onclick="openImageLightbox('${post.mediaUrl}')" class="rounded-lg w-full border border-slate-700 cursor-pointer">`;
-            }
-          }
-
-          const card = `
-            <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
-              <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white shrink-0">
-                    ${(post.authorName || 'U').charAt(0)}
-                  </div>
-                  <div>
-                    ${getUserLinkHTML(post.userId, post.authorName, post.authorUsername)}
-                  </div>
-                </div>
-
-                <div class="relative">
-                  <button onclick="togglePostMenu('${postId}')" class="text-slate-400 hover:text-white p-1">
-                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
-                  </button>
-                  <div id="menu-${postId}" class="hidden absolute right-0 top-6 w-36 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
-                    ${isOwner ? `
-                      <button onclick="editPost('${postId}', '${post.content}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Editar</button>
-                      <button onclick="deletePost('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Eliminar</button>
-                    ` : `
-                      <button onclick="blockPostUI('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Ocultar</button>
-                      <button onclick="openReportModal('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Reportar</button>
-                    `}
-                  </div>
-                </div>
-              </div>
-
-              <p class="text-xs text-slate-200">${post.content}</p>
-              ${mediaHTML}
-
-              <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
-                <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
-                  <i data-lucide="heart" class="w-4 h-4"></i>
-                  <span>${likes.length}</span>
-                </button>
-                <button onclick="toggleCommentsBox('${postId}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
-                  <i data-lucide="message-square" class="w-4 h-4"></i>
-                  <span>Comentarios</span>
-                </button>
-                <button onclick="openShareModal('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
-                  <i data-lucide="share-2" class="w-4 h-4"></i>
-                  <span>Compartir</span>
-                </button>
-              </div>
-
-              <div id="comments-section-${postId}" class="hidden pt-3 border-t border-slate-800 space-y-2">
-                <div class="flex gap-2">
-                  <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
-                  <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
-                </div>
-                <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
-              </div>
-            </div>
-          `;
-
-          feedContainer.insertAdjacentHTML('beforeend', card);
+          renderPostCard(postId, post, feedContainer);
         });
 
         lucide.createIcons();
       });
     }
 
-    // BÚSQUEDA GLOBAL MULTI-SECCIÓN
+    // RENDERIZADOR REUTILIZABLE PARA PUBLICACIONES CON CONTADOR DE COMENTARIOS ()
+    function renderPostCard(postId, post, container) {
+      const isOwner = auth.currentUser && post.userId === auth.currentUser.uid;
+      const likes = post.likes || [];
+      const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
+
+      let mediaHTML = '';
+      if (post.mediaUrl) {
+        if (post.mediaType === 'video') {
+          mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full border border-slate-700"></video>`;
+        } else {
+          mediaHTML = `<img src="${post.mediaUrl}" class="rounded-lg w-full border border-slate-700">`;
+        }
+      }
+
+      const card = `
+        <div id="post-card-${postId}" class="bg-slate-800 border border-slate-700/80 rounded-xl overflow-hidden shadow-md p-4 space-y-3 relative">
+          <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white shrink-0">
+                ${(post.authorUsername || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div>
+                ${getUserLinkHTML(post.userId, post.authorUsername)}
+              </div>
+            </div>
+
+            <div class="relative">
+              <button onclick="togglePostMenu('${postId}')" class="text-slate-400 hover:text-white p-1">
+                <i data-lucide="more-vertical" class="w-4 h-4"></i>
+              </button>
+              <div id="menu-${postId}" class="hidden absolute right-0 top-6 w-36 bg-slate-950 border border-slate-800 rounded-lg shadow-xl z-30 py-1 text-xs">
+                ${isOwner ? `
+                  <button onclick="editPost('${postId}', '${post.content}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Editar</button>
+                  <button onclick="deletePost('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Eliminar</button>
+                ` : `
+                  <button onclick="blockPostUI('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-slate-300">Ocultar</button>
+                  <button onclick="openReportModal('${postId}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-800 text-red-400">Reportar</button>
+                `}
+              </div>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-200">${post.content}</p>
+          ${mediaHTML}
+
+          <div class="pt-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
+            <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
+              <i data-lucide="heart" class="w-4 h-4"></i>
+              <span>${likes.length}</span>
+            </button>
+
+            <!-- BOTÓN COMENTARIOS CON CONTADOR DE COMENTARIOS () -->
+            <button onclick="toggleCommentsBox('${postId}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+              <i data-lucide="message-square" class="w-4 h-4"></i>
+              <span>Comentarios (<strong id="comment-count-num-${postId}">0</strong>)</span>
+            </button>
+
+            <button onclick="openShareModal('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span>Compartir</span>
+            </button>
+          </div>
+
+          <div id="comments-section-${postId}" class="hidden pt-3 border-t border-slate-800 space-y-2">
+            <div class="flex gap-2">
+              <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
+              <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
+            </div>
+            <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', card);
+      updateCommentCountBadge(postId);
+    }
+
+    function updateCommentCountBadge(postId) {
+      db.collection('posts').doc(postId).collection('comments').onSnapshot(snap => {
+        const badge = document.getElementById(`comment-count-num-${postId}`);
+        if (badge) badge.innerText = snap.size;
+      });
+    }
+
+    // VISTA INDIVIDUAL DE PUBLICACIÓN (URL ÚNICA QUE SE PUEDE COMPARTIR)
+    async function renderSinglePostView(postId) {
+      switchTab('single-post');
+      const container = document.getElementById('single-post-render-container');
+      container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">Cargando publicación...</p>';
+
+      try {
+        const doc = await db.collection('posts').doc(postId).get();
+        if (!doc.exists) {
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">Esta publicación no existe o fue eliminada.</p>';
+          return;
+        }
+
+        container.innerHTML = '';
+        renderPostCard(doc.id, doc.data(), container);
+        toggleCommentsBox(doc.id);
+        lucide.createIcons();
+      } catch (err) { console.error(err); }
+    }
+
+    // BÚSQUEDA GLOBAL
     async function handleGlobalSearch(query) {
       const dropdown = document.getElementById('search-results-dropdown');
       const cleanQuery = query.replace('@', '').trim().toLowerCase();
@@ -1516,7 +1566,7 @@
 
         let resultsHTML = '';
 
-        // 1. USUARIOS
+        // USUARIOS
         const users = usersSnap.docs.map(doc => doc.data()).filter(u => u.uid !== auth.currentUser?.uid && (u.username?.toLowerCase().includes(cleanQuery) || u.name?.toLowerCase().includes(cleanQuery)));
         if (users.length > 0) {
           resultsHTML += `<div class="text-[10px] font-bold text-red-500 uppercase px-2 pt-1">Personas</div>`;
@@ -1524,15 +1574,15 @@
             resultsHTML += `
               <div onclick="viewUserProfile('${u.uid}'); document.getElementById('search-results-dropdown').classList.add('hidden');" class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg cursor-pointer transition">
                 <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center font-bold text-[10px] text-white">${u.name.charAt(0)}</div>
-                  <span class="font-semibold text-white text-xs">${u.name} (@${u.username})</span>
+                  <div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center font-bold text-[10px] text-white">${u.username.charAt(0).toUpperCase()}</div>
+                  <span class="font-semibold text-white text-xs">${getUserLinkHTML(u.uid, u.username)}</span>
                 </div>
               </div>
             `;
           });
         }
 
-        // 2. VEHÍCULOS
+        // VEHÍCULOS
         const vehicles = vehiclesSnap.docs.map(doc => doc.data()).filter(v => v.name?.toLowerCase().includes(cleanQuery) || v.desc?.toLowerCase().includes(cleanQuery));
         if (vehicles.length > 0) {
           resultsHTML += `<div class="text-[10px] font-bold text-amber-500 uppercase px-2 pt-2 border-t border-slate-800">Vehículos</div>`;
@@ -1546,7 +1596,7 @@
           });
         }
 
-        // 3. GRUPOS
+        // GRUPOS
         const groups = groupsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(g => g.name?.toLowerCase().includes(cleanQuery) || g.desc?.toLowerCase().includes(cleanQuery));
         if (groups.length > 0) {
           resultsHTML += `<div class="text-[10px] font-bold text-blue-500 uppercase px-2 pt-2 border-t border-slate-800">Grupos</div>`;
@@ -1560,7 +1610,7 @@
           });
         }
 
-        // 4. MARKET
+        // MARKET
         const marketItems = marketSnap.docs.map(doc => doc.data()).filter(m => m.title?.toLowerCase().includes(cleanQuery) || m.desc?.toLowerCase().includes(cleanQuery));
         if (marketItems.length > 0) {
           resultsHTML += `<div class="text-[10px] font-bold text-emerald-500 uppercase px-2 pt-2 border-t border-slate-800">Market</div>`;
@@ -1578,7 +1628,7 @@
         }
 
         if (!resultsHTML) {
-          dropdown.innerHTML = '<p class="text-xs text-slate-500 p-3 text-center">No se encontraron resultados para tu búsqueda.</p>';
+          dropdown.innerHTML = '<p class="text-xs text-slate-500 p-3 text-center">No se encontraron resultados.</p>';
         } else {
           dropdown.innerHTML = resultsHTML;
         }
@@ -1587,7 +1637,7 @@
       } catch (err) { console.error(err); }
     }
 
-    // RESTO DE FUNCIONALIDADES
+    // PERFIL DE USUARIO
     async function viewUserProfile(uid) {
       activeProfileUid = uid;
       switchTab('profile');
@@ -1599,10 +1649,11 @@
         const u = userDoc.data();
         const isOwn = auth.currentUser && auth.currentUser.uid === uid;
 
-        document.getElementById('profile-display-name').innerText = u.name;
+        // EL NOMBRE REAL ES LO ÚNICO QUE SE MUESTRA EXCLUSIVAMENTE AQUÍ
+        document.getElementById('profile-display-name').innerText = u.name || u.username;
         document.getElementById('profile-display-username').innerText = '@' + u.username;
         document.getElementById('profile-display-bio').innerText = u.bio || 'Sin biografía agregada.';
-        document.getElementById('profile-avatar-initials').innerText = u.name.charAt(0).toUpperCase();
+        document.getElementById('profile-avatar-initials').innerText = u.username.charAt(0).toUpperCase();
 
         const img = document.getElementById('profile-avatar-img');
         if (u.avatarUrl) {
@@ -1635,6 +1686,7 @@
 
         loadUserVehicles(uid);
         loadUserOwnPostsGrid(uid);
+        loadUserJoinedGroups(uid);
       } catch (err) { console.error(err); }
     }
 
@@ -1654,12 +1706,40 @@
           await db.collection('users').doc(myUid).update({
             following: firebase.firestore.FieldValue.arrayUnion(activeProfileUid)
           });
-          addNotification(activeProfileUid, 'follow', `${currentUserData.name} comenzó a seguirte.`);
+          addNotification(activeProfileUid, 'follow', `@${currentUserData.username} comenzó a seguirte.`);
         }
         viewUserProfile(activeProfileUid);
       } catch (err) { console.error(err); }
     }
 
+    // MOSTRAR GRUPOS A LOS QUE PERTENECE EN EL PERFIL
+    function loadUserJoinedGroups(uid) {
+      db.collection('groups').where('members', 'array-contains', uid).onSnapshot(snapshot => {
+        const grid = document.getElementById('user-joined-groups-grid');
+        grid.innerHTML = '';
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<div class="col-span-full bg-slate-800/90 border border-slate-700/80 rounded-xl p-8 text-center"><p class="text-xs text-slate-400">No pertenece a ningún grupo actualmente.</p></div>`;
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const g = doc.data();
+          const card = `
+            <div onclick="openGroupProfile('${doc.id}')" class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:border-red-500/50 transition">
+              <img src="${g.imageUrl}" class="w-12 h-12 rounded-lg object-cover">
+              <div>
+                <h4 class="font-bold text-xs text-white">${g.name}</h4>
+                <p class="text-[10px] text-slate-400 line-clamp-1">${g.desc}</p>
+              </div>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', card);
+        });
+      });
+    }
+
+    // PRESIONAR POST EN PERFIL MANDA A NUEVA NAVEGACIÓN Y URL ÚNICA
     function loadUserOwnPostsGrid(uid) {
       db.collection('posts').where('userId', '==', uid).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         const grid = document.getElementById('user-own-posts-grid');
@@ -1675,7 +1755,7 @@
           const postId = doc.id;
 
           const card = `
-            <div onclick="openPostDetailModal('${postId}')" class="aspect-square bg-slate-950 border border-slate-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition relative group">
+            <div onclick="window.location.hash = '#post/${postId}'" class="aspect-square bg-slate-950 border border-slate-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition relative group">
               ${post.mediaUrl ? (post.mediaType === 'video' ? `<video src="${post.mediaUrl}" class="w-full h-full object-cover"></video>` : `<img src="${post.mediaUrl}" class="w-full h-full object-cover">`) : `<div class="p-3 text-xs text-slate-300 h-full flex items-center justify-center text-center overflow-hidden">${post.content}</div>`}
               <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 text-white font-bold text-xs transition">
                 <span class="flex items-center gap-1"><i data-lucide="heart" class="w-4 h-4 text-red-500 fill-red-500"></i> ${(post.likes || []).length}</span>
@@ -1688,78 +1768,9 @@
       });
     }
 
-    async function openPostDetailModal(postId) {
-      try {
-        const doc = await db.collection('posts').doc(postId).get();
-        if (!doc.exists) return;
-
-        const post = doc.data();
-        const likes = post.likes || [];
-        const isLiked = auth.currentUser && likes.includes(auth.currentUser.uid);
-
-        let mediaHTML = '';
-        if (post.mediaUrl) {
-          if (post.mediaType === 'video') {
-            mediaHTML = `<video src="${post.mediaUrl}" controls class="rounded-lg w-full border border-slate-700"></video>`;
-          } else {
-            mediaHTML = `<img src="${post.mediaUrl}" onclick="openImageLightbox('${post.mediaUrl}')" class="rounded-lg w-full border border-slate-700 cursor-pointer">`;
-          }
-        }
-
-        const detailContainer = document.getElementById('post-detail-container');
-        detailContainer.innerHTML = `
-          <div class="space-y-3">
-            <div class="flex items-center gap-3 border-b border-slate-800 pb-2">
-              <div class="w-9 h-9 rounded-full bg-red-600 font-bold flex items-center justify-center text-xs text-white">
-                ${(post.authorName || 'U').charAt(0)}
-              </div>
-              <div>
-                ${getUserLinkHTML(post.userId, post.authorName, post.authorUsername)}
-              </div>
-            </div>
-
-            <p class="text-xs text-slate-200">${post.content}</p>
-            ${mediaHTML}
-
-            <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <button onclick="toggleLikePost('${postId}')" class="flex items-center gap-1.5 font-semibold ${isLiked ? 'text-red-500' : 'hover:text-red-500'} transition">
-                <i data-lucide="heart" class="w-4 h-4"></i>
-                <span>${likes.length}</span>
-              </button>
-              <button onclick="openShareModal('${post.content}')" class="hover:text-white flex items-center gap-1.5 font-semibold transition">
-                <i data-lucide="share-2" class="w-4 h-4"></i>
-                <span>Compartir</span>
-              </button>
-            </div>
-
-            <div class="pt-3 border-t border-slate-800 space-y-2">
-              <div class="flex gap-2">
-                <input id="comment-input-${postId}" type="text" placeholder="Escribe un comentario..." class="flex-1 bg-slate-950 border border-slate-700 rounded p-1.5 text-xs text-white">
-                <button onclick="addComment('${postId}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">Comentar</button>
-              </div>
-              <div id="comments-list-${postId}" class="space-y-2 max-h-60 overflow-y-auto"></div>
-            </div>
-          </div>
-        `;
-
-        document.getElementById('modal-post-detail').classList.remove('hidden');
-        listenPostComments(postId);
-        lucide.createIcons();
-      } catch (err) { console.error(err); }
-    }
-
-    function closePostDetailModal() {
-      document.getElementById('modal-post-detail').classList.add('hidden');
-    }
-
-    // HISTORIAS
-    function openUploadStoryModal() {
-      document.getElementById('modal-upload-story').classList.remove('hidden');
-    }
-
-    function closeUploadStoryModal() {
-      document.getElementById('modal-upload-story').classList.add('hidden');
-    }
+    // HISTORIAS CON NAVEGACIÓN CRONOLÓGICA Y CONTROLES A LOS LADOS
+    function openUploadStoryModal() { document.getElementById('modal-upload-story').classList.remove('hidden'); }
+    function closeUploadStoryModal() { document.getElementById('modal-upload-story').classList.add('hidden'); }
 
     async function handleStorySubmit(e) {
       e.preventDefault();
@@ -1772,7 +1783,7 @@
       try {
         await db.collection('stories').add({
           userId: auth.currentUser.uid,
-          authorName: currentUserData.name,
+          authorUsername: currentUserData.username,
           authorAvatar: currentUserData.avatarUrl || '',
           mediaUrl,
           mediaType,
@@ -1787,7 +1798,8 @@
       const now = Date.now();
       const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
 
-      db.collection('stories').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+      // ORDEN CRONOLÓGICO: MÁS ANTIGUO PRIMERO
+      db.collection('stories').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
         const container = document.getElementById('stories-container');
         container.innerHTML = '';
 
@@ -1801,9 +1813,9 @@
             if (!storiesByUser[s.userId]) {
               storiesByUser[s.userId] = {
                 userId: s.userId,
-                authorName: s.authorName,
+                authorUsername: s.authorUsername || 'usuario',
                 authorAvatar: s.authorAvatar,
-                latestTimestamp: createdAtMs,
+                oldestTimestamp: createdAtMs,
                 stories: []
               };
             }
@@ -1811,15 +1823,13 @@
           }
         });
 
-        userStoriesQueue = Object.values(storiesByUser).sort((a, b) => b.latestTimestamp - a.latestTimestamp);
+        userStoriesQueue = Object.values(storiesByUser).sort((a, b) => a.oldestTimestamp - b.oldestTimestamp);
 
         userStoriesQueue.forEach((u, uIdx) => {
           const count = u.stories.length;
 
           let dashArray = '100';
-          if (count > 1) {
-            dashArray = `${80 / count} ${20 / count}`;
-          }
+          if (count > 1) dashArray = `${80 / count} ${20 / count}`;
 
           const bubble = `
             <div onclick="startStoryPlayback(${uIdx}, 0)" class="flex flex-col items-center gap-1 cursor-pointer shrink-0">
@@ -1836,10 +1846,10 @@
                   />
                 </svg>
                 <div class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center font-bold text-xs text-white overflow-hidden border border-slate-950 z-10">
-                  ${u.authorAvatar ? `<img src="${u.authorAvatar}" class="w-full h-full object-cover">` : u.authorName.charAt(0)}
+                  ${u.authorAvatar ? `<img src="${u.authorAvatar}" class="w-full h-full object-cover">` : u.authorUsername.charAt(0).toUpperCase()}
                 </div>
               </div>
-              <span class="text-[10px] text-slate-300 font-medium truncate w-14 text-center">${u.authorName}</span>
+              <span class="text-[10px] text-slate-300 font-medium truncate w-14 text-center">@${u.authorUsername}</span>
             </div>
           `;
           container.insertAdjacentHTML('beforeend', bubble);
@@ -1848,7 +1858,7 @@
     }
 
     function startStoryPlayback(userIndex, storyIndex) {
-      if (userIndex >= userStoriesQueue.length) {
+      if (userIndex >= userStoriesQueue.length || userIndex < 0) {
         closeViewStoryModal();
         return;
       }
@@ -1859,15 +1869,17 @@
       const userGroup = userStoriesQueue[currentUserIndex];
       const story = userGroup.stories[currentStoryIndex];
 
-      document.getElementById('story-viewer-name').innerHTML = `${getUserLinkHTML(userGroup.userId, userGroup.authorName)} (${currentStoryIndex + 1}/${userGroup.stories.length})`;
+      document.getElementById('story-viewer-name').innerHTML = `${getUserLinkHTML(userGroup.userId, userGroup.authorUsername)} (${currentStoryIndex + 1}/${userGroup.stories.length})`;
+      
       const avatarContainer = document.getElementById('story-viewer-avatar');
-      avatarContainer.innerHTML = userGroup.authorAvatar ? `<img src="${userGroup.authorAvatar}" class="w-full h-full object-cover rounded-full">` : userGroup.authorName.charAt(0);
+      avatarContainer.onclick = () => { closeViewStoryModal(); viewUserProfile(userGroup.userId); };
+      avatarContainer.innerHTML = userGroup.authorAvatar ? `<img src="${userGroup.authorAvatar}" class="w-full h-full object-cover rounded-full">` : userGroup.authorUsername.charAt(0).toUpperCase();
 
       const contentBox = document.getElementById('story-viewer-content');
       if (story.mediaType === 'video') {
         contentBox.innerHTML = `<video src="${story.mediaUrl}" controls autoplay class="w-full"></video>`;
       } else {
-        contentBox.innerHTML = `<img src="${story.mediaUrl}" onclick="openImageLightbox('${story.mediaUrl}')" class="w-full cursor-pointer">`;
+        contentBox.innerHTML = `<img src="${story.mediaUrl}" class="w-full">`;
       }
 
       document.getElementById('modal-view-story').classList.remove('hidden');
@@ -1905,6 +1917,17 @@
       }
     }
 
+    function prevStory() {
+      if (currentStoryIndex - 1 >= 0) {
+        startStoryPlayback(currentUserIndex, currentStoryIndex - 1);
+      } else if (currentUserIndex - 1 >= 0) {
+        const prevGroup = userStoriesQueue[currentUserIndex - 1];
+        startStoryPlayback(currentUserIndex - 1, prevGroup.stories.length - 1);
+      } else {
+        closeViewStoryModal();
+      }
+    }
+
     function pauseStoryProgress() { isStoryPaused = true; }
     function resumeStoryProgress() { isStoryPaused = false; }
 
@@ -1932,14 +1955,13 @@
             <div onclick="viewUserProfile('${f.uid}'); closeFriendsModal();" class="flex items-center justify-between p-2.5 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:bg-slate-800 transition">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-bold text-xs text-white">
-                  ${f.name.charAt(0)}
+                  ${f.username.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p class="font-bold text-xs text-white">${f.name}</p>
-                  <p class="text-[10px] text-slate-400">@${f.username}</p>
+                  <p class="font-bold text-xs text-white">${getUserLinkHTML(f.uid, f.username)}</p>
                 </div>
               </div>
-              <button onclick="event.stopPropagation(); openDirectChat('${f.uid}', '${f.name}'); closeFriendsModal();" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2.5 py-1 rounded">Mensaje</button>
+              <button onclick="event.stopPropagation(); openDirectChat('${f.uid}', '${f.username}'); closeFriendsModal();" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2.5 py-1 rounded">Mensaje</button>
             </div>
           `;
           container.insertAdjacentHTML('beforeend', item);
@@ -1949,9 +1971,7 @@
       document.getElementById('modal-friends-list').classList.remove('hidden');
     }
 
-    function closeFriendsModal() {
-      document.getElementById('modal-friends-list').classList.add('hidden');
-    }
+    function closeFriendsModal() { document.getElementById('modal-friends-list').classList.add('hidden'); }
 
     // COMPARTIR
     function openShareModal(content) {
@@ -1965,8 +1985,8 @@
       } else {
         friends.forEach(f => {
           const item = `
-            <div onclick="sendPostToFriend('${f.uid}', '${f.name}')" class="flex items-center justify-between p-2 bg-slate-950 hover:bg-slate-800 rounded cursor-pointer border border-slate-800">
-              <span class="text-xs text-white font-bold">${f.name}</span>
+            <div onclick="sendPostToFriend('${f.uid}', '${f.username}')" class="flex items-center justify-between p-2 bg-slate-950 hover:bg-slate-800 rounded cursor-pointer border border-slate-800">
+              <span class="text-xs text-white font-bold">@${f.username}</span>
               <span class="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded font-bold">Enviar</span>
             </div>
           `;
@@ -1977,27 +1997,25 @@
       document.getElementById('modal-share-post').classList.remove('hidden');
     }
 
-    function closeShareModal() {
-      document.getElementById('modal-share-post').classList.add('hidden');
-    }
+    function closeShareModal() { document.getElementById('modal-share-post').classList.add('hidden'); }
 
     function copyPostLink() {
-      navigator.clipboard.writeText(activeSharePostContent || window.location.href);
-      alert("¡Publicación / URL copiada al portapapeles!");
+      navigator.clipboard.writeText(window.location.href);
+      alert("¡Enlace copiado al portapapeles!");
       closeShareModal();
     }
 
-    async function sendPostToFriend(friendUid, friendName) {
+    async function sendPostToFriend(friendUid, friendUsername) {
       if (!auth.currentUser) return;
       const chatId = [auth.currentUser.uid, friendUid].sort().join('_');
 
       try {
         await db.collection('chats').doc(chatId).collection('messages').add({
           senderId: auth.currentUser.uid,
-          text: `Te comparto esta publicación: "${activeSharePostContent}"`,
+          text: `Te comparto esta publicación: ${window.location.href}`,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert(`Publicación enviada a ${friendName}`);
+        alert(`Publicación enviada a @${friendUsername}`);
         closeShareModal();
       } catch (err) { alert(err.message); }
     }
@@ -2021,7 +2039,6 @@
       try {
         await db.collection('posts').doc(postId).collection('comments').add({
           authorUid: auth.currentUser.uid,
-          authorName: currentUserData.name,
           authorUsername: currentUserData.username,
           text,
           parentCommentId,
@@ -2030,7 +2047,7 @@
 
         const postDoc = await db.collection('posts').doc(postId).get();
         if (postDoc.exists) {
-          addNotification(postDoc.data().userId, 'comment', `${currentUserData.name} comentó tu publicación.`);
+          addNotification(postDoc.data().userId, 'comment', `@${currentUserData.username} comentó tu publicación.`);
         }
 
         inputEl.value = '';
@@ -2080,7 +2097,7 @@
             const card = `
               <div id="comment-card-${c.id}" class="p-2 bg-slate-900 border border-slate-800 rounded-lg space-y-1.5 relative">
                 <div class="flex items-center justify-between">
-                  ${getUserLinkHTML(c.authorUid, c.authorName, c.authorUsername)}
+                  ${getUserLinkHTML(c.authorUid, c.authorUsername)}
                   
                   <div class="relative">
                     <button onclick="toggleCommentMenu('${c.id}')" class="text-slate-500 hover:text-white p-0.5">
@@ -2104,7 +2121,7 @@
                 <div class="pl-3 border-l border-slate-700 space-y-1 mt-1">
                   ${replies.map(r => `
                     <div class="p-1.5 bg-slate-950 rounded text-xs">
-                      ${getUserLinkHTML(r.authorUid, r.authorName)}:
+                      ${getUserLinkHTML(r.authorUid, r.authorUsername)}:
                       <span class="text-slate-300 text-[11px]">${r.text}</span>
                     </div>
                   `).join('')}
@@ -2140,7 +2157,7 @@
           await postRef.update({ likes: firebase.firestore.FieldValue.arrayRemove(userUid) });
         } else {
           await postRef.update({ likes: firebase.firestore.FieldValue.arrayUnion(userUid) });
-          addNotification(postData.userId, 'like', `${currentUserData.name} le dio Me Gusta a tu publicación.`);
+          addNotification(postData.userId, 'like', `@${currentUserData.username} le dio Me Gusta a tu publicación.`);
         }
       } catch (err) { console.error(err); }
     }
@@ -2163,7 +2180,6 @@
       try {
         await db.collection('posts').add({
           userId: auth.currentUser.uid,
-          authorName: currentUserData.name,
           authorUsername: currentUserData.username,
           content: document.getElementById('post-text').value,
           mediaUrl,
@@ -2194,7 +2210,7 @@
                 if (msg.senderId !== myUid) {
                   if (!activeChatFriend || activeChatFriend.uid !== f.uid || document.getElementById('active-chat-box').classList.contains('hidden')) {
                     unreadCounts[f.uid] = (unreadCounts[f.uid] || 0) + 1;
-                    addOrUpdateChatBubble(f.uid, f.name, true);
+                    addOrUpdateChatBubble(f.uid, f.username, true);
                   }
                 }
               }
@@ -2203,7 +2219,7 @@
       });
     }
 
-    function addOrUpdateChatBubble(friendUid, friendName, hasUnread = false) {
+    function addOrUpdateChatBubble(friendUid, friendUsername, hasUnread = false) {
       const container = document.getElementById('floating-bubbles-container');
       let existing = document.getElementById(`bubble-${friendUid}`);
 
@@ -2212,8 +2228,8 @@
 
       if (!existing) {
         const bubble = `
-          <div id="bubble-${friendUid}" onclick="toggleDirectChatBubble('${friendUid}', '${friendName}')" class="w-12 h-12 rounded-full bg-red-600 ${alertClasses} text-white font-bold text-sm flex items-center justify-center cursor-pointer shadow-2xl relative hover:scale-110 transition">
-            ${friendName.charAt(0)}
+          <div id="bubble-${friendUid}" onclick="toggleDirectChatBubble('${friendUid}', '${friendUsername}')" class="w-12 h-12 rounded-full bg-red-600 ${alertClasses} text-white font-bold text-sm flex items-center justify-center cursor-pointer shadow-2xl relative hover:scale-110 transition">
+            ${friendUsername.charAt(0).toUpperCase()}
             <span id="badge-unread-${friendUid}" class="${count > 0 ? '' : 'hidden'} absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900">${count}</span>
             <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-950"></span>
           </div>
@@ -2229,22 +2245,22 @@
       }
     }
 
-    function toggleDirectChatBubble(friendUid, friendName) {
+    function toggleDirectChatBubble(friendUid, friendUsername) {
       const chatBox = document.getElementById('active-chat-box');
       
       if (activeChatFriend && activeChatFriend.uid === friendUid && !chatBox.classList.contains('hidden')) {
         closeDirectChat();
       } else {
-        openDirectChat(friendUid, friendName);
+        openDirectChat(friendUid, friendUsername);
       }
     }
 
-    function openDirectChat(friendUid, friendName) {
-      activeChatFriend = { uid: friendUid, name: friendName };
+    function openDirectChat(friendUid, friendUsername) {
+      activeChatFriend = { uid: friendUid, username: friendUsername };
       unreadCounts[friendUid] = 0;
-      addOrUpdateChatBubble(friendUid, friendName, false);
+      addOrUpdateChatBubble(friendUid, friendUsername, false);
 
-      document.getElementById('chat-title-text').innerText = friendName;
+      document.getElementById('chat-title-text').innerText = '@' + friendUsername;
       document.getElementById('active-chat-box').classList.remove('hidden');
       document.getElementById('chat-dropdown').classList.add('hidden');
       
@@ -2308,16 +2324,16 @@
         });
     }
 
-    async function sendFriendRequest(targetUid, targetName, targetUsername) {
+    async function sendFriendRequest(targetUid, targetUsername) {
       if (!isLoggedIn) return openAuthModal('login');
 
       try {
         await db.collection('users').doc(auth.currentUser.uid).update({
-          sentRequests: firebase.firestore.FieldValue.arrayUnion({ uid: targetUid, name: targetName, username: targetUsername })
+          sentRequests: firebase.firestore.FieldValue.arrayUnion({ uid: targetUid, username: targetUsername })
         });
 
         await db.collection('users').doc(targetUid).update({
-          incomingRequests: firebase.firestore.FieldValue.arrayUnion({ uid: auth.currentUser.uid, name: currentUserData.name, username: currentUserData.username })
+          incomingRequests: firebase.firestore.FieldValue.arrayUnion({ uid: auth.currentUser.uid, username: currentUserData.username })
         });
 
         alert(`Solicitud enviada a @${targetUsername}`);
@@ -2326,28 +2342,28 @@
       } catch (err) { alert("Error al enviar solicitud: " + err.message); }
     }
 
-    async function acceptFriendRequest(senderUid, senderName, senderUsername) {
+    async function acceptFriendRequest(senderUid, senderUsername) {
       try {
         const myUid = auth.currentUser.uid;
 
         await db.collection('users').doc(myUid).update({
-          friends: firebase.firestore.FieldValue.arrayUnion({ uid: senderUid, name: senderName, username: senderUsername }),
-          incomingRequests: firebase.firestore.FieldValue.arrayRemove({ uid: senderUid, name: senderName, username: senderUsername })
+          friends: firebase.firestore.FieldValue.arrayUnion({ uid: senderUid, username: senderUsername }),
+          incomingRequests: firebase.firestore.FieldValue.arrayRemove({ uid: senderUid, username: senderUsername })
         });
 
         await db.collection('users').doc(senderUid).update({
-          friends: firebase.firestore.FieldValue.arrayUnion({ uid: myUid, name: currentUserData.name, username: currentUserData.username }),
-          sentRequests: firebase.firestore.FieldValue.arrayRemove({ uid: myUid, name: currentUserData.name, username: currentUserData.username })
+          friends: firebase.firestore.FieldValue.arrayUnion({ uid: myUid, username: currentUserData.username }),
+          sentRequests: firebase.firestore.FieldValue.arrayRemove({ uid: myUid, username: currentUserData.username })
         });
 
-        alert(`¡Ahora eres amigo de ${senderName}!`);
+        alert(`¡Ahora eres amigo de @${senderUsername}!`);
       } catch (err) { alert("Error al aceptar solicitud: " + err.message); }
     }
 
-    async function rejectFriendRequest(senderUid, senderName, senderUsername) {
+    async function rejectFriendRequest(senderUid, senderUsername) {
       try {
         await db.collection('users').doc(auth.currentUser.uid).update({
-          incomingRequests: firebase.firestore.FieldValue.arrayRemove({ uid: senderUid, name: senderName, username: senderUsername })
+          incomingRequests: firebase.firestore.FieldValue.arrayRemove({ uid: senderUid, username: senderUsername })
         });
       } catch (err) { console.error(err); }
     }
@@ -2363,13 +2379,13 @@
       }
 
       friendsListEl.innerHTML = friends.map(f => `
-        <div onclick="openDirectChat('${f.uid}', '${f.name}')" class="flex items-center justify-between p-2 hover:bg-slate-900 rounded-lg cursor-pointer transition border border-slate-800">
+        <div onclick="openDirectChat('${f.uid}', '${f.username}')" class="flex items-center justify-between p-2 hover:bg-slate-900 rounded-lg cursor-pointer transition border border-slate-800">
           <div class="flex items-center gap-2">
             <div class="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center font-bold text-xs text-white">
-              ${f.name.charAt(0)}
+              ${f.username.charAt(0).toUpperCase()}
             </div>
             <div>
-              ${getUserLinkHTML(f.uid, f.name, f.username)}
+              ${getUserLinkHTML(f.uid, f.username)}
             </div>
           </div>
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -2436,7 +2452,7 @@
           const item = doc.data();
           const card = `
             <div class="market-card bg-slate-800/90 border border-slate-700 rounded-xl overflow-hidden shadow-lg p-4 space-y-3">
-              <img src="${item.imageUrl}" onclick="openImageLightbox('${item.imageUrl}')" class="w-full rounded-lg cursor-pointer">
+              <img src="${item.imageUrl}" class="w-full rounded-lg">
               <div class="flex justify-between items-start">
                 <h3 class="font-bold text-sm text-white">${item.title}</h3>
                 <span class="text-red-400 font-black text-sm">$${item.price.toLocaleString('es-CL')}</span>
@@ -2474,7 +2490,7 @@
       } catch (err) { alert(err.message); }
     }
 
-    // EDITAR PERFIL PROPIO
+    // EDITAR PERFIL
     function openEditProfileModal() {
       toggleSettingsModal();
       document.getElementById('edit-name').value = currentUserData.name || '';
@@ -2505,8 +2521,12 @@
       } catch (err) { alert(err.message); }
     }
 
-    // NAVEGACIÓN GENERAL
+    // NAVEGACIÓN GENERAL DE TAB
     function switchTab(tabId) {
+      if (tabId !== 'single-post' && window.location.hash) {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
+      }
+
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
 
